@@ -22,7 +22,6 @@ def get_track_uris_from_playlist(playlist_id):
         playlist_obj = json_slice['playlists'][playlist_id-198000]  # dict
         for track in playlist_obj['tracks']:
             playlist_uris.append(track['track_uri'])
-    print(np.array(playlist_uris))
     return np.array(playlist_uris)
 
 
