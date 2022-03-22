@@ -38,9 +38,9 @@ def calc_mean_vector(model, track_uris):
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     model = None
-    if os.path.isfile("./models/word2vec-song-vectors.model"):
+    if os.path.isfile("models/gensim_word2vec/word2vec-song-vectors.model"):
         print("load model from file")
-        model = gensim.models.Word2Vec.load("./models/word2vec-song-vectors.model")
+        model = gensim.models.Word2Vec.load("./models/gensim_word2vec/word2vec-song-vectors.model")
         print("model loaded from file")
     else:
         print("read data from database")
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         model.build_vocab(playlists, progress_per=1000)
         model.train(playlists, total_examples=model.corpus_count, epochs=model.epochs)
         # save model
-        model.save("./models/word2vec-song-vectors.model")
+        model.save("./models/gensim_word2vec/word2vec-song-vectors.model")
         # model.wv.save_word2vec_format("./models/word2vec-song-vectors.model")
         print("trained and saved model")
 
