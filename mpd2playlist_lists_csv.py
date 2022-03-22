@@ -15,14 +15,8 @@ parser.add_argument('--out_path', default=None, required=True)
 
 args = parser.parse_args()
 
-playlists_file = open(path.join(args.out_path, 'playlist_lists.csv'), 'w', newline='', encoding='utf8')
+playlists_file = open(path.join(args.out_path, 'track_sequences.csv'), 'w', newline='', encoding='utf8')
 playlists_writer = csv.writer(playlists_file)
-
-
-playlists_descr_file = open(path.join(args.out_path, 'playlists_descr.csv'), 'w', newline='', encoding='utf8')
-playlists_descr_writer = csv.writer(playlists_descr_file)
-
-tracks = set()
 
 for mpd_slice in listdir(args.mpd_path):
     with open(path.join(args.mpd_path, mpd_slice), encoding='utf8') as json_file:
@@ -31,9 +25,7 @@ for mpd_slice in listdir(args.mpd_path):
 
         for playlist in json_slice['playlists']:
             row = []
-            row.append([playlist['pid'], playlist['name']])
-
+            row.extend([playlist['pid'], playlist['name']])
             for track in playlist['tracks']:
-                row.append([track['track_uri']])
-
+                row.append(track['track_uri'])
             playlists_writer.writerow(row)
