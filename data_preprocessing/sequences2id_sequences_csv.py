@@ -5,7 +5,7 @@ import csv
 import json
 
 def create_dict():
-    with open('data/spotify_million_playlist_dataset_csv/data/vocabulary.csv', encoding='utf8') as read_obj:
+    with open('../data/spotify_million_playlist_dataset_csv/data/vocabulary.csv', encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file
         track_to_index = {}
@@ -15,13 +15,14 @@ def create_dict():
             index_to_track[row[0]] = row[1]
         return track_to_index, index_to_track
 
+
 if __name__ == '__main__':
     track_to_index, index_to_track = create_dict()
 
-    file = open('data/spotify_million_playlist_dataset_csv/data/id_sequences.csv', 'w', newline='', encoding='utf8')
+    file = open('../data/spotify_million_playlist_dataset_csv/data/id_sequences.csv', 'w', newline='', encoding='utf8')
     file_writer = csv.writer(file)
 
-    with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+    with open('../data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file
         for row in csv_reader:

@@ -6,6 +6,7 @@ from os import listdir
 from os import path
 import argparse
 import json
+import csv
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------
@@ -43,21 +44,19 @@ if __name__ == '__main__':
         model = gensim.models.Word2Vec.load("./models/gensim_word2vec/word2vec-song-vectors.model")
         print("model loaded from file")
     else:
+        num_playlists_to_read = 10000
         print("read data from database")
-        column_names = ['pid', 'pos', 'track_uri']
-        df = pd.read_csv(".\data\spotify_million_playlist_dataset_csv\data\items.csv",
-                         nrows=50000000, names=column_names, header=None)
-        # each value only once
-        pid = df['pid'].unique()
         # make matrix with each row is a playlist(list of track_uri)
         playlists = []
-        for playlist_id in pid:
-            tracks = df[df['pid'] == playlist_id]['track_uri'].values
-            tracks = tracks.tolist()
-            playlists.append(tracks)
-
+        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file
+            for idx, row in enumerate(csv_reader):
+                if idx >= num_playlists_to_read:
+                    break
+                playlists.append(row[2:])
         print("build vocabulary and train model...")
-        model = gensim.models.Word2Vec(window=30, min_count=1, workers=6)  # AMD Ryzen 5 2600x with 6 cores
+        model = gensim.models.Word2Vec(window=30, min_count=1, workers=4)  # AMD Ryzen 5 2600x with 6 cores
         model.build_vocab(playlists, progress_per=1000)
         model.train(playlists, total_examples=model.corpus_count, epochs=model.epochs)
         # save model
@@ -65,12 +64,13 @@ if __name__ == '__main__':
         # model.wv.save_word2vec_format("./models/word2vec-song-vectors.model")
         print("trained and saved model")
 
-    """
-    some playlists:
+
+    '''some playlists:
     old bangers 198000
-    brunch 198154
-    """
-    track_uris = get_track_uris_from_playlist(198087)
+    brunch 198154'''
+    print(model.wv.get_index("spotify:track:1KHdq8NK9QxnGjdXb55NiG"))
+
+    """track_uris = get_track_uris_from_playlist(198087)
     x = calc_mean_vector(model, track_uris)
     print(model.wv.similar_by_vector(x, topn=500))
-    # print(model.wv.similar_by_key('spotify:track:0muI8DpTEpLqqibPm3sKYf'))
+    # print(model.wv.similar_by_key('spotify:track:0muI8DpTEpLqqibPm3sKYf'))"""
