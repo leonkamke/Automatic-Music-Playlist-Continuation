@@ -148,7 +148,7 @@ class Seq2Seq(nn.Module):
         return predictions
 
 
-def train(model, train_data, optimizer, criterion, batch_size=1, clip=1, epochs=2):
+def train(model, train_data, optimizer, criterion, device, batch_size=1, clip=1, epochs=2):
     model.train()
     epoch_loss = 0
     num_iterations = 0
@@ -156,8 +156,8 @@ def train(model, train_data, optimizer, criterion, batch_size=1, clip=1, epochs=
         for i in range(0, len(train_data), batch_size):
             num_iterations += 1
             print(num_iterations)
-            src = train_data[i][0]
-            trg = train_data[i][1]
+            src = train_data[i][0].to(device)
+            trg = train_data[i][1].to(device)
             optimizer.zero_grad()
             output = model(src, trg)
             # output.shape(1, vocab_size)
@@ -168,7 +168,6 @@ def train(model, train_data, optimizer, criterion, batch_size=1, clip=1, epochs=
             optimizer.step()
             print("loss = ", loss.item())
             epoch_loss += loss.item()
-            print(model.encoder.embedding.weight)
     return epoch_loss / (len(train_data)*epochs)
 
 
@@ -179,7 +178,7 @@ if __name__ == '__main__':
     ENC_DROPOUT = 0.5
     DEC_DROPOUT = 0.5
     # training parameters
-    num_playlists_for_training = 1000000
+    num_playlists_for_training = 100
     num_epochs = 2
     # print options
     # torch.set_printoptions(profile="full")
@@ -217,7 +216,7 @@ if __name__ == '__main__':
     train_data, test_data, valid_data = create_train_valid_test_data(num_playlists_for_training, 0, 0, word2vec)
     print("created train data")
 
-    x = train(model, train_data, optimizer, criterion, epochs=num_epochs, batch_size=10)
+    x = train(model, train_data, optimizer, criterion, device, epochs=num_epochs, batch_size=10)
 
     torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch.pth')
     # model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch.pth'))
