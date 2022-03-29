@@ -2,14 +2,16 @@ import numpy as np
 import csv
 import torch
 import torch.nn as nn
+import torch.nn.functional as functional
 import torch.optim as optim
 import random
 import gensim
+import os
 
 
 def get_word2vec_model():
-    print("load word2model from file")
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/word2vec-song-vectors.model")
+    print("load word2vec from file")
+    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/100_thousand_playlists/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     return model
 
@@ -29,6 +31,7 @@ def create_train_valid_test_data(num_rows_train, num_rows_valid, num_rows_test, 
                 if len(row) <= 3:
                     continue
                 i = int(len(row) / 2 + 1)
+                i = 4
                 src = row[2:i]
                 trg = row[i: len(row)]
                 train_data.append([src, trg])
@@ -36,6 +39,7 @@ def create_train_valid_test_data(num_rows_train, num_rows_valid, num_rows_test, 
                 if len(row) <= 3:
                     continue
                 i = int(len(row) / 2 + 1)
+                i = 4
                 src = row[2:i]
                 trg = row[i: len(row)]
                 valid_data.append([src, trg])
@@ -43,6 +47,7 @@ def create_train_valid_test_data(num_rows_train, num_rows_valid, num_rows_test, 
                 if len(row) <= 3:
                     continue
                 i = int(len(row) / 2 + 1)
+                i = 4
                 src = row[2:i]
                 trg = row[i: len(row)]
                 test_data.append([src, trg])
@@ -89,6 +94,7 @@ class Encoder(nn.Module):
 
     def forward(self, src):
         embedded = self.dropout(self.embedding(src))
+        # embedded.shape == (26, 100)
         outputs, (hidden, cell) = self.rnn(embedded)
         return hidden, cell
 
@@ -120,7 +126,7 @@ class Seq2Seq(nn.Module):
         self.encoder = encoder
         self.decoder = decoder
         self.device = device
-        self.teacher_forcing_ratio = 0.5
+        self.teacher_forcing_ratio = 0.0
         self.training = True
         assert encoder.hid_dim == decoder.hid_dim, \
             "Hidden dimensions of encoder and decoder must be equal!"
@@ -141,6 +147,8 @@ class Seq2Seq(nn.Module):
             best_candidate = pred[0].argmax()
             # best_candidate.shape == scalar
             predictions[t] = pred[0]
+
+
             # if teacher forcing, use actual next token as next input
             # if not, use predicted token
             input = trg[t] if teacher_force and self.training else best_candidate
@@ -153,7 +161,7 @@ def train(model, train_data, optimizer, criterion, device, batch_size=1, clip=1,
     epoch_loss = 0
     num_iterations = 0
     for x in range(0, epochs):
-        for i in range(0, len(train_data), batch_size):
+        for i in range(0, len(train_data)):
             num_iterations += 1
             print(num_iterations)
             src = train_data[i][0].to(device)
@@ -173,22 +181,22 @@ def train(model, train_data, optimizer, criterion, device, batch_size=1, clip=1,
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    HID_DIM = 50
-    N_LAYERS = 2
-    ENC_DROPOUT = 0.5
-    DEC_DROPOUT = 0.5
+    HID_DIM = 100
+    N_LAYERS = 1
+    ENC_DROPOUT = 0.0
+    DEC_DROPOUT = 0.0
     # training parameters
-    num_playlists_for_training = 100
-    num_epochs = 2
+    num_playlists_for_training = 1
+    num_epochs = 100
+    learning_rate = 0.01
     # print options
     # torch.set_printoptions(profile="full")
 
     print("create model...")
     word2vec = get_word2vec_model()
     weights = torch.FloatTensor(word2vec.wv.vectors)
-    # weights.shape == (169657, 100)
+    # weights.shape == (2262292, 100)
     vocab_size = len(word2vec.wv)
-    print(vocab_size)
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
 
     enc = Encoder(embedding_pre_trained, HID_DIM, N_LAYERS, ENC_DROPOUT)
@@ -196,37 +204,66 @@ if __name__ == '__main__':
     model = Seq2Seq(enc, dec, device).to(device)
     print("finish")
 
-    print("init weights...")
+    """print("init weights...")
+
     def init_weights(m):
         for name, param in m.named_parameters():
             nn.init.uniform_(param.data, -0.08, 0.08)
     model.apply(init_weights)
-    print("finish")
+    print("finish")"""
 
     def count_parameters(model):
         return sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'The model has {count_parameters(model):,} trainable parameters')
 
-    optimizer = optim.Adam(model.parameters())
+    optimizer = optim.Adam(model.parameters(), learning_rate)
 
     criterion = nn.CrossEntropyLoss()  # maybe add ignore_index = ...
 
     # read data from csv file
     print("Create train data...")
     train_data, test_data, valid_data = create_train_valid_test_data(num_playlists_for_training, 0, 0, word2vec)
-    print("created train data")
+    print("Created train data")
 
-    x = train(model, train_data, optimizer, criterion, device, epochs=num_epochs, batch_size=10)
+    if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
+        x = train(model, train_data, optimizer, criterion, device, epochs=num_epochs, batch_size=10)
+        torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
+    else:
+        model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
+        # evaluate model:
+        model.eval()
+        with torch.no_grad():
+            model.training = False
+            with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+                test_playlist = []
+                csv_reader = csv.reader(read_obj)
+                for idx, row in enumerate(csv_reader):
+                    if idx == 1:
+                        test_playlist = row
+                        break
+                idx_half = int(len(test_playlist)/2)
+                src_uri = test_playlist[2:idx_half]
+                trg_uri = test_playlist[idx_half:len(test_playlist)]
+                print(src_uri)
+                print(trg_uri)
+                src = []
+                trg = []
+                for uri in src_uri:
+                    src.append(word2vec.wv.get_index(uri))
+                for uri in trg_uri:
+                    trg.append(word2vec.wv.get_index(uri))
+                print(src)
+                print(trg)
+                src = torch.LongTensor(src).to(device)
+                trg = torch.LongTensor(trg).to(device)
+                print(src)
+                print(trg)
+                output = model(src, trg)
+                output = torch.argmax(output, dim=1)
+                trg_model = []
+                for track_idx in output:
+                    trg_model.append(word2vec.wv.index_to_key[track_idx])
+                print("Target: ", trg)
+                print("Model output: ", trg_model)
 
-    torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch.pth')
-    # model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch.pth'))
 
-    ''''# evaluate model:
-    model.eval()
-    with torch.no_grad():
-        model.training = False
-        #print(x)
-        output = model(torch.tensor([4, 5, 6, 7, 8]), torch.tensor([9, 10, 11, 12]))
-        print(output.shape)
-        print("sequence prediction: ", torch.argmax(output, dim=1))
-        print("output vector: ", output[0])'''

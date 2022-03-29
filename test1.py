@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import gensim
 import csv
+import seq2seq_no_batch_pretrained_emb as seq2seq
 
 def create_dict():
     with open('data/spotify_million_playlist_dataset_csv/data/vocabulary.csv', encoding='utf8') as read_obj:
@@ -53,14 +54,19 @@ def create_train_valid_test_data(num_rows_train, num_rows_valid, num_rows_test):
 
 
 if __name__ == '__main__':
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/word2vec-song-vectors.model")
+    # predictions.shape = (ln(trg), vocab_size)
+    # trg.shape = (ln(trg))
+    trg0 = torch.LongTensor([5, 6, 7, 8, 9])
+    predictions0 = [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+    predictions0 = torch.FloatTensor(predictions0)
+    trg1 = torch.LongTensor([3])
+    predictions1 = [[0, 0, 0, 0.01, 0]]
+    predictions1 = torch.FloatTensor(predictions1)
+    criterion = nn.CrossEntropyLoss()
+    loss = criterion(predictions1, trg1)
 
-    # 'spotify:track:74tqql9zP6JjF5hjkHHUXp', 'spotify:track:4erhEGuOGQgjv3p1bccnpn',
-    # 'spotify:track:4hRA2rCPaCOpoEIq5qXaBz', 'spotify:track:1enx9LPZrXxaVVBxas5rRm'
-
-    weights = torch.FloatTensor(model.wv.vectors)
-    # weights.shape == (169657, 100)
-    #print(weights.shape)
-    x = model.wv.
-
-    # train emb_dir and give the seq2seq model the gensim model as a parameter
+    print(loss.item())
