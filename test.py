@@ -5,76 +5,73 @@ import torch.nn as nn
 import csv
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
-def create_train_valid_test_data(num_rows_train, num_rows_valid, num_rows_test):
-    # read training data from "track_sequences"
-    # rows(track_sequences) = 1.000.000 (0 to 999.999)
-    train_data = []
-    valid_data = []
-    test_data = []
-    with open('data/spotify_million_playlist_dataset_csv/data/id_sequences.csv', encoding='utf8') as read_obj:
-        csv_reader = csv.reader(read_obj)
-        # Iterate over each row in the csv file
-        for index, row_str in enumerate(csv_reader):
-            row = [int(id) for id in row_str]
-            if index >= num_rows_train + num_rows_valid + num_rows_test:
-                break
-            elif index < num_rows_train:
-                if len(row) <= 3:
-                    continue
-                i = int(len(row) / 2 + 1)
-                src = torch.Tensor(row[0:i])
-                trg = torch.Tensor(row[i: len(row)])
-                train_data.append([src, trg])
-            elif index < num_rows_train + num_rows_valid:
-                if len(row) <= 3:
-                    continue
-                i = int(len(row) / 2 + 1)
-                src = torch.Tensor(row[0:i])
-                trg = torch.Tensor(row[i: len(row)])
-                valid_data.append([src, trg])
-            else:
-                if len(row) <= 3:
-                    continue
-                i = int(len(row) / 2 + 1)
-                src = torch.Tensor(row[0:i])
-                trg = torch.Tensor(row[i: len(row)])
-                test_data.append([src, trg])
-    # shape of train data: (num_rows_train, 2)
-    # shape of validation data: (num_rows_valid, 2)
-    # shape of test data: (num_rows_test, 2)
-    return np.array(train_data), np.array(valid_data), np.array(test_data)
 
-def create_dict():
-    with open('data/spotify_million_playlist_dataset_csv/data/vocabulary.csv', encoding='utf8') as read_obj:
-        csv_reader = csv.reader(read_obj)
-        # Iterate over each row in the csv file
-        track_to_index = {}
-        index_to_track = {}
-        for index, row in enumerate(csv_reader):
-            track_to_index[row[1]] = int(row[0])
-            index_to_track[row[0]] = row[1]
-        return track_to_index, index_to_track
+class Seq2Seq(nn.Module):
+    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
+        super().__init__()
+        self.hid_dim = hid_dim
+        self.n_layers = n_layers
+        self.vocab_size = vocab_size
+
+        # input shape of embedding: (*) containing the indices
+        # output shape of embedding: (*, embed_dim == 100)
+        self.embedding = pre_trained_embedding
+        # input shape of LSTM has to be (batch_size, seq_len, embed_dim == 100) when batch_first=True
+        # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
+        #                       h_n.shape == (n_layers, batch_size, hid_dim)
+        #                       c_n.shape == (n_layers, batch_size, hid_dim)
+        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        # input shape of Linear: (*, hid_dim)
+        # output shape of Linear: (*, vocab_size)
+        self.fc_out = nn.Linear(hid_dim, vocab_size)
+
+    def forward(self, input):
+        # input.shape == (batch_size, seq_len)
+        x = self.embedding(input)
+        # x.shape == (batch_size, seq_len, embed_dim == 100), when batch_first=True
+        x, (h_n, c_n) = self.rnn(x)
+        # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
+        # x = self.fc_out(x)
+        # returned_matrix.shape == (batch_size, seq_len, vocab_size)
+        return self.fc_out(x)
 
 
-# skript for creating the vocabulary (list of all tracks)
 if __name__ == '__main__':
-    BATCH_SIZE = 11
-    train_data, valid_data, test_data = create_train_valid_test_data(1000, 10, 10)
-    embedding = nn.Embedding(10000, 100)
-    x_seq = [torch.tensor([5, 18, 29], dtype=torch.int32), torch.tensor([32, 100], dtype=torch.int32), torch.tensor([699, 6, 9, 17], dtype=torch.int32)]
+    """# test_batch.shape == (2, 3, 3)
+    src = torch.FloatTensor([[[0.5, 0.5, 0.5],
+                                     [0.3, 0.3, 0.3],
+                                     [0.4, 0.4, 0.4]],
+                                    [[0.1, 0.1, 0.1],
+                                    [0.2, 0.2, 0.2],
+                                   [0.9, 0.9, 0.9]]])
 
-    # pad the input sequence with zeros
-    x_padded = pad_sequence(x_seq, batch_first=True, padding_value=0)
-    print(x_padded)
-    # sort the list of sequences by sequence length
-    lengths = torch.IntTensor([torch.max(x_padded[i, :].data.nonzero()) + 1 for i in range(x_padded.size()[0])])
-    lengths, perm_idx = lengths.sort(0, descending=True)
-    x_padded = x_padded[perm_idx][:, :lengths.max()]
-    print(x_padded)
-    # save the length in a list
+    rnn = nn.LSTM(3, 2, 1, batch_first=True)
+    output, (hn, cn) = rnn(src)
+    # output.shape == (2, 3, 2)
+    fc_out = nn.Linear(2, 10)
+    output = fc_out(output)
+    # output.shape == (2, 3, 10)
+    print(output.shape)"""
 
-    packed_sequences = pack_padded_sequence(x_padded, batch_first=True, lengths=lengths, enforce_sorted=True)
-    print(packed_sequences)
-    embedding(packed_sequences.data)
-    # x_padded = [[5, 18, 29, 0], [32, 100, 0, 0], [699, 6, 9, 17]]
+    """# IMPORTANT!!! This is how Cross entropy works!!!
+    # batch_size = 2; trg_len = 3, output_dim = 5
+    trg = torch.LongTensor([4, 2, 2, 0, -1, 1])
+    output = torch.FloatTensor([[0, 0, 0, 0, 1, 0],
+                                [1, 1, 10, 1, 1, 1],
+                                [10, 10, 20, 10, 10, 10],
+                                [1, -1, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 10],
+                                [0, 1, 0, 0, 0, 0]])
+    criterion = nn.CrossEntropyLoss(ignore_index=-1)
+    loss = criterion(output, trg)
+    print(loss.item())"""
+
+    """from torch.nn.utils.rnn import pad_sequence
+    a = torch.LongTensor([1, 2])
+    b = torch.LongTensor([1, 10, 4, 0])
+    c = torch.LongTensor([1, 2, 3, 4, 3, 4, -1, -1])
+    out = pad_sequence([a, b, c], batch_first=True)
+    print(out.size())
+    print(out)"""
+
 
