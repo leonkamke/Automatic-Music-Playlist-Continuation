@@ -9,7 +9,7 @@ import data_preprocessing.load_data as ld
 
 def get_word2vec_model():
     print("load word2vec from file")
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/word2vec-song-vectors.model")
+    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/10_thousand_playlists/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     return model
 
@@ -69,8 +69,6 @@ def train(model, src, trg, optimizer, criterion, device, batch_size=10, epochs=2
             # output.shape = (batch_size, seq_len, vocab_size)
             output = output.view(-1, model.vocab_size)
             trg_i = trg_i.view(-1)
-            print(" trg_i.shape == ", trg_i.shape)
-            print(" output.shape == ", output.shape)
             loss = criterion(output, trg_i)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -83,6 +81,7 @@ def train(model, src, trg, optimizer, criterion, device, batch_size=10, epochs=2
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cpu')
 
     print("load pretrained embedding layer...")
     word2vec = get_word2vec_model()
@@ -102,18 +101,18 @@ if __name__ == '__main__':
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
 
-    """print("init weights...")
+    print("init weights...")
     def init_weights(m):
         for name, param in m.named_parameters():
             nn.init.uniform_(param.data, -0.08, 0.08)
     model.apply(init_weights)
-    print("finish")"""
+    print("finish")
 
     # Training parameters
-    learning_rate = 0.003
-    num_epochs = 2
-    batch_size = 10
-    num_playlists_for_training = 300
+    learning_rate = 0.1
+    num_epochs = 100
+    batch_size = 5
+    num_playlists_for_training = 10
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
 
