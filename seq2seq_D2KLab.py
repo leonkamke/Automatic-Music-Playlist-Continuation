@@ -5,6 +5,8 @@ import torch.optim as optim
 import gensim
 import os
 import data_preprocessing.load_data as ld
+from torch.utils.data import DataLoader
+from torch.utils.checkpoint import checkpoint
 
 
 def get_word2vec_model():
@@ -12,6 +14,11 @@ def get_word2vec_model():
     model = gensim.models.Word2Vec.load("./models/gensim_word2vec/10_thousand_playlists/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     return model
+
+
+def init_weights(m):
+    for name, param in m.named_parameters():
+        nn.init.uniform_(param.data, -0.08, 0.08)
 
 
 def count_parameters(model):
@@ -37,15 +44,27 @@ class Seq2Seq(nn.Module):
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
 
-    def forward(self, input, prd_len):
+        self.layers = nn.Sequential(
+            self.embedding,
+            self.rnn,
+            self.fc_out
+        )
+
+    def forward(self, input):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
+        x.requires_grad = True
+        # x = checkpoint(self.embedding, input)
         # x.shape == (batch_size, seq_len, embed_dim == 100), when batch_first=True
-        x, (h_n, c_n) = self.rnn(x)
+
+        # x, (h_n, c_n) = self.rnn(x)
+        x, (h_n, c_n) = checkpoint(self.rnn, x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
+
+        x = checkpoint(self.fc_out, x)
         # x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
-        return self.fc_out(x)
+        return x
 
     def rank(self, output, n):
         # output.shape (batch_size, seq_len, vocab_size)
@@ -56,76 +75,82 @@ class Seq2Seq(nn.Module):
         # returned prediction shape: (batch_size, n)
 
 
-def train(model, src, trg, optimizer, criterion, device, batch_size=10, epochs=2, clip=1):
+def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
-    epoch_loss = 0
-    num_iterations = 0
-    for x in range(0, epochs):
-        for i in range(0, len(src), batch_size):
-            src_i = src[i:i+batch_size].to(device)
-            trg_i = trg[i:i+batch_size].to(device)
+    num_iterations = 1
+    for epoch in range(num_epochs):
+        for i, (src, trg) in enumerate(dataloader):
+            src = src.to(device)
+            trg = trg.to(device)
             optimizer.zero_grad()
-            output = model(src_i, trg_i)
+            output = model(src)
+            del src
             # output.shape = (batch_size, seq_len, vocab_size)
             output = output.view(-1, model.vocab_size)
-            trg_i = trg_i.view(-1)
-            loss = criterion(output, trg_i)
+            trg = trg.view(-1)
+            loss = criterion(output, trg)
+            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
+            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
-            print("epoch ", x, " iteration ", num_iterations, " loss = ", loss.item())
-            epoch_loss += loss.item()
-        num_iterations = 0
+        num_iterations = 1
 
 
 if __name__ == '__main__':
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    #device = torch.device('cpu')
-
     print("load pretrained embedding layer...")
     word2vec = get_word2vec_model()
     weights = torch.FloatTensor(word2vec.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+    print("finished")
 
-    print("create Seq2Seq model")
-    # Seq2Seq parameters
+    # Training and model parameters
+    learning_rate = 0.2
+    num_epochs = 1000
+    batch_size = 8
+    num_playlists_for_training = 8
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec.wv)
     HID_DIM = 100
     N_LAYERS = 1
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
-    print("finish")
 
-    print(f'The model has {count_parameters(model):,} trainable parameters')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    print("create Seq2Seq model...")
+    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    print("finished")
 
     print("init weights...")
-    def init_weights(m):
-        for name, param in m.named_parameters():
-            nn.init.uniform_(param.data, -0.08, 0.08)
     model.apply(init_weights)
-    print("finish")
+    print("finished")
 
-    # Training parameters
-    learning_rate = 0.1
-    num_epochs = 100
-    batch_size = 5
-    num_playlists_for_training = 10
+    print(f'The model has {count_parameters(model):,} trainable parameters')
+    print("The size of the vocabulary is: ", VOCAB_SIZE)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
-
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    src, trg = ld.create_train_data(num_playlists_for_training, 0, 0, word2vec)
+    dataset = ld.PlaylistDataset(word2vec, num_playlists_for_training)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
     print("Created train data")
 
     if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train(model, src, trg, optimizer, criterion, device, batch_size=batch_size, epochs=num_epochs)
+        train(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
         # evaluate model:"""
+        model.eval()
+        src1, trg1 = dataset[0]
+        src1 = src1.to(device)
+        prediction = model(src1)
+        prediction = prediction.argmax(dim=1)
+        print(prediction.shape)
+        print("prediction: ", prediction)
+        print("target: ", trg1)
+

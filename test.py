@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import csv
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
+import gensim
 
 
 class Seq2Seq(nn.Module):
@@ -74,4 +75,6 @@ if __name__ == '__main__':
     print(out.size())
     print(out)"""
 
+    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/100_thousand_playlists/word2vec-song-vectors.model")
+    model.wv.get_index('spotify:track:2xvWdq0XdHYATHsD3i5QMq')
 
