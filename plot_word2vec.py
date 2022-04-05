@@ -11,10 +11,10 @@ vectors in a 2D coordinate system
 if __name__ == '__main__':
     # parameters vor vector plotting
     num_dimensions = 2
-    num_vectors = 10000
+    num_vectors = 7000
 
     print("load model from file")
-    model = gensim.models.Word2Vec.load("./models/word2vec-song-vectors.model")
+    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
     print("model loaded from file")
 
     # extract the words & their vectors, as numpy arrays
@@ -29,14 +29,4 @@ if __name__ == '__main__':
 
     plt.figure(figsize=(15, 15))
     plt.scatter(x_vals, y_vals)
-    """
-    #
-    # Label randomly subsampled 25 data points
-    #
-    indices = list(range(len(labels)))    
-    selected_indices = random.sample(indices, 25)
-    for i in selected_indices:
-        plt.annotate(labels[i], (x_vals[i], y_vals[i]))
-    plt.show()
-    """
     plt.show()

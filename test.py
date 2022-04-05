@@ -54,8 +54,8 @@ if __name__ == '__main__':
     # output.shape == (2, 3, 10)
     print(output.shape)"""
 
-    """# IMPORTANT!!! This is how Cross entropy works!!!
-    # batch_size = 2; trg_len = 3, output_dim = 5
+    # IMPORTANT!!! This is how Cross entropy works!!!
+    # batch_size = 2; trg_len = 3, output_dim = 6
     trg = torch.LongTensor([4, 2, 2, 0, -1, 1])
     output = torch.FloatTensor([[0, 0, 0, 0, 1, 0],
                                 [1, 1, 10, 1, 1, 1],
@@ -65,7 +65,7 @@ if __name__ == '__main__':
                                 [0, 1, 0, 0, 0, 0]])
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
     loss = criterion(output, trg)
-    print(loss.item())"""
+    print(loss.item())
 
     """from torch.nn.utils.rnn import pad_sequence
     a = torch.LongTensor([1, 2])
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     print(out.size())
     print(out)"""
 
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/100_thousand_playlists/word2vec-song-vectors.model")
-    model.wv.get_index('spotify:track:2xvWdq0XdHYATHsD3i5QMq')
+    """model = gensim.models.Word2Vec.load("./models/gensim_word2vec/100_thousand_playlists/word2vec-song-vectors.model")
+    model.wv.get_index('spotify:track:2xvWdq0XdHYATHsD3i5QMq')"""
 

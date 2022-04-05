@@ -9,13 +9,6 @@ from torch.utils.data import DataLoader
 from torch.utils.checkpoint import checkpoint
 
 
-def get_word2vec_model():
-    print("load word2vec from file")
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/10_thousand_playlists/word2vec-song-vectors.model")
-    print("word2vec loaded from file")
-    return model
-
-
 def init_weights(m):
     for name, param in m.named_parameters():
         nn.init.uniform_(param.data, -0.08, 0.08)
@@ -61,18 +54,15 @@ class Seq2Seq(nn.Module):
         x, (h_n, c_n) = checkpoint(self.rnn, x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
-        x = checkpoint(self.fc_out, x)
+        x = checkpoint(self.fc_out, x[:, -1, :])
         # x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
         return x
 
-    def rank(self, output, n):
-        # output.shape (batch_size, seq_len, vocab_size)
-        x = torch.zeros(output.size(dim=0), n)
-        for idx, sequence in enumerate(output):
-            x[idx], _ = torch.topk(output[idx][-1], n)
-        return x
-        # returned prediction shape: (batch_size, n)
+    def predict(self, input, len):
+        x = self.forward(input)
+        # x.shape == (batch_size, seq_len, vocab_size)
+        x = x.argmax(dim=2)
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -82,12 +72,18 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
         for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
+            # trg.shape = (batch_size, seq_len)
             optimizer.zero_grad()
             output = model(src)
+            for ind in range(len(output)):
+                output[ind, :] = output[ind, -1]
             del src
             # output.shape = (batch_size, seq_len, vocab_size)
             output = output.view(-1, model.vocab_size)
+            # output.shape = (batch_size * seq_len, vocab_size)
             trg = trg.view(-1)
+            # trg.shape = (batch_size * seq_len)
+            print("trg shape view ", trg.shape)
             loss = criterion(output, trg)
             del trg
             loss.backward()
@@ -100,7 +96,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
 
 if __name__ == '__main__':
     print("load pretrained embedding layer...")
-    word2vec = get_word2vec_model()
+    word2vec = ld.get_word2vec_model("10_thousand_playlists")
     weights = torch.FloatTensor(word2vec.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
@@ -108,10 +104,10 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.2
-    num_epochs = 1000
-    batch_size = 8
-    num_playlists_for_training = 8
+    learning_rate = 0.001
+    num_epochs = 100
+    batch_size = 5
+    num_playlists_for_training = 100
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec.wv)
     HID_DIM = 100

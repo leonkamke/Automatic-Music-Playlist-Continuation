@@ -3,6 +3,7 @@ import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
+import gensim
 
 
 class PlaylistDataset(Dataset):
@@ -64,3 +65,10 @@ def collate_fn(data):
     src = pad_sequence(src, batch_first=True)
     trg = pad_sequence(trg, batch_first=True, padding_value=-1)
     return src, torch.LongTensor(trg)
+
+
+def get_word2vec_model(word2vec_model):
+    print("load word2vec from file")
+    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/" + word2vec_model + "/word2vec-song-vectors.model")
+    print("word2vec loaded from file")
+    return model
