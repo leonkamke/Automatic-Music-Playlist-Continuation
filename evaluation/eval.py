@@ -16,31 +16,84 @@ EVALUATION OF THE SPOTIFY CHALLENGE:
 
 import load_eval_data as eval_data
 import numpy as np
-from sklearn.metrics import ndcg_score, dcg_score
-import torch
 
 
-def evaluate_model(model, word2vec, last_n_playlists, src_size):
+def evaluate_model(model, word2vec_tracks, word2vec_artists, last_n_playlists):
+    print("start evaluation...")
     model.eval()
     # create evaluation dataset
-    evaluation_dataset = eval_data.EvaluationDataset(word2vec, last_n_playlists, src_size)
+    print("create evaluation dataset...")
+    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, last_n_playlists)
+    print("finished")
     # loop over all evaluation playlists
-    for i, (src, trg, trg_len) in enumerate(evaluation_dataset):
-        print("todo")
+    print("start computing R-Precision and NDCG:")
+    r_precision_tracks = 0.0
+    r_precision_artists = 0.0
+    ndcg_tracks = 0.0
+    ndcg_artists = 0.0
+    for i, (src, trg) in enumerate(evaluation_dataset):
+        print("playlist " + str(i) + " of " + str(len(evaluation_dataset)))
+        # src (list of indices), trg (list of indices), trg_len (natural number)
+        prediction = model.predict(src)
+        # prediction is of shape len(trg)
+        # first compute R-Precision and NDCG for tracks
+        r_precision_tracks += calc_r_precision(prediction, trg)
+        ndcg_tracks += calc_NDCG(prediction, trg)
+        # convert prediction and target to list's of artist id's
+        artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
+        # calculate for the artists R-Precision and NDCG
+        r_precision_artists += calc_r_precision(artist_prediction, artist_ground_truth)
+        ndcg_artists += calc_NDCG(artist_prediction, artist_ground_truth)
+
+    r_precision_tracks = r_precision_tracks/len(evaluation_dataset)
+    ndcg_tracks = ndcg_tracks / len(evaluation_dataset)
+    r_precision_artists = r_precision_artists / len(evaluation_dataset)
+    ndcg_artists = ndcg_artists / len(evaluation_dataset)
+    # print the results
+    print("Average R-Precision(tracks) : " + str(r_precision_tracks))
+    print("Average R-Precision(artists): " + str(r_precision_artists))
+    print("Average NDCG(tracks):       : " + str(ndcg_tracks))
+    print("Average NDCG(artists):      : " + str(ndcg_artists))
 
 
-# functions for calculating R-Precision, NDCG, and Click
+# ----------------------------------------------------------------------------------------------------------------------
+# functions for calculating R-Precision, NDCG
 # All metrics will be evaluated at both the track level (exact track match)
 # and the artist level (any track by the same artist is a match)
 
 
-def calc_r_precision(prediction, target):
-    rel_tracks = np.intersect1d(prediction, target)
-    return len(rel_tracks)/len(target)
+def calc_r_precision(prediction, ground_truth):
+    rel_tracks = np.intersect1d(prediction, ground_truth)
+    return len(rel_tracks) / len(ground_truth)
 
 
-if __name__ == "__main__":
-    y = torch.FloatTensor([[5, 4, 3, 2, 1]])
-    y_pred = torch.FloatTensor([[1, 2, 3, 4, 5]])
-    print(ndcg_score(y, y_pred))
+def calc_NDCG(prediction, ground_truth):
+    seq_len = len(prediction)
+    relevance = np.arange(seq_len, 0, -1)   # list goes from seq_len to 1
+    rel_dict = {}
+    # create dictionary
+    for i, rel_i in enumerate(relevance):
+        element = ground_truth[i]
+        rel_dict[element] = rel_i
+    # compute ndcg with dcg and ideal dcg
+    dcg = 0.0
+    for i, elem in enumerate(prediction):
+        # compute dcg
+        if elem in rel_dict:
+            dcg += rel_dict[elem] / np.log2(i+2)
+    # compute idcg
+    idcg = 0.0
+    for i, rel in enumerate(relevance):
+        idcg += rel / np.log2(i+2)
+    ndcg = dcg / idcg
+    return ndcg
 
+
+def tracks_to_artists(artist_dict, prediction, ground_truth):
+    artist_pred = prediction
+    artist_ground_truth = ground_truth
+    for i, track_id in enumerate(prediction):
+        artist_pred[i] = artist_dict[track_id]
+    for i, track_id in enumerate(ground_truth):
+        artist_ground_truth[i] = artist_dict[track_id]
+    return artist_pred, artist_ground_truth

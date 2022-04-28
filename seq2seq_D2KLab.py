@@ -46,23 +46,22 @@ class Seq2Seq(nn.Module):
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
-        x.requires_grad = True
-        # x = checkpoint(self.embedding, input)
         # x.shape == (batch_size, seq_len, embed_dim == 100), when batch_first=True
 
-        # x, (h_n, c_n) = self.rnn(x)
-        x, (h_n, c_n) = checkpoint(self.rnn, x)
+        x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
-        x = checkpoint(self.fc_out, x[:, -1, :])
-        # x = self.fc_out(x)
+        x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
         return x
 
     def predict(self, input, len):
+        # input.shape == seq_len
         x = self.forward(input)
-        # x.shape == (batch_size, seq_len, vocab_size)
-        x = x.argmax(dim=2)
+        # x.shape == (1, seq_len, vocab_size)
+        x = x.argmax(dim=3)
+        # x.shape == list of length seq_len
+        return x
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -140,7 +139,7 @@ if __name__ == '__main__':
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
-        # evaluate model:"""
+        # evaluate model:
         model.eval()
         src1, trg1 = dataset[0]
         src1 = src1.to(device)
