@@ -11,19 +11,18 @@ EVALUATION OF THE SPOTIFY CHALLENGE:
   8)  Title and 25 random tracks
   9)  Title and first 100 tracks
   10) Title and 100 random tracks
-
 """
 
-import load_eval_data as eval_data
+from evaluation import load_eval_data as eval_data
 import numpy as np
 
 
-def evaluate_model(model, word2vec_tracks, word2vec_artists, last_n_playlists):
+def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
     print("start evaluation...")
     model.eval()
     # create evaluation dataset
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, last_n_playlists)
+    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, end_idx)
     print("finished")
     # loop over all evaluation playlists
     print("start computing R-Precision and NDCG:")
@@ -93,7 +92,13 @@ def tracks_to_artists(artist_dict, prediction, ground_truth):
     artist_pred = prediction
     artist_ground_truth = ground_truth
     for i, track_id in enumerate(prediction):
-        artist_pred[i] = artist_dict[track_id]
+        if int(track_id) not in artist_dict:
+            print("key error")
+        else:
+            artist_pred[i] = artist_dict[int(track_id)]
     for i, track_id in enumerate(ground_truth):
-        artist_ground_truth[i] = artist_dict[track_id]
+        if int(track_id) not in artist_dict:
+            print("key error")
+        else:
+            artist_ground_truth[i] = artist_dict[int(track_id)]
     return artist_pred, artist_ground_truth

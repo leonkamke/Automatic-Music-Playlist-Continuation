@@ -1,12 +1,10 @@
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import gensim
 import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
-from torch.utils.checkpoint import checkpoint
+import evaluation.eval as ev
 
 
 def init_weights(m):
@@ -37,16 +35,10 @@ class Seq2Seq(nn.Module):
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
 
-        self.layers = nn.Sequential(
-            self.embedding,
-            self.rnn,
-            self.fc_out
-        )
-
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
-        # x.shape == (batch_size, seq_len, embed_dim == 100), when batch_first=True
+        # x.shape == (batch_size, seq_len, embed_dim == 100)
 
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
@@ -55,12 +47,12 @@ class Seq2Seq(nn.Module):
         # x.shape == (batch_size, seq_len, vocab_size)
         return x
 
-    def predict(self, input, len):
+    def predict(self, input):
         # input.shape == seq_len
         x = self.forward(input)
-        # x.shape == (1, seq_len, vocab_size)
-        x = x.argmax(dim=3)
-        # x.shape == list of length seq_len
+        # x.shape == (seq_len, vocab_size)
+        x = x.argmax(dim=1)
+        # x.shape == (seq_len)
         return x
 
 
@@ -71,18 +63,14 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
         for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
-            # trg.shape = (batch_size, seq_len)
+            # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
             output = model(src)
-            for ind in range(len(output)):
-                output[ind, :] = output[ind, -1]
-            del src
             # output.shape = (batch_size, seq_len, vocab_size)
             output = output.view(-1, model.vocab_size)
             # output.shape = (batch_size * seq_len, vocab_size)
             trg = trg.view(-1)
             # trg.shape = (batch_size * seq_len)
-            print("trg shape view ", trg.shape)
             loss = criterion(output, trg)
             del trg
             loss.backward()
@@ -103,16 +91,17 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.001
-    num_epochs = 100
+    learning_rate = 0.0003
+    num_epochs = 30
     batch_size = 5
     num_playlists_for_training = 100
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec.wv)
     HID_DIM = 100
-    N_LAYERS = 1
+    N_LAYERS = 10
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cpu')
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -140,12 +129,8 @@ if __name__ == '__main__':
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
         # evaluate model:
-        model.eval()
-        src1, trg1 = dataset[0]
-        src1 = src1.to(device)
-        prediction = model(src1)
-        prediction = prediction.argmax(dim=1)
-        print(prediction.shape)
-        print("prediction: ", prediction)
-        print("target: ", trg1)
+        word2vec_tracks = ld.get_word2vec_model("10_thousand_playlists")
+        word2vec_artists = ld.get_word2vec_model("10_thousand_playlists_artists")
+        ev.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
+
 
