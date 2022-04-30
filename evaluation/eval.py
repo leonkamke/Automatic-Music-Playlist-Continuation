@@ -19,35 +19,46 @@ import numpy as np
 
 def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
     print("start evaluation...")
-    model.eval()
     # create evaluation dataset
     print("create evaluation dataset...")
     evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, end_idx)
     print("finished")
     # loop over all evaluation playlists
     print("start computing R-Precision and NDCG:")
-    r_precision_tracks = 0.0
-    r_precision_artists = 0.0
-    ndcg_tracks = 0.0
-    ndcg_artists = 0.0
+    r_precision_tracks_sum = 0.0
+    r_precision_artists_sum = 0.0
+    ndcg_tracks_sum = 0.0
+    ndcg_artists_sum = 0.0
+    print(len(evaluation_dataset))
     for i, (src, trg) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)))
         # src (list of indices), trg (list of indices), trg_len (natural number)
         prediction = model.predict(src)
+        print(prediction)
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
-        r_precision_tracks += calc_r_precision(prediction, trg)
-        ndcg_tracks += calc_NDCG(prediction, trg)
+        r_precision_tracks = calc_r_precision(prediction, trg)
+        ndcg_tracks = calc_NDCG(prediction, trg)
+        r_precision_tracks_sum += r_precision_tracks
+        ndcg_tracks_sum += ndcg_tracks
         # convert prediction and target to list's of artist id's
         artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
         # calculate for the artists R-Precision and NDCG
-        r_precision_artists += calc_r_precision(artist_prediction, artist_ground_truth)
-        ndcg_artists += calc_NDCG(artist_prediction, artist_ground_truth)
+        r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
+        ndcg_artists = calc_NDCG(artist_prediction, artist_ground_truth)
+        r_precision_artists_sum += r_precision_artists
+        ndcg_artists_sum += ndcg_artists
 
-    r_precision_tracks = r_precision_tracks/len(evaluation_dataset)
-    ndcg_tracks = ndcg_tracks / len(evaluation_dataset)
-    r_precision_artists = r_precision_artists / len(evaluation_dataset)
-    ndcg_artists = ndcg_artists / len(evaluation_dataset)
+        print("R-Precision(tracks) : " + str(r_precision_tracks))
+        print("R-Precision(artists): " + str(r_precision_artists))
+        print("NDCG(tracks):       : " + str(ndcg_tracks))
+        print("NDCG(artists):      : " + str(ndcg_artists))
+        print(" ")
+
+    r_precision_tracks = r_precision_tracks_sum / len(evaluation_dataset)
+    ndcg_tracks = ndcg_tracks_sum / len(evaluation_dataset)
+    r_precision_artists = r_precision_artists_sum / len(evaluation_dataset)
+    ndcg_artists = ndcg_artists_sum / len(evaluation_dataset)
     # print the results
     print("Average R-Precision(tracks) : " + str(r_precision_tracks))
     print("Average R-Precision(artists): " + str(r_precision_artists))
@@ -92,13 +103,11 @@ def tracks_to_artists(artist_dict, prediction, ground_truth):
     artist_pred = prediction
     artist_ground_truth = ground_truth
     for i, track_id in enumerate(prediction):
-        if int(track_id) not in artist_dict:
-            print("key error")
-        else:
-            artist_pred[i] = artist_dict[int(track_id)]
+        artist_pred[i] = artist_dict[int(track_id)]
     for i, track_id in enumerate(ground_truth):
-        if int(track_id) not in artist_dict:
-            print("key error")
-        else:
-            artist_ground_truth[i] = artist_dict[int(track_id)]
+        artist_ground_truth[i] = artist_dict[int(track_id)]
     return artist_pred, artist_ground_truth
+
+
+if __name__ == "__main__":
+    print(calc_r_precision([10, 20, 3], [1, 2, 3]))

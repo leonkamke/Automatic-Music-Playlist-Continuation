@@ -14,12 +14,12 @@ import csv
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     model = None
-    if os.path.isfile("models/gensim_word2vec/10_thousand_playlists_artists/word2vec-song-vectors.model"):
+    if os.path.isfile("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model"):
         print("load model from file")
-        model = gensim.models.Word2Vec.load("./models/gensim_word2vec/10_thousand_playlists_artists/word2vec-song-vectors.model")
+        model = gensim.models.Word2Vec.load("./models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
         print("model loaded from file")
     else:
-        num_playlists_to_read = 10000
+        num_playlists_to_read = 1000000
         print("read data from database")
         # make matrix with each row is a playlist(list of track_uri)
         playlists = []
@@ -38,6 +38,6 @@ if __name__ == '__main__':
         print("Train model (this can take a lot of time)...")
         model.train(playlists, total_examples=model.corpus_count, epochs=model.epochs)
         # save model
-        model.save("./models/gensim_word2vec/10_thousand_playlists_artists/word2vec-song-vectors.model")
+        model.save("./models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
         # model.wv.save_word2vec_format("./models/word2vec-song-vectors.model")
         print("trained and saved the model")

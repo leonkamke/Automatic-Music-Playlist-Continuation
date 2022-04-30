@@ -22,7 +22,6 @@ for mpd_slice in listdir(args.mpd_path):
     with open(path.join(args.mpd_path, mpd_slice), encoding='utf8') as json_file:
         print("\tReading file " + mpd_slice)
         json_slice = json.load(json_file)
-
         for playlist in json_slice['playlists']:
             row = []
             row.extend([playlist['pid'], playlist['name']])

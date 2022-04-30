@@ -4,7 +4,7 @@ import torch.optim as optim
 import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
-import evaluation.eval as ev
+import evaluation.eval as eval
 
 
 def init_weights(m):
@@ -83,25 +83,25 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
 
 if __name__ == '__main__':
     print("load pretrained embedding layer...")
-    word2vec = ld.get_word2vec_model("10_thousand_playlists")
-    weights = torch.FloatTensor(word2vec.wv.vectors)
+    word2vec_tracks = ld.get_word2vec_model("1_mil_playlists")
+    weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.0003
+    learning_rate = 0.001
     num_epochs = 30
     batch_size = 5
     num_playlists_for_training = 100
     # VOCAB_SIZE == 169657
-    VOCAB_SIZE = len(word2vec.wv)
+    VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
-    N_LAYERS = 10
+    N_LAYERS = 1
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    #device = torch.device('cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -118,19 +118,24 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    dataset = ld.PlaylistDataset(word2vec, num_playlists_for_training)
+    dataset = ld.PlaylistDataset(word2vec_tracks, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
     print("Created train data")
 
-    if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
+    """if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
         # evaluate model:
-        word2vec_tracks = ld.get_word2vec_model("10_thousand_playlists")
-        word2vec_artists = ld.get_word2vec_model("10_thousand_playlists_artists")
-        ev.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
+        model.eval()
+        word2vec_tracks = ld.get_word2vec_model("1_mil_playlists")
+        word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
+        ev.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
+
+    model.eval()
+    word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
+    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
 
 
