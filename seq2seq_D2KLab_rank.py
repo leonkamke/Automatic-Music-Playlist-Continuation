@@ -68,6 +68,16 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             optimizer.zero_grad()
             output = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
+            """for i, pred_sequence in enumerate(output):
+                # pred_sequence.shape == (seq_len, vocab_size)
+                # trg_len.shape == (batch_size)
+                with torch.no_grad():
+                    x = pred_sequence[trg_len[i]-1, :]
+                    # x.shape == (vocab_size)
+                    _, pred_indices = torch.topk(x, trg_len[i])
+                optimizer.zero_grad()"""
+
+                # trg.shape = (batch_size * seq_len)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -90,7 +100,7 @@ if __name__ == '__main__':
     learning_rate = 0.1
     num_epochs = 25
     batch_size = 10
-    num_playlists_for_training = 50
+    num_playlists_for_training = 100
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100

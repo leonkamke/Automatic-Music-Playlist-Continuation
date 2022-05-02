@@ -11,11 +11,11 @@ class PlaylistDataset(Dataset):
         # data loading
         self.word2vec = word2vec
         self.num_rows_train = num_rows_train
-        self.src, self.trg = self.read_train_data()
+        self.src, self.trg, self.trg_len = self.read_train_data()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index]
+        return self.src[index], self.trg[index], self.trg_len[index]
 
     def __len__(self):
         return self.n_samples
@@ -42,6 +42,7 @@ class PlaylistDataset(Dataset):
             # create lists of track indices according to the indices of the word2vec model
             src_idx = []
             trg_idx = []
+            trg_len = []
             for i in range(len(src_uri)):
                 indices = []
                 for uri in src_uri[i]:
@@ -51,7 +52,8 @@ class PlaylistDataset(Dataset):
                 for uri in trg_uri[i]:
                     indices.append(self.word2vec.wv.get_index(uri))
                 trg_idx.append(torch.LongTensor(indices))
-        return src_idx, trg_idx
+                trg_len.append(len(indices))
+        return src_idx, trg_idx, trg_len
 
 
 def collate_fn(data):
@@ -61,10 +63,10 @@ def collate_fn(data):
                 length - Original length of each sequence(without padding) tensor of shape (batch_size)
                 padded_trg - Padded trg, tensor of shape (batch_size, padded_length)
     """
-    src, trg = zip(*data)
+    src, trg, trg_len = zip(*data)
     src = pad_sequence(src, batch_first=True)
     trg = pad_sequence(trg, batch_first=True, padding_value=-1)
-    return src, torch.LongTensor(trg)
+    return src, torch.LongTensor(trg), trg_len
 
 
 def get_word2vec_model(word2vec_model):

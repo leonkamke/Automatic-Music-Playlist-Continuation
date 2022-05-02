@@ -108,6 +108,3 @@ def tracks_to_artists(artist_dict, prediction, ground_truth):
         artist_ground_truth[i] = artist_dict[int(track_id)]
     return artist_pred, artist_ground_truth
 
-
-if __name__ == "__main__":
-    print(calc_r_precision([10, 20, 3], [1, 2, 3]))
