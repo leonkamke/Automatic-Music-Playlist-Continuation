@@ -1,5 +1,5 @@
 TODO (important):
-- understand the Cross entropy loss and the Pytorch funktion, it's hard to let the neural network overfit (maybe because
+- understand the Cross entropy loss and the Pytorch function, it's hard to let the neural network overfit (maybe because
     of the dimension of the output layer)
 - get familiar with DFKI-account and NVIDIA cluster
 - train seq2seq_D2KLab.py with NVIDIA cluster

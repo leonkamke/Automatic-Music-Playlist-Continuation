@@ -16,7 +16,7 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-class Seq2Seq(nn.Module):
+class Encoder(nn.Module):
     def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
         super().__init__()
         self.hid_dim = hid_dim
@@ -46,15 +46,79 @@ class Seq2Seq(nn.Module):
         x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
 
-        return x
+        # for each batch and sequence only return last vector
+        x = x[:, -1, :]
+        # x.shape == (batch_size, vocab_size)
 
-    def predict(self, input):
-        # input.shape == seq_len
-        x = self.forward(input)
-        # x.shape == (seq_len, vocab_size)
-        x = x.argmax(dim=1)
-        # x.shape == (seq_len)
-        return x
+        x = torch.argmax(x, dim=1)
+        # x.shape == (batch_size)
+        print(x.shape)
+        return x, (h_n, c_n)
+
+
+class Decoder(nn.Module):
+    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
+        super().__init__()
+        self.hid_dim = hid_dim
+        self.n_layers = n_layers
+        self.vocab_size = vocab_size
+
+        # input shape of embedding: (*) containing the indices
+        # output shape of embedding: (*, embed_dim == 100)
+        self.embedding = pre_trained_embedding
+        # input shape of LSTM has to be (batch_size, seq_len, embed_dim == 100) when batch_first=True
+        # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
+        #                       h_n.shape == (n_layers, batch_size, hid_dim)
+        #                       c_n.shape == (n_layers, batch_size, hid_dim)
+        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        # input shape of Linear: (*, hid_dim)
+        # output shape of Linear: (*, vocab_size)
+        self.fc_out = nn.Linear(hid_dim, vocab_size)
+
+    def forward(self, input, h_n, c_n):
+        # input.shape == (batch_size)
+        x = self.embedding(input)
+        # x.shape == (batch_size, embed_dim == 100)
+
+        x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
+        # x.shape == (batch_size, hid_dim), when batch_first=True
+
+        x = self.fc_out(x)
+        # x.shape == (batch_size, vocab_size)
+
+        return x, (h_n, c_n)
+
+
+class Seq2Seq(nn.Module):
+    def __init__(self, encoder, decoder, vocab_size, device):
+        super().__init__()
+
+        self.encoder = encoder
+        self.decoder = decoder
+        self.device = device
+        self.vocab_size = vocab_size
+
+    def forward(self, src):
+        # src.shape == (batch_size, src_len)
+        num_predictions = src.shape[1]
+        batch_size = src.shape[0]
+        # tensor to store decoder outputs
+        outputs = torch.zeros(batch_size, num_predictions, self.vocab_size).to(self.device)
+
+        x, (h_n, c_n) = self.encoder(src)
+        # x.shape == (batch_size)
+
+        for i in range(num_predictions):
+            output, (h_n, c_n) = self.decoder(x, h_n, c_n)
+            # output.shape == (batch_size, vocab_size)
+            # safe the output in outputs
+            outputs[:, i, :] = output
+
+            # set next input for decoder
+            x = torch.argmax(output, dim=1)
+            # x.shape == (batch_size)
+
+        return outputs
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -90,17 +154,21 @@ if __name__ == '__main__':
     learning_rate = 0.1
     num_epochs = 25
     batch_size = 10
-    num_playlists_for_training = 50
+    num_playlists_for_training = 100
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
     N_LAYERS = 1
 
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     print("create Seq2Seq model...")
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    # Encoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0)
+    encoder = Encoder(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    # Decoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
+    decoder = Decoder(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    # Seq2Seq params: (encoder, decoder, vocab_size, device)
+    model = Seq2Seq(encoder, decoder, VOCAB_SIZE, device)
     print("finished")
 
     print("init weights...")
@@ -133,3 +201,5 @@ if __name__ == '__main__':
     """model.eval()
     word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
     eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
+
+

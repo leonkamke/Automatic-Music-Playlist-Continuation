@@ -82,6 +82,10 @@ if __name__ == '__main__':
           [2, 5, 2],
           [3, 4, 400],
           [0, -1, 1]]]
-    x = torch.tensor(x)
-    print(x.argmax(dim=2)[0])
+    x = torch.Tensor(x)
+    y = torch.rand((5, 4, 3))
+    v = torch.zeros((5, 3))
+    print(v)
+    y[:, 0, :] = v
+    print(y)
 
