@@ -26,7 +26,7 @@ class Encoder(nn.Module):
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
         self.embedding = pre_trained_embedding
-        # input shape of LSTM has to be (batch_size, seq_len, embed_dim == 100) when batch_first=True
+        # input shape of LSTM has to  be(batch_size, seq_len, embed_dim == 100) when batch_first=True
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
@@ -52,7 +52,7 @@ class Encoder(nn.Module):
 
         x = torch.argmax(x, dim=1)
         # x.shape == (batch_size)
-        print(x.shape)
+
         return x, (h_n, c_n)
 
 
@@ -78,12 +78,17 @@ class Decoder(nn.Module):
     def forward(self, input, h_n, c_n):
         # input.shape == (batch_size)
         x = self.embedding(input)
-        # x.shape == (batch_size, embed_dim == 100)
+        x = torch.unsqueeze(x, dim=1)
+        # x.shape == (batch_size, 1, embed_dim)
 
+        # UNSQUEECE input such that the lstm understands that this is not a sequence of length(batch_size)!!!
+        # x.shape == (batch_size, embed_dim == 100) but x.shape has to be (1, batch_size, embed_dim==100)!!!
+        # h_n.shape == (1, batch_size, embed_dim)
+        # x must have shape (batch_size, sequence_length, embed_dim)
         x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
-        # x.shape == (batch_size, hid_dim), when batch_first=True
+        # x.shape == (batch_size, 1, hid_dim), when batch_first=True
 
-        x = self.fc_out(x)
+        x = self.fc_out(x.squeeze(1))
         # x.shape == (batch_size, vocab_size)
 
         return x, (h_n, c_n)
@@ -110,7 +115,7 @@ class Seq2Seq(nn.Module):
 
         for i in range(num_predictions):
             output, (h_n, c_n) = self.decoder(x, h_n, c_n)
-            # output.shape == (batch_size, vocab_size)
+            # output.shape == (batch_size, 1, vocab_size)
             # safe the output in outputs
             outputs[:, i, :] = output
 
@@ -132,6 +137,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             optimizer.zero_grad()
             output = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
+            # but Cross Entropy Loss requires output.shape = (batch_size, vocab_size, seq_len)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
