@@ -1,0 +1,11 @@
+TODO (important):
+- get familiar with DFKI-account and NVIDIA cluster
+- train seq2seq_D2KLab.py with NVIDIA cluster:
+    necessary files for the training-scripts:
+    - seq2seq_enc_dec.py
+    - data_preprocessing/load_data.py
+    - models/gensim_word2vec/1_mil_playlists
+
+TODO(not important):
+- improve track_embeddings
+

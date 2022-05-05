@@ -204,8 +204,5 @@ if __name__ == '__main__':
         word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
         eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
 
-    """model.eval()
-    word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
-    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
 
 

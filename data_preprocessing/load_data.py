@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
