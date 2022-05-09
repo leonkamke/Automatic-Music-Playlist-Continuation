@@ -55,16 +55,16 @@ class PlaylistDataset(Dataset):
         return src_idx, trg_idx, trg_len
 
 
-class NextTrackDataset(Dataset):
+class NextTrackDatasetOnlyOneTarget(Dataset):
     def __init__(self, word2vec, num_rows_train):
         # data loading
         self.word2vec = word2vec
         self.num_rows_train = num_rows_train
-        self.src, self.trg = self.read_train_data()
+        self.src, self.trg, self.src_len = self.read_train_data()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index]
+        return self.src[index], self.trg[index], self.src_len[index]
 
     def __len__(self):
         return self.n_samples
@@ -87,6 +87,7 @@ class NextTrackDataset(Dataset):
             # create lists of track indices according to the indices of the word2vec model
             src_idx = []
             trg_idx = []
+            src_len = []
             for i in range(len(src_uri)):
                 indices = []
                 for uri in src_uri[i]:
@@ -94,7 +95,9 @@ class NextTrackDataset(Dataset):
                 src_idx.append(torch.LongTensor(indices))
                 trg_index = self.word2vec.wv.get_index(trg_uri[i])
                 trg_idx.append(trg_index)
-        return src_idx, trg_idx
+                src_len.append(len(indices))
+        return src_idx, trg_idx, src_len
+
 
 
 def collate_fn(data):
@@ -109,17 +112,17 @@ def collate_fn(data):
     trg = pad_sequence(trg, batch_first=True, padding_value=-1)
     return src, torch.LongTensor(trg), trg_len
 
-def collate_fn_next_track(data):
+
+def collate_fn_next_track_one_target(data):
     """
     args:       data: list of tuple (src, trg)
     return:     padded_src - Padded src, tensor of shape (batch_size, padded_length)
                 length - Original length of each sequence(without padding) tensor of shape (batch_size)
                 padded_trg - Padded trg, tensor of shape (batch_size, padded_length)
     """
-    src, trg = zip(*data)
+    src, trg, src_len = zip(*data)
     src = pad_sequence(src, batch_first=True)
-    trg = pad_sequence(trg, batch_first=True, padding_value=-1)
-    return src, torch.LongTensor(trg), trg_len
+    return src, torch.LongTensor(trg), src_len
 
 
 def get_word2vec_model(word2vec_model):

@@ -33,7 +33,7 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
     for i, (src, trg) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)))
         # src (list of indices), trg (list of indices), trg_len (natural number)
-        prediction = model.predict(src)
+        prediction = model.predict(src, len(src))
         print(prediction)
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
