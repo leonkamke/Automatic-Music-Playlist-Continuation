@@ -119,11 +119,11 @@ class Seq2Seq(nn.Module):
         num_iterations = 1"""
 
 
-def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
-        for i, (src, trg, trg_len) in enumerate(dataloader):
+        for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
@@ -176,13 +176,14 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    dataset = ld.NextTrackDataset(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn_next_track)
+    dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
+                            collate_fn=ld.collate_fn_shifted_target)
     print("Created train data")
 
     if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train(model, dataloader, optimizer, criterion, device, num_epochs)
+        train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
