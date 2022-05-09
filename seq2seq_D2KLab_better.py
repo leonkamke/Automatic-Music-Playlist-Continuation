@@ -89,7 +89,7 @@ class Seq2Seq(nn.Module):
         num_iterations = 1"""
 
 
-"""def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     batch_size = dataloader.batch_size
@@ -116,7 +116,7 @@ class Seq2Seq(nn.Module):
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
-        num_iterations = 1"""
+        num_iterations = 1
 
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -141,7 +141,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
 
 if __name__ == '__main__':
     print("load pretrained embedding layer...")
-    word2vec_tracks = ld.get_word2vec_model("100_thousand_playlists")
+    word2vec_tracks = ld.get_word2vec_model("10_thousand_playlists")
     weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
@@ -149,17 +149,17 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.1
-    num_epochs = 3
-    batch_size = 5
-    num_playlists_for_training = 300
+    learning_rate = 0.001
+    num_epochs = 1000
+    batch_size = 100
+    num_playlists_for_training = 2000
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
-    N_LAYERS = 2
+    N_LAYERS = 1
 
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -176,14 +176,17 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
+    # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
+    dataset = ld.NextTrackDatasetOnlyOneTarget(word2vec_tracks, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
-                            collate_fn=ld.collate_fn_shifted_target)
+                            collate_fn=ld.collate_fn_next_track_one_target)
+                            #collate_fn=ld.collate_fn_shifted_target)
     print("Created train data")
 
     if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
+        # train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
+        train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
