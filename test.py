@@ -78,7 +78,7 @@ if __name__ == '__main__':
     """model = gensim.models.Word2Vec.load("./models/gensim_word2vec/100_thousand_playlists/word2vec-song-vectors.model")
     model.wv.get_index('spotify:track:2xvWdq0XdHYATHsD3i5QMq')"""
 
-    x = [[[1, 2, 3],
+    """x = [[[1, 2, 3],
           [2, 5, 2],
           [3, 4, 400],
           [0, -1, 1]]]
@@ -87,5 +87,16 @@ if __name__ == '__main__':
     v = torch.zeros((5, 3))
     print(v)
     y[:, 0, :] = v
-    print(y)
+    print(y)"""
+
+    """x = torch.LongTensor([10, 2, 3, 8, 5])
+    _, top_k = torch.topk(x, dim=0, k=3)
+    print(top_k)"""
+
+    x = torch.Tensor([[1, 2, 3, 4],
+                      [3, 6, 2, 7],
+                      [1, 2, 2, 2]])
+    x = torch.mean(x, dim=0)
+    print(x)
+    #output has to be of size one
 
