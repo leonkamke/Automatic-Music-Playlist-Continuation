@@ -1,8 +1,6 @@
 import torch
 import csv
-from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
-import data_preprocessing.load_data as ld
 
 
 # Dataset which creates src tracks with size size_seed and the corresponding targets
@@ -59,7 +57,8 @@ class EvaluationDataset(Dataset):
         return src_idx, trg_idx
 
     def init_artist_dict(self):
-        with open('data/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv', encoding='utf8') as read_obj:
+        with open('data/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv',
+                  encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
             track_artist_dict = {}
@@ -70,5 +69,3 @@ class EvaluationDataset(Dataset):
                     track_artist_dict[track_id] = artist_id
                 print("line " + str(index) + " in track_artist_dict_unique.csv")
         return track_artist_dict
-
-

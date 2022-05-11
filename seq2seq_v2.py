@@ -1,3 +1,10 @@
+"""
+Encoder-Decoder recurrent neural network
+training: Seq2Seq model which takes the output of the decoder into account for computing the
+            Cross Entropy Loss
+prediction:
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -103,9 +110,8 @@ class Seq2Seq(nn.Module):
         self.device = device
         self.vocab_size = vocab_size
 
-    def forward(self, src):
+    def forward(self, src, num_predictions):
         # src.shape == (batch_size, src_len)
-        num_predictions = src.shape[1]
         batch_size = src.shape[0]
         # tensor to store decoder outputs
         outputs = torch.zeros(batch_size, num_predictions, self.vocab_size).to(self.device)
@@ -123,7 +129,15 @@ class Seq2Seq(nn.Module):
             x = torch.argmax(output, dim=1)
             # x.shape == (batch_size)
 
+        # outputs.shape == (batch_size, num_predictions, self.vocab_size)
         return outputs
+
+    def predict(self, input, num_predictions):
+        x = self.forward(input, num_predictions)
+        # x.shape == (num_predictions, vocab_size)
+        x = x.argmax(x, dim=1)
+        # x.shape == (num_predictions)
+        return x
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -135,7 +149,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            output = model(src)
+            output = model(src, src.shape[1])
             # output.shape = (batch_size, seq_len, vocab_size)
             # but Cross Entropy Loss requires output.shape = (batch_size, vocab_size, seq_len)
             loss = criterion(output.permute(0, 2, 1), trg)
@@ -203,6 +217,3 @@ if __name__ == '__main__':
         word2vec_tracks = ld.get_word2vec_model("1_mil_playlists")
         word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
         eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
-
-
-

@@ -1,5 +1,10 @@
+Pytorch version: 1.11.0
+Cuda version: 11.3
+
 TODO (important):
-- get familiar with DFKI-account and NVIDIA cluster
+- clean up code: (seq2seq_D2KLab.py, seq2seq_D2KLab_better.py, seq2seq_D2KLab_rank.py, seq2seq_enc_dec.py)
+- implement NDCG
+- implement "taking arguments" with the python script
 - train seq2seq_D2KLab.py with NVIDIA cluster:
     necessary files for the training-scripts:
     - seq2seq_enc_dec.py

@@ -1,3 +1,8 @@
+"""
+training: Seq2Seq model which takes output from each input timestamp into account for the cross-entropy loss
+prediction: for a input of length playlist_size the output will also be of size playlist_size
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -48,82 +53,20 @@ class Seq2Seq(nn.Module):
 
         return x
 
-    def predict_do_rank(self, input, num_predictions):
+    def predict(self, input):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
-        x = x[-1]
-        # x.shape == (vocab_size)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
-        # top_k.shape == (num_predictions)
-        return top_k
-
-    def predict(self, input, num_predictions):
-        # input.shape == seq_len
-        x = self.forward(input)
-        # x.shape == (seq_len, vocab_size)
-        x = torch.mean(x, dim=0)
-        # x.shape == (vocab_size)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
-        # top_k.shape == (num_predictions)
-        return top_k
+        x = x.argmax(dim=1)
+        # x.shape == (seq_len)
+        return x
 
 
-"""def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
         for i, (src, trg, trg_len) in enumerate(dataloader):
-            src = src.to(device)
-            trg = trg.to(device)
-            # trg.shape = src.shape = (batch_size, seq_len)
-            optimizer.zero_grad()
-            output = model(src)
-            # output.shape = (batch_size, seq_len, vocab_size)
-            loss = criterion(output.permute(0, 2, 1), trg)
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-            optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
-            num_iterations += 1
-        num_iterations = 1"""
-
-
-def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
-    model.train()
-    num_iterations = 1
-    batch_size = dataloader.batch_size
-    vocab_size = model.vocab_size
-    for epoch in range(num_epochs):
-        for i, (src, trg, src_len) in enumerate(dataloader):
-            src = src.to(device)
-            # src.shape == (batch_size, seq_len)
-            trg = trg.to(device)
-            # trg.shape == (batch_size)
-            optimizer.zero_grad()
-            batch_output = torch.zeros((batch_size, vocab_size)).to(device)
-            for idx, src_i in enumerate(src):
-                # src_i.shape == (seq_len)
-                # model(src_i).shape == (seq_len, vocab_size)
-                # model(src_i)[-1].shape == (vocab_size)
-                index = src_len[idx]-1
-                batch_output[idx] = model(src_i)[index]
-                # output.shape == (vocab_size)
-            # batch_output.shape = (batch_size, vocab_size)
-            loss = criterion(batch_output, trg)
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-            optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
-            num_iterations += 1
-        num_iterations = 1
-
-
-def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
-    model.train()
-    num_iterations = 1
-    for epoch in range(num_epochs):
-        for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
@@ -149,17 +92,17 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.001
-    num_epochs = 1000
-    batch_size = 100
-    num_playlists_for_training = 2000
+    learning_rate = 0.1
+    num_epochs = 25
+    batch_size = 10
+    num_playlists_for_training = 50
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
     N_LAYERS = 1
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # device = torch.device('cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -176,17 +119,13 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetOnlyOneTarget(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
-                            collate_fn=ld.collate_fn_next_track_one_target)
-                            #collate_fn=ld.collate_fn_shifted_target)
+    dataset = ld.PlaylistDataset(word2vec_tracks, num_playlists_for_training)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
     print("Created train data")
 
     if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        # train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
+        train(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
@@ -196,6 +135,3 @@ if __name__ == '__main__':
         word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
         eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
 
-    """model.eval()
-    word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
-    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
