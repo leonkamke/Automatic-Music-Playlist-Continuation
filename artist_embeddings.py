@@ -1,11 +1,5 @@
 import gensim
-import pandas as pd
 import os.path
-import numpy as np
-from os import listdir
-from os import path
-import argparse
-import json
 import csv
 
 

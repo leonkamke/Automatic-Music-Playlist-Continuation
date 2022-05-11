@@ -1,25 +1,28 @@
 """
-EVALUATION OF THE SPOTIFY CHALLENGE:
-  1000 examples for each scenario:
-  1)  Title only (no tracks)
-  2)  Title and first track
-  3)  Title and first 5 tracks
-  4)  First 5 tracks only
-  5)  Title and first 10 tracks
-  6)  First 10 tracks only
-  7)  Title and first 25 tracks
-  8)  Title and 25 random tracks
-  9)  Title and first 100 tracks
-  10) Title and 100 random tracks
+Evaluation script.
+It considers how good a model recommends relevant tracks (R-Precision) and
+it evaluates the ordering of the recommendation (NDCG).
 """
+import gensim
 
 from evaluation import load_eval_data as eval_data
 import numpy as np
+from collections import OrderedDict
+import torch
+import load_attributes as la
 
 
 def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
     print("start evaluation...")
     # create evaluation dataset
+
+    """model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
+    # evaluate model:
+    model.eval()
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
+
     print("create evaluation dataset...")
     evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, end_idx)
     print("finished")
@@ -38,14 +41,14 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
         r_precision_tracks = calc_r_precision(prediction, trg)
-        ndcg_tracks = calc_NDCG(prediction, trg)
+        ndcg_tracks = calc_ndcg(prediction, trg)
         r_precision_tracks_sum += r_precision_tracks
         ndcg_tracks_sum += ndcg_tracks
         # convert prediction and target to list's of artist id's
         artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
         # calculate for the artists R-Precision and NDCG
         r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
-        ndcg_artists = calc_NDCG(artist_prediction, artist_ground_truth)
+        ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
         r_precision_artists_sum += r_precision_artists
         ndcg_artists_sum += ndcg_artists
 
@@ -67,36 +70,32 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# functions for calculating R-Precision, NDCG
-# All metrics will be evaluated at both the track level (exact track match)
-# and the artist level (any track by the same artist is a match)
+"""
+functions for calculating R-Precision and NDCG
+All metrics will be evaluated at both the track level (exact track match)
+and the artist level (any track by the same artist is a match)
+"""
 
 
 def calc_r_precision(prediction, ground_truth):
     rel_tracks = np.intersect1d(prediction, ground_truth)
-    return len(rel_tracks) / len(ground_truth)
+    return float(len(rel_tracks)) / float(len(ground_truth))
 
 
-def calc_NDCG(prediction, ground_truth):
-    seq_len = len(prediction)
-    relevance = np.arange(seq_len, 0, -1)   # list goes from seq_len to 1
-    rel_dict = {}
-    # create dictionary
-    for i, rel_i in enumerate(relevance):
-        element = ground_truth[i]
-        rel_dict[element] = rel_i
-    # compute ndcg with dcg and ideal dcg
-    dcg = 0.0
-    for i, elem in enumerate(prediction):
-        # compute dcg
-        if elem in rel_dict:
-            dcg += rel_dict[elem] / np.log2(i+2)
-    # compute idcg
-    idcg = 0.0
-    for i, rel in enumerate(relevance):
-        idcg += rel / np.log2(i+2)
-    ndcg = dcg / idcg
-    return ndcg
+def calc_dcg(prediction, ground_truth):
+    unique_predicted = to_unique_tensor(prediction)
+    unique_ground_truth = to_unique_tensor(ground_truth)
+    if len(unique_predicted) == 0 or len(unique_ground_truth) == 0:
+        return 0.0
+    score = [float(elem in unique_ground_truth) for elem in unique_predicted]
+    print(score)
+    return np.sum(score / np.log2(1 + np.arange(1, 1 + len(score))))
+
+
+def calc_ndcg(prediction, ground_truth):
+    dcg = calc_dcg(prediction, ground_truth)
+    ideal_dcg = calc_dcg(ground_truth, ground_truth)
+    return dcg / ideal_dcg
 
 
 def tracks_to_artists(artist_dict, prediction, ground_truth):
@@ -108,3 +107,11 @@ def tracks_to_artists(artist_dict, prediction, ground_truth):
         artist_ground_truth[i] = artist_dict[int(track_id)]
     return artist_pred, artist_ground_truth
 
+
+def to_unique_tensor(tensor):
+    if not isinstance(tensor, list):
+        tensor_list = tensor.tolist()
+    else:
+        tensor_list = tensor
+    unique_tensor_list = list(OrderedDict.fromkeys(tensor_list))
+    return torch.LongTensor(unique_tensor_list)

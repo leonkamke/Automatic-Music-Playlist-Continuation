@@ -3,7 +3,7 @@ training: train by computing the Cross Entropy Loss based on only one target (th
 prediction: do_rank (take k largest values (indices) for the prediction)
             do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
                             largest values (indices) for the prediction)"""
-
+import gensim
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -11,6 +11,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
+import load_attributes as la
 
 
 def init_weights(m):
@@ -108,7 +109,11 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
 
 if __name__ == '__main__':
     print("load pretrained embedding layer...")
-    word2vec_tracks = ld.get_word2vec_model("10_thousand_playlists")
+
+    print("load word2vec from file")
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    print("word2vec loaded from file")
+
     weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
@@ -116,10 +121,10 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.001
-    num_epochs = 1000
-    batch_size = 100
-    num_playlists_for_training = 2000
+    learning_rate = la.get_learning_rate()
+    num_epochs = la.get_num_epochs()
+    batch_size = la.get_batch_size()
+    num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100

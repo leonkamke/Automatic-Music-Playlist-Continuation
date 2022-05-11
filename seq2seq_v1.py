@@ -2,7 +2,7 @@
 training: Seq2Seq model which takes output from each input timestamp into account for the cross-entropy loss
 prediction: for a input of length playlist_size the output will also be of size playlist_size
 """
-
+import gensim.models
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,6 +10,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
+import load_attributes as la
 
 
 def init_weights(m):
@@ -84,7 +85,11 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
 
 if __name__ == '__main__':
     print("load pretrained embedding layer...")
-    word2vec_tracks = ld.get_word2vec_model("10_thousand_playlists")
+
+    print("load word2vec from file")
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    print("word2vec loaded from file")
+
     weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
@@ -92,17 +97,17 @@ if __name__ == '__main__':
     print("finished")
 
     # Training and model parameters
-    learning_rate = 0.1
-    num_epochs = 25
-    batch_size = 10
-    num_playlists_for_training = 50
+    learning_rate = la.get_learning_rate()
+    num_epochs = la.get_num_epochs()
+    batch_size = la.get_batch_size()
+    num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
     N_LAYERS = 1
 
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -126,7 +131,7 @@ if __name__ == '__main__':
     if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), 'models/pytorch/seq2seq_no_batch_pretrained_emb.pth')
+        torch.save(model.state_dict(), 'models/pytorch/seq2seq_v1.pth')
     else:
         model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
         # evaluate model:

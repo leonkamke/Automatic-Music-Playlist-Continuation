@@ -181,9 +181,3 @@ def collate_fn_next_track_one_target(data):
     src = pad_sequence(src, batch_first=True)
     return src, torch.LongTensor(trg), src_len
 
-
-def get_word2vec_model(word2vec_model):
-    print("load word2vec from file")
-    model = gensim.models.Word2Vec.load("./models/gensim_word2vec/" + word2vec_model + "/word2vec-song-vectors.model")
-    print("word2vec loaded from file")
-    return model
