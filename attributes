@@ -1,10 +1,10 @@
 # Important paths for training and evaluating scripts (track_sequences, artist_sequences, track_artist_dict_unique, track2vec_model, artist2vec_model)
-C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\data\spotify_million_playlist_dataset_csv\data\track_sequences.csv
-C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\data\spotify_million_playlist_dataset_csv\data\artist_sequences.csv
-C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\data\spotify_million_playlist_dataset_csv\data\track_artist_dict_unique.csv
-C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\models\gensim_word2vec\1_mil_playlists\word2vec-song-vectors.model
-C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\models\gensim_word2vec\1_mil_playlists_artists\word2vec-song-vectors.model
-output path of trained models
+/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_sequences.csv
+/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/artist_sequences.csv
+/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv
+/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model
+/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model
+/netscratch/kamke/outputs/trained_models
 
 # Parameters for training the model (n_epochs, batch_size, n_playlists_for_training, learning_rate)
 10
