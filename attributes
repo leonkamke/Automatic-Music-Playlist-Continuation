@@ -4,10 +4,10 @@ C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\data\spotif
 C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\data\spotify_million_playlist_dataset_csv\data\track_artist_dict_unique.csv
 C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\models\gensim_word2vec\1_mil_playlists\word2vec-song-vectors.model
 C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\models\gensim_word2vec\1_mil_playlists_artists\word2vec-song-vectors.model
-output path of trained models
+C:\Users\lkamk\PycharmProjects\Automatic-Music-Playlist-Continuation\models\pytorch
 
 # Parameters for training the model (n_epochs, batch_size, n_playlists_for_training, learning_rate)
-10
+100
 10
 0.01
 50

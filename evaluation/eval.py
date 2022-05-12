@@ -17,8 +17,8 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx)
     # create evaluation dataset
     print("create evaluation dataset...")
     evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx)
-    print("Length of the evaluation dataset: " + len(evaluation_dataset) +
-          " (start_idx: " + start_idx + ", end_idx: " + end_idx + ")")
+    print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
+          " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
 
     # loop over all evaluation playlists
@@ -87,7 +87,6 @@ def calc_dcg(prediction, ground_truth):
     if len(unique_predicted) == 0 or len(unique_ground_truth) == 0:
         return 0.0
     score = [float(elem in unique_ground_truth) for elem in unique_predicted]
-    print(score)
     return np.sum(score / np.log2(1 + np.arange(1, 1 + len(score))))
 
 
