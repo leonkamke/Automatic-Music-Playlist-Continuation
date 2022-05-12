@@ -3,7 +3,6 @@ Evaluation script.
 It considers how good a model recommends relevant tracks (R-Precision) and
 it evaluates the ordering of the recommendation (NDCG).
 """
-import gensim
 
 from evaluation import load_eval_data as eval_data
 import numpy as np
@@ -12,41 +11,39 @@ import torch
 import load_attributes as la
 
 
-def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
+def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx):
     print("start evaluation...")
+
     # create evaluation dataset
-
-    """model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
-    # evaluate model:
-    model.eval()
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)"""
-
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, end_idx)
+    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx)
+    print("Length of the evaluation dataset: " + len(evaluation_dataset) +
+          " (start_idx: " + start_idx + ", end_idx: " + end_idx + ")")
     print("finished")
+
     # loop over all evaluation playlists
     print("start computing R-Precision and NDCG:")
     r_precision_tracks_sum = 0.0
     r_precision_artists_sum = 0.0
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
-    print(len(evaluation_dataset))
+
     for i, (src, trg) in enumerate(evaluation_dataset):
-        print("playlist " + str(i) + " of " + str(len(evaluation_dataset)))
-        # src (list of indices), trg (list of indices), trg_len (natural number)
-        prediction = model.predict(src, len(src))
-        print(prediction)
+        print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
+        # src (list of indices), trg (list of indices)
+        prediction = model.predict(src, len(trg))
+
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
         r_precision_tracks = calc_r_precision(prediction, trg)
         ndcg_tracks = calc_ndcg(prediction, trg)
         r_precision_tracks_sum += r_precision_tracks
         ndcg_tracks_sum += ndcg_tracks
+
         # convert prediction and target to list's of artist id's
         artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
-        # calculate for the artists R-Precision and NDCG
+
+        # calculate for the artists R-Precision and artists NDCG
         r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
         ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
         r_precision_artists_sum += r_precision_artists
@@ -58,15 +55,17 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, end_idx):
         print("NDCG(artists):      : " + str(ndcg_artists))
         print(" ")
 
-    r_precision_tracks = r_precision_tracks_sum / len(evaluation_dataset)
-    ndcg_tracks = ndcg_tracks_sum / len(evaluation_dataset)
-    r_precision_artists = r_precision_artists_sum / len(evaluation_dataset)
-    ndcg_artists = ndcg_artists_sum / len(evaluation_dataset)
+    r_precision_tracks_sum = r_precision_tracks_sum / len(evaluation_dataset)
+    ndcg_tracks_sum = ndcg_tracks_sum / len(evaluation_dataset)
+    r_precision_artists_sum = r_precision_artists_sum / len(evaluation_dataset)
+    ndcg_artists_sum = ndcg_artists_sum / len(evaluation_dataset)
+
     # print the results
-    print("Average R-Precision(tracks) : " + str(r_precision_tracks))
-    print("Average R-Precision(artists): " + str(r_precision_artists))
-    print("Average NDCG(tracks):       : " + str(ndcg_tracks))
-    print("Average NDCG(artists):      : " + str(ndcg_artists))
+    print("Results for evaluation dataset ----------------------------")
+    print("Average R-Precision(tracks) : " + str(r_precision_tracks_sum))
+    print("Average R-Precision(artists): " + str(r_precision_artists_sum))
+    print("Average NDCG(tracks):       : " + str(ndcg_tracks_sum))
+    print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
 
 
 # ----------------------------------------------------------------------------------------------------------------------

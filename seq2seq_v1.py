@@ -78,7 +78,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -128,15 +128,14 @@ if __name__ == '__main__':
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
     print("Created train data")
 
-    if not os.path.isfile("models/pytorch/seq2seq_no_batch_pretrained_emb.pth"):
+    if not os.path.isfile(la.output_path_model() + '/seq2seq_v1.pth'):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), 'models/pytorch/seq2seq_v1.pth')
+        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v1.pth')
     else:
-        model.load_state_dict(torch.load('models/pytorch/seq2seq_no_batch_pretrained_emb.pth'))
+        model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v1.pth'))
         # evaluate model:
         model.eval()
-        word2vec_tracks = ld.get_word2vec_model("1_mil_playlists")
-        word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
-        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 100)
-
+        # word2vec_tracks already initialised above
+        word2vec_artists = la.path_artist_to_vec_model()
+        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx())

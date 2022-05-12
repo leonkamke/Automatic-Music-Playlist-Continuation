@@ -1,4 +1,4 @@
-START_PATH = 1      # line in which the paths start
+START_PATH = 1  # line in which the paths start
 START_TRAINING = 9  # line in which the training parameters start
 
 """
@@ -18,6 +18,29 @@ N_EPOCHS = 9
 BATCH_SIZE = 10
 LEARNING_RATE = 11
 NUM_PLAYLISTS_FOR_TRAINING = 12
+
+"""
+Which line contains which evaluation parameter
+"""
+START_IDX = 15
+END_IDX = 16
+
+
+# Methods for the evaluation parameters -----------------------------------------------
+def get_start_idx():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == START_IDX:
+            file.close()
+            return int(row[:-1])
+
+
+def get_end_idx():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == END_IDX:
+            file.close()
+            return int(row[:-1])
 
 
 # Methods for the training parameters -------------------------------------------------
@@ -100,4 +123,3 @@ def output_path_model():
         if i == OUTPUT_PATH_MODEL:
             file.close()
             return row[:-1]
-

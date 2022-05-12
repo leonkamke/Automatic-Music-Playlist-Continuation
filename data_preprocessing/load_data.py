@@ -2,7 +2,7 @@ import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
-import gensim
+import load_attributes as la
 
 
 class PlaylistDataset(Dataset):
@@ -23,7 +23,7 @@ class PlaylistDataset(Dataset):
         # read training data from "track_sequences"
         src_uri = []
         trg_uri = []
-        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
@@ -73,7 +73,7 @@ class NextTrackDatasetOnlyOneTarget(Dataset):
         # read training data from "track_sequences"
         src_uri = []
         trg_uri = []
-        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
@@ -117,7 +117,7 @@ class NextTrackDatasetShiftedTarget(Dataset):
         # read training data from "track_sequences"
         src_uri = []
         trg_uri = []
-        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):

@@ -1,16 +1,18 @@
 import torch
 import csv
 from torch.utils.data import Dataset
+import load_attributes as la
 
 
 # Dataset which creates src tracks with size size_seed and the corresponding targets
 # uses the last 50.000 playlists
 # cuts each playlist in the middle
 class EvaluationDataset(Dataset):
-    def __init__(self, word2vec_tracks, word2vec_artists, end_idx):
+    def __init__(self, word2vec_tracks, word2vec_artists, start_idx, end_idx):
         # data loading
         self.word2vec_tracks = word2vec_tracks
         self.word2vec_artists = word2vec_artists
+        self.start_idx = start_idx
         self.end_idx = end_idx
         self.src, self.trg = self.read_train_data()
         # artist_dict: track_id -> artist_id
@@ -31,7 +33,7 @@ class EvaluationDataset(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                if index < self.end_idx:
+                if self.start_idx <= index < self.end_idx:
                     is_odd = len(row) % 2 == 1
                     i = int(len(row) / 2 + 1)
                     src_i = row[2:i]
