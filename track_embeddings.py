@@ -1,14 +1,13 @@
 import gensim
-import pandas as pd
 import os.path
 import numpy as np
-from os import listdir
 from os import path
 import argparse
 import json
 import csv
 import evaluation.eval as eval
 import data_preprocessing.load_data as ld
+import load_attributes as la
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------
@@ -42,7 +41,7 @@ class Word2VecModel:
         self.word2vec_tracks = word2vec_tracks
         self.word2vec_artists = word2vec_artists
 
-    def predict(self, input):
+    def predict(self, input, num_predictions):
         # calculate mean-vector of given tracks
         vec = []
         for track_id in input:
@@ -51,7 +50,7 @@ class Word2VecModel:
             vec.append(track_vector)
         mean_vector = np.mean(vec, axis=0)
         # get similar tracks
-        output_keys = self.word2vec_tracks.wv.similar_by_vector(mean_vector, topn=len(input))
+        output_keys = self.word2vec_tracks.wv.similar_by_vector(mean_vector, topn=num_predictions)
         # convert the list of keys (output) to a list of indices
         output_indices = []
         for key in output_keys:
@@ -65,10 +64,9 @@ class Word2VecModel:
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     word2vec_tracks = None
-    if os.path.isfile("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model"):
+    if os.path.isfile(la.path_track_to_vec_model()):
         print("load model from file")
-        word2vec_tracks = gensim.models.Word2Vec.load(
-            "./models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+        word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
         print("model loaded from file")
     else:
         num_playlists_to_read = 10000
@@ -104,6 +102,6 @@ if __name__ == '__main__':
     # print(model.wv.similar_by_key('spotify:track:0muI8DpTEpLqqibPm3sKYf'))"""
 
     # evaluate word2vec model
-    word2vec_artists = ld.get_word2vec_model("1_mil_playlists_artists")
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     model = Word2VecModel(word2vec_tracks, word2vec_artists)
-    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 500)
+    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 0, 500)
