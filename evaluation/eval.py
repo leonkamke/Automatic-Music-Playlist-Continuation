@@ -11,7 +11,7 @@ import torch
 import load_attributes as la
 
 
-def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx):
+def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx, device):
     print("start evaluation...")
 
     # create evaluation dataset
@@ -20,6 +20,8 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx)
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
+
+
 
     # loop over all evaluation playlists
     print("start computing R-Precision and NDCG:")
@@ -31,6 +33,7 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx)
     for i, (src, trg) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
         # src (list of indices), trg (list of indices)
+        src = src.to(device)
         prediction = model.predict(src, len(trg))
 
         # prediction is of shape len(trg)
