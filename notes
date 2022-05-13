@@ -1,7 +1,11 @@
 Pytorch version: 1.11.0
 Cuda version: 11.3
+Python version: 3.9.7
 
 TODO (important):
+- maybe implement, that the evaluation results will be printed
+    in a text file(results, wich learning-machine, wich training parameters)
+- Maybe implements cold start problem (empty playlist)
 - train seq2seq_D2KLab.py with NVIDIA cluster:
     necessary files for the training-scripts:
     - seq2seq_enc_dec.py

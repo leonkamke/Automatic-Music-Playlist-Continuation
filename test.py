@@ -5,6 +5,7 @@ import torch.nn as nn
 import csv
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import gensim
+import sys
 
 
 class Seq2Seq(nn.Module):
@@ -93,10 +94,13 @@ if __name__ == '__main__':
     _, top_k = torch.topk(x, dim=0, k=3)
     print(top_k)"""
 
-    x = torch.Tensor([[1, 2, 3, 4],
+    """x = torch.Tensor([[1, 2, 3, 4],
                       [3, 6, 2, 7],
                       [1, 2, 2, 2]])
     x = torch.mean(x, dim=0)
     print(x)
-    #output has to be of size one
+    #output has to be of size one"""
+
+    print(sys.version)
+    print(sys.version_info)
 
