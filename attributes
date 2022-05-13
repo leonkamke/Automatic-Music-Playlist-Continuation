@@ -6,9 +6,9 @@
 /netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model
 /netscratch/kamke/outputs/trained_models
 
-# Parameters for training the model (n_epochs, batch_size, n_playlists_for_training, learning_rate)
+# Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
 100
-10
+1
 0.01
 50
 
