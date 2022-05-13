@@ -41,6 +41,7 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
         r_precision_tracks = calc_r_precision(prediction, trg)
+        print("c")
         ndcg_tracks = calc_ndcg(prediction, trg)
         r_precision_tracks_sum += r_precision_tracks
         ndcg_tracks_sum += ndcg_tracks
