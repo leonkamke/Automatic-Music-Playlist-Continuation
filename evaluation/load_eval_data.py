@@ -29,7 +29,7 @@ class EvaluationDataset(Dataset):
         # read training data from "track_sequences"
         src_uri = []
         trg_uri = []
-        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
@@ -59,7 +59,7 @@ class EvaluationDataset(Dataset):
         return src_idx, trg_idx
 
     def init_artist_dict(self):
-        with open('data/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv',
+        with open(la.path_track_artist_dict_unique(),
                   encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
