@@ -7,13 +7,13 @@
 /netscratch/kamke/outputs/trained_models
 
 # Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
-100
+2
 1
 0.01
 50
 
 # Parameters for evaluating the model (start_idx, end_idx)
 0
-100
+500
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------

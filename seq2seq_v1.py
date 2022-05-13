@@ -137,5 +137,5 @@ if __name__ == '__main__':
         # evaluate model:
         model.eval()
         # word2vec_tracks already initialised above
-        word2vec_artists = la.path_artist_to_vec_model()
+        word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
         eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx())
