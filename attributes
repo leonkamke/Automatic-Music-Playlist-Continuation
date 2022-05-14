@@ -14,7 +14,7 @@
 
 # Parameters for evaluating the model (start_idx, end_idx)
 0
-1000
+200
 
 # Paramteter for the device
 cpu
