@@ -9,11 +9,14 @@
 # Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
 1
 70
-0.0081
+0.001
 315000
 
 # Parameters for evaluating the model (start_idx, end_idx)
 0
-50000
+1000
+
+# Paramteter for the device
+cpu
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------

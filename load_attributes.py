@@ -25,6 +25,20 @@ Which line contains which evaluation parameter
 START_IDX = 15
 END_IDX = 16
 
+"""
+Which line contains which device will be used
+"""
+DEVICE = 19
+
+
+# Method for getting the setted device
+def get_device():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == DEVICE:
+            file.close()
+            return row[:-1]
+
 
 # Methods for the evaluation parameters -----------------------------------------------
 def get_start_idx():

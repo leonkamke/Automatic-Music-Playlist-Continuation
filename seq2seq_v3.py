@@ -130,8 +130,9 @@ if __name__ == '__main__':
     HID_DIM = 100
     N_LAYERS = 1
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
+    device = torch.device(la.get_device())
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
