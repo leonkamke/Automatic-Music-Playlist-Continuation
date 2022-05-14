@@ -3,6 +3,7 @@ Cuda version: 11.3
 Python version: 3.9.7
 
 TODO (important):
+- gensim get_normed_vectors for pretrained embedding layer
 - maybe implement, that the evaluation results will be printed
     in a text file(results, wich learning-machine, wich training parameters)
 - Maybe implements cold start problem (empty playlist)

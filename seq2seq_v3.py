@@ -114,7 +114,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
+    weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
