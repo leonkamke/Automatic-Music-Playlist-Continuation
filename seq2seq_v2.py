@@ -185,7 +185,8 @@ if __name__ == '__main__':
     HID_DIM = 100
     N_LAYERS = 1
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(la.get_device())
 
     print("create Seq2Seq model...")
     # Encoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0)
@@ -221,4 +222,4 @@ if __name__ == '__main__':
         model.eval()
         # word2vec_tracks already initialised above
         word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx())
+        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
