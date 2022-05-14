@@ -8,8 +8,8 @@
 
 # Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
 1
-1
-0.01
+100
+0.001
 500
 
 # Parameters for evaluating the model (start_idx, end_idx)
