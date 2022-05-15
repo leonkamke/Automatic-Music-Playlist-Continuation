@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     # weights.shape == (2262292, 100)
-    # pre_trained embedding reduces the number of trainable parameters from  454 million to 17 mill
+    # pre_trained embedding reduces the number of trainable parameters from  454 million to 228,572,292
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
     print("finished")
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = 100
-    N_LAYERS = 1
+    N_LAYERS = 10
 
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
