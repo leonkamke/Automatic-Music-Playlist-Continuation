@@ -106,7 +106,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
+    weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
@@ -119,8 +119,8 @@ if __name__ == '__main__':
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
-    HID_DIM = 100
-    N_LAYERS = 1
+    HID_DIM = la.get_recurrent_dimension()
+    N_LAYERS = la.get_num_recurrent_layers()
 
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
