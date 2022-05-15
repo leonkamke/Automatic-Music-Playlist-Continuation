@@ -118,6 +118,7 @@ if __name__ == '__main__':
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+    embedding_pre_trained = nn.Embedding(len(word2vec_tracks), 100)
     print("finished")
 
     # Training and model parameters
