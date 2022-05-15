@@ -19,4 +19,8 @@
 # Paramteter for the device
 cuda
 
+# Parameter for network architecture(num recurrent layers, num recurrent dimension)
+10
+100
+
 # ---------------------------------------------------------------------------------------------------------------------------------------------------

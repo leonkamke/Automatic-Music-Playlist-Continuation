@@ -127,8 +127,8 @@ if __name__ == '__main__':
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
-    HID_DIM = 100
-    N_LAYERS = 10
+    HID_DIM = la.get_recurrent_dimension()
+    N_LAYERS = la.get_num_recurrent_layers()
 
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')

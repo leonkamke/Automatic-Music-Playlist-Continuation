@@ -30,6 +30,29 @@ Which line contains which device will be used
 """
 DEVICE = 19
 
+"""
+Which line contains which device will be used
+"""
+NUM_RECURRENT_LAYERS = 22
+NUM_RECURRENT_DIMENSION  = 23
+
+
+# Methods for getting the network architecture
+def get_num_recurrent_layers():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == NUM_RECURRENT_LAYERS:
+            file.close()
+            return int(row[:-1])
+
+
+def get_recurrent_dimension():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == NUM_RECURRENT_DIMENSION:
+            file.close()
+            return int(row[:-1])
+
 
 # Method for getting the setted device
 def get_device():
