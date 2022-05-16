@@ -155,10 +155,10 @@ if __name__ == '__main__':
                             collate_fn=ld.collate_fn_next_track_one_target)
     print("Created train data")
 
-    if not os.path.isfile(la.output_path_model() + '/seq2seq_v3.pth'):
+    if not os.path.isfile(la.output_path_model() + '/seq2seq_v3_batch_25.pth'):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v3.pth')
+        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v3_batch_25.pth')
     else:
         model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v3.pth'))
         # evaluate model:
