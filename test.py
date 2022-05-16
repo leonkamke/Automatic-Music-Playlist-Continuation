@@ -6,6 +6,7 @@ import csv
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import gensim
 import sys
+import load_attributes as la
 
 
 class Seq2Seq(nn.Module):
@@ -36,6 +37,45 @@ class Seq2Seq(nn.Module):
         # x = self.fc_out(x)
         # returned_matrix.shape == (batch_size, seq_len, vocab_size)
         return self.fc_out(x)
+
+
+# safes a tensor of shape (2262292, 200) in a file. concatenation of tracks and artists
+def get_track_artist_vectors(word2vec_tracks, word2vec_artists):
+    weights_tracks = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
+    weights_artists = torch.FloatTensor(word2vec_artists.wv.get_normed_vectors())
+    track_artist_dict = get_artist_dict(word2vec_tracks, word2vec_artists)
+    # create tensor for returning the output
+    output = torch.zeros((len(word2vec_tracks.wv), 200), dtype=torch.float)
+
+    for i in range(len(word2vec_tracks.wv)):
+        track_vec = weights_tracks[i]
+        artist_vec_id = track_artist_dict[i]
+        artist_vec = weights_artists[artist_vec_id]
+        track_artist_cat = torch.cat((track_vec, artist_vec), dim=0)
+        output[i] = track_artist_cat
+        print("track_id: ", i)
+        print("artist_id: ", artist_vec_id)
+        print("track_artist_cat.shape: ", track_artist_cat.shape)
+        print("track_artist_cat: ", track_artist_cat)
+    # safe output in a file
+    torch.save(output, la.output_path_model() + "/track_artist_embed.pt")
+    print("output.shape = ", output.shape)
+    print(output)
+
+
+# Returns the following dictionary: artist_dict: track_id -> artist_id
+def get_artist_dict(word2vec_tracks, word2vec_artists):
+    with open(la.path_track_artist_dict_unique(), encoding='utf8') as read_obj:
+        csv_reader = csv.reader(read_obj)
+        # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
+        track_artist_dict = {}
+        for index, row in enumerate(csv_reader):
+            if row[0] not in track_artist_dict:
+                track_id = word2vec_tracks.wv.get_index(row[0])
+                artist_id = word2vec_artists.wv.get_index(row[1])
+                track_artist_dict[track_id] = artist_id
+            print("line " + str(index) + " in track_artist_dict_unique.csv")
+    return track_artist_dict
 
 
 if __name__ == '__main__':
@@ -101,6 +141,6 @@ if __name__ == '__main__':
     print(x)
     #output has to be of size one"""
 
-    print(sys.version)
-    print(sys.version_info)
-
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    get_track_artist_vectors(word2vec_tracks, word2vec_artists)

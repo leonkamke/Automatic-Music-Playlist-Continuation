@@ -121,11 +121,11 @@ class NextTrackDatasetShiftedTarget(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                playlist_len = len(row)-2
+                playlist_len = len(row) - 2
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 3:
-                    src_i = row[2:playlist_len-1]
+                    src_i = row[2:playlist_len - 1]
                     trg_i = row[3:playlist_len]
                     src_uri.append(src_i)
                     trg_uri.append(trg_i)
@@ -181,3 +181,35 @@ def collate_fn_next_track_one_target(data):
     src = pad_sequence(src, batch_first=True)
     return src, torch.LongTensor(trg), src_len
 
+
+# safes a tensor of shape (2262292, 200) in a file. concatenation of tracks and artists
+def get_track_artist_vectors(word2vec_tracks, word2vec_artists):
+    weights_tracks = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
+    weights_artists = torch.FloatTensor(word2vec_artists.wv.get_normed_vectors())
+    track_artist_dict = get_artist_dict(word2vec_tracks, word2vec_artists)
+    # create tensor for returning the output
+    output = torch.zeros((len(word2vec_tracks), 200), dtype=torch.float)
+
+    for i in range(len(word2vec_tracks.wv)):
+        track_vec = weights_tracks[i]
+        artist_vec_id = track_artist_dict[i]
+        artist_vec = weights_artists[artist_vec_id]
+        track_artist_cat = torch.cat((track_vec, artist_vec), dim=0)
+        output[i] = track_artist_cat
+    # safe output in a file
+    torch.save(output, 'track_artist_embed.pt')
+
+
+# Returns the following dictionary: artist_dict: track_id -> artist_id
+def get_artist_dict(word2vec_tracks, word2vec_artists):
+    with open(la.path_track_artist_dict_unique(), encoding='utf8') as read_obj:
+        csv_reader = csv.reader(read_obj)
+        # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
+        track_artist_dict = {}
+        for index, row in enumerate(csv_reader):
+            if row[0] not in track_artist_dict:
+                track_id = word2vec_tracks.wv.get_index(row[0])
+                artist_id = word2vec_artists.wv.get_index(row[1])
+                track_artist_dict[track_id] = artist_id
+            print("line " + str(index) + " in track_artist_dict_unique.csv")
+    return track_artist_dict
