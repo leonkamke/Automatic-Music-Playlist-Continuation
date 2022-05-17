@@ -21,8 +21,6 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
 
-
-
     # loop over all evaluation playlists
     print("start computing R-Precision and NDCG:")
     r_precision_tracks_sum = 0.0
@@ -74,6 +72,16 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
     print("Average R-Precision(artists): " + str(r_precision_artists_sum))
     print("Average NDCG(tracks):       : " + str(ndcg_tracks_sum))
     print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
+
+    output_string = "Results for evaluation dataset ----------------------------\n" + \
+                    "start_idx: " + str(start_idx) + "\n" \
+                    "end_idx: " + str(end_idx) + "\n" \
+                    "Average R-Precision(tracks) : " + str(r_precision_tracks_sum) + "\n" + \
+                    "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
+                    "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
+                    "Average NDCG(artists):      : " + str(ndcg_artists_sum)
+    return output_string
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
