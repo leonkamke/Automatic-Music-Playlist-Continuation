@@ -1,3 +1,6 @@
+import torch
+
+
 class Ensemble:
     def __init__(self, model_list):
         self.model_list = model_list
@@ -8,16 +11,15 @@ class Ensemble:
         """# x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)"""
-        print("todo")
-
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+        for model in self.model_list:
+            prediction = model.predict(input, num_predictions)
+            for i, track_id in enumerate(prediction):
+                rankings[track_id] += (num_predictions - i)
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
         return top_k
-
-    def predict(self, ):
-        print("d")
-
-    def score(self, ):
-        print("d")
 
 
 if __name__ == "__main__":
-    print("dk")
+    model_list = []
+
