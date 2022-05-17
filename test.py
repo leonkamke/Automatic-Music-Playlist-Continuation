@@ -194,5 +194,9 @@ if __name__ == "__main__":
     get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
 
     """word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
-    print(word2vec_tracks.corpus_count)"""
+    print(len(word2vec_tracks.wv))
+    word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
+    print(len(word2vec_artists.wv))
+    word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
+    print(len(word2vec_albums.wv))"""
 

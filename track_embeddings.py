@@ -67,7 +67,7 @@ class Word2VecModel:
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     word2vec_tracks = None
-    if os.path.isfile(la.path_track_to_vec_model()):
+    if os.path.isfile("./models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model"):
         print("load model from file")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
         print("model loaded from file")
@@ -80,13 +80,13 @@ if __name__ == '__main__':
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file
             for idx, row in enumerate(csv_reader):
-                print(idx)
                 if idx >= num_playlists_to_read:
                     break
                 playlists.append(row[2:])
+                print(idx)
         print("build vocabulary...")
         # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
-        word2vec_tracks = gensim.models.Word2Vec()  # AMD Ryzen 5 2600x with 6 cores
+        word2vec_tracks = gensim.models.Word2Vec(min_count=1)  # AMD Ryzen 5 2600x with 6 cores
         word2vec_tracks.build_vocab(playlists, progress_per=1000)
         print("builded vocabulary")
         print("Train model (this can take a lot of time)...")
@@ -102,12 +102,12 @@ if __name__ == '__main__':
     # print(model.wv.get_index("spotify:track:1KHdq8NK9QxnGjdXb55NiG"))
 
     """track_uris = get_track_uris_from_playlist(8024)
-    x = calc_mean_vector(word2vec_tracks, track_uris)"""
+    x = calc_mean_vector(word2vec_tracks, track_uris)
     print(word2vec_tracks.wv.similar_by_key("spotify:track:4ZoBC5MhSEzuknIgAkBaoT", topn=500))
     # print(model.wv.similar_by_key('spotify:track:0muI8DpTEpLqqibPm3sKYf'))
 
     # evaluate word2vec model
     # word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    """word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     model = Word2VecModel(word2vec_tracks, word2vec_artists)
     eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 0, 500, torch.device('cpu'))"""
