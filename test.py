@@ -185,7 +185,7 @@ if __name__ == "__main__":
     # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
 
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print(len(word2vec_tracks.corpus_count))
+    print(word2vec_tracks.corpus_count)
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print(len(word2vec_artists.wv))
     word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
