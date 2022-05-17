@@ -11,6 +11,7 @@ TRACK_TO_VEC_MODEL = 4
 ARTIST_TO_VEC_MODEL = 5
 OUTPUT_PATH_MODEL = 6
 EMBED_WEIGHTS = 26
+TRACK_ALBUM_DICT_UNIQUE = 27
 
 """
 Which line contains which training parameter
@@ -135,6 +136,14 @@ def path_track_artist_dict_unique():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_ARTIST_DICT_UNIQUE:
+            file.close()
+            return row[:-1]
+
+
+def path_track_album_dict_unique():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == TRACK_ALBUM_DICT_UNIQUE:
             file.close()
             return row[:-1]
 

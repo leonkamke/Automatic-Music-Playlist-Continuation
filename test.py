@@ -77,6 +77,20 @@ def get_artist_dict(word2vec_tracks, word2vec_artists):
             print("line " + str(index) + " in track_artist_dict_unique.csv")
     return track_artist_dict
 
+# Returns the following dictionary: artist_dict: track_id -> album_id
+def get_album_dict(word2vec_tracks, word2vec_albums):
+    with open(la.path_track_album_dict_unique(), encoding='utf8') as read_obj:
+        csv_reader = csv.reader(read_obj)
+        # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
+        track_artist_dict = {}
+        for index, row in enumerate(csv_reader):
+            if row[0] not in track_artist_dict:
+                track_id = word2vec_tracks.wv.get_index(row[0])
+                artist_id = word2vec_artists.wv.get_index(row[1])
+                track_artist_dict[track_id] = artist_id
+            print("line " + str(index) + " in track_artist_dict_unique.csv")
+    return track_artist_dict
+
 
 if __name__ == '__main__':
     """# test_batch.shape == (2, 3, 3)
@@ -141,6 +155,36 @@ if __name__ == '__main__':
     print(x)
     #output has to be of size one"""
 
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    get_track_artist_vectors(word2vec_tracks, word2vec_artists)
+    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+    word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
+    word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
+    # get_track_artist_vectors(word2vec_tracks, word2vec_artists)
+
+    embeddings = torch.load("models/pretrained_embedded_matrix/track_artist_embed.pt", map_location=torch.device("cuda"))
+    index = word2vec_tracks.wv.get_index("spotify:track:1zCoCopxgQmozHBuuyfW2K")
+    track_vec2 = word2vec_tracks.wv.get_vector("spotify:track:1zCoCopxgQmozHBuuyfW2K", norm=True)
+    #track_vec2 = word2vec_tracks.wv.word_vec("")
+    track_vec = embeddings[index][0:100]
+
+    artist_vec = embeddings[index][100:]
+    artist_vec2 = word2vec_artists.wv.get_vector("spotify:artist:6p5JxpTc7USNnBnLzctyd4", norm=True)
+    print(artist_vec2)
+    print(artist_vec)
+    print(track_vec2)
+    print(track_vec)
+
+    # print(artist_vec.shape)
+    print(word2vec_albums.wv.similar_by_key("spotify:album:2VVvm4zJlUQm9XmBCvGN6z", topn=500))
+
+    # artist_vec = embeddings[index][100:]
+
+    """
+    "pos": 31, 
+                    "artist_name": "Phillip Phillips", 
+                    "track_uri": "spotify:track:1zCoCopxgQmozHBuuyfW2K", 
+                    "artist_uri": "spotify:artist:6p5JxpTc7USNnBnLzctyd4", 
+                    "track_name": "Gone, Gone, Gone", 
+                    "album_uri": "spotify:album:6Q763AFH9UEyRKe0aFDJt0", 
+                    "duration_ms": 209693, 
+                    "album_name": "The World From The Side Of The Moon"
+                    """

@@ -112,8 +112,6 @@ if __name__ == '__main__':
     # device = torch.device('cpu')
     device = torch.device(la.get_device())
 
-    print("load pretrained embedding layer...")
-
     print("load word2vec from file")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
