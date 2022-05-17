@@ -95,8 +95,8 @@ def get_album_dict(word2vec_tracks, word2vec_albums):
         for index, row in enumerate(csv_reader):
             if row[0] not in track_album_dict:
                 track_id = word2vec_tracks.wv.get_index(row[0])
-                artist_id = word2vec_albums.wv.get_index(row[1])
-                track_album_dict[track_id] = artist_id
+                album_id = word2vec_albums.wv.get_index(row[1])
+                track_album_dict[track_id] = album_id
             print("line " + str(index) + " in track_album_dict_unique.csv")
     return track_album_dict
 
@@ -165,8 +165,12 @@ if __name__ == "__main__":
     #output has to be of size one"""
 
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    print(len(word2vec_tracks.wv))
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    print(len(word2vec_artists.wv))
     word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
+    print(len(word2vec_albums.wv))
+
 
     get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
 
