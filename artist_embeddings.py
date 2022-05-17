@@ -26,7 +26,8 @@ if __name__ == '__main__':
                 playlists.append(row[2:])
 
         print("build vocabulary...")
-        model = gensim.models.Word2Vec(window=30, min_count=1, workers=4)  # AMD Ryzen 5 2600x with 6 cores
+        # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
+        model = gensim.models.Word2Vec()  # AMD Ryzen 5 2600x with 6 cores
         model.build_vocab(playlists, progress_per=1000)
         print("builded vocabulary")
         print("Train model (this can take a lot of time)...")

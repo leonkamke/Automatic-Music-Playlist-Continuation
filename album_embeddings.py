@@ -21,12 +21,14 @@ if __name__ == '__main__':
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file
             for idx, row in enumerate(csv_reader):
+                print(idx)
                 if idx >= num_playlists_to_read:
                     break
                 playlists.append(row[2:])
 
         print("build vocabulary...")
-        model = gensim.models.Word2Vec(window=30, min_count=1, workers=4)  # AMD Ryzen 5 2600x with 6 cores
+        # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
+        model = gensim.models.Word2Vec()  # AMD Ryzen 5 2600x with 6 cores
         model.build_vocab(playlists, progress_per=1000)
         print("builded vocabulary")
         print("Train model (this can take a lot of time)...")

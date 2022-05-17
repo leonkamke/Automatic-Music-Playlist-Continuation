@@ -101,7 +101,7 @@ def get_album_dict(word2vec_tracks, word2vec_albums):
     return track_album_dict
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """# test_batch.shape == (2, 3, 3)
     src = torch.FloatTensor([[[0.5, 0.5, 0.5],
                                      [0.3, 0.3, 0.3],
@@ -180,24 +180,12 @@ if __name__ == '__main__':
     print(artist_vec2)
     print(artist_vec)
     print(track_vec2)
-    print(track_vec)
+    print(track_vec)"""
 
-    # print(artist_vec.shape)
-    print(word2vec_albums.wv.similar_by_key("spotify:album:2VVvm4zJlUQm9XmBCvGN6z", topn=500))"""
+    word2vec_tracks = gensim.models.Word2Vec()
+    print(word2vec_tracks.epochs)
+    print(word2vec_tracks.window)
+    print(word2vec_tracks.min_alpha)
+    print(word2vec_tracks.alpha)
+    # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
 
-    # artist_vec = embeddings[index][100:]
-
-    """
-    "pos": 31, 
-                    "artist_name": "Phillip Phillips", 
-                    "track_uri": "spotify:track:1zCoCopxgQmozHBuuyfW2K", 
-                    "artist_uri": "spotify:artist:6p5JxpTc7USNnBnLzctyd4", 
-                    "track_name": "Gone, Gone, Gone", 
-                    "album_uri": "spotify:album:6Q763AFH9UEyRKe0aFDJt0", 
-                    "duration_ms": 209693, 
-                    "album_name": "The World From The Side Of The Moon"
-                    """
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
-    get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
