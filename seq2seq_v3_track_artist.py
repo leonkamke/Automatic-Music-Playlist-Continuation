@@ -118,6 +118,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
+    print("load pretrained embedding layer")
     weights = torch.load(la.path_embedded_weights(), map_location=device)
     # weights.shape == (2262292, 200)
     # pre_trained embedding reduces the number of trainable parameters from  454 million to 228,572,292
@@ -155,12 +156,12 @@ if __name__ == '__main__':
                             collate_fn=ld.collate_fn_next_track_one_target)
     print("Created train data")
 
-    if not os.path.isfile(la.output_path_model() + '/seq2seq_v3.pth'):
+    if not os.path.isfile(la.output_path_model() + '/seq2seq_v3_track_artist.pth'):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v3.pth')
+        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v3_track_artist.pth')
     else:
-        model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v3.pth'))
+        model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v3_track_artist.pth'))
         # evaluate model:
         model.eval()
 
