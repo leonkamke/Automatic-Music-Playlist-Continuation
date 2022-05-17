@@ -154,15 +154,16 @@ if __name__ == '__main__':
                             collate_fn=ld.collate_fn_next_track_one_target)
     print("Created train data")
 
-    foldername = "/seq2seq_v3_track_artist"
+    foldername = "/seq2seq_v3_track_album_artist"
+    save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
-    if not os.path.isfile(la.output_path_model() + '/seq2seq_v3_track_artist.pth'):
+    if not os.path.isfile(la.output_path_model() + foldername):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
         os.mkdir(la.output_path_model() + foldername)
-        torch.save(model.state_dict(), la.output_path_model() + foldername + '/seq2seq_v3_track_artist.pth')
+        torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
     else:
-        model.load_state_dict(torch.load(la.output_path_model() + foldername + '/seq2seq_v3_track_artist.pth'))
+        model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
         # evaluate model:
         model.eval()
 
