@@ -197,7 +197,7 @@ if __name__ == '__main__':
                     "duration_ms": 209693, 
                     "album_name": "The World From The Side Of The Moon"
                     """
-    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
-    word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
-    word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
     get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
