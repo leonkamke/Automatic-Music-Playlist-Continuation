@@ -24,7 +24,7 @@ def count_parameters(model):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0.1):
+    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0.0):
         super().__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
