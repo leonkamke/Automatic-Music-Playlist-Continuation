@@ -23,9 +23,10 @@ cuda
 1
 100
 
-# path for weights matrix for embedded layer (path embedded weights, track_album_dict_unique, album2vec_model)
+# path for weights matrix for embedded layer (path embedded weights, track_album_dict_unique, album2vec_model, foldername_for_trained_model_with_eval_results)
 /netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track_album_artist_embed.pt
 /ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_album_dict_unique.csv
 /netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model
+/seq2seq_v3_track_album_artist
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------

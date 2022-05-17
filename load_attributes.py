@@ -13,6 +13,7 @@ OUTPUT_PATH_MODEL = 6
 EMBED_WEIGHTS = 26
 TRACK_ALBUM_DICT_UNIQUE = 27
 ALBUM_TO_VEC_MODEL = 28
+FOLDER_NAME = 29
 
 """
 Which line contains which training parameter
@@ -129,6 +130,14 @@ def path_artist_sequences_path():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == ARTIST_SEQUENCES:
+            file.close()
+            return row[:-1]
+
+
+def get_folder_name():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == FOLDER_NAME:
             file.close()
             return row[:-1]
 
