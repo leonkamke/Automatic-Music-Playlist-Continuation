@@ -31,7 +31,7 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
     for i, (src, trg) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
         # src (list of indices), trg (list of indices)
-        # src = src.to(device)
+        src = src.to(device)
         print("a")
         num_predictions = len(trg)
         # num_predictions = 500
