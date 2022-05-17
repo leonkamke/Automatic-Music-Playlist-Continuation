@@ -163,13 +163,13 @@ if __name__ == "__main__":
     x = torch.mean(x, dim=0)
     print(x)
     #output has to be of size one"""
-    """
-    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
-    word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
-    word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
+
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
     # get_track_artist_vectors(word2vec_tracks, word2vec_artists)
 
-    embeddings = torch.load("models/pretrained_embedded_matrix/track_artist_embed.pt", map_location=torch.device("cuda"))
+    """embeddings = torch.load("models/pretrained_embedded_matrix/track_artist_embed.pt", map_location=torch.device("cuda"))
     index = word2vec_tracks.wv.get_index("spotify:track:1zCoCopxgQmozHBuuyfW2K")
     track_vec2 = word2vec_tracks.wv.get_vector("spotify:track:1zCoCopxgQmozHBuuyfW2K", norm=True)
     #track_vec2 = word2vec_tracks.wv.word_vec("")
@@ -182,10 +182,10 @@ if __name__ == "__main__":
     print(track_vec2)
     print(track_vec)"""
 
-    word2vec_tracks = gensim.models.Word2Vec()
+    """word2vec_tracks = gensim.models.Word2Vec()
     print(word2vec_tracks.epochs)
     print(word2vec_tracks.window)
     print(word2vec_tracks.min_alpha)
-    print(word2vec_tracks.alpha)
+    print(word2vec_tracks.alpha)"""
     # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
 
