@@ -167,7 +167,8 @@ if __name__ == "__main__":
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
-    # get_track_artist_vectors(word2vec_tracks, word2vec_artists)
+
+    get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
 
     """embeddings = torch.load("models/pretrained_embedded_matrix/track_artist_embed.pt", map_location=torch.device("cuda"))
     index = word2vec_tracks.wv.get_index("spotify:track:1zCoCopxgQmozHBuuyfW2K")
