@@ -134,7 +134,7 @@ if __name__ == '__main__':
     N_LAYERS = la.get_num_recurrent_layers()
 
     print("create Seq2Seq model...")
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
     print("finished")
 
     print("init weights...")
@@ -158,20 +158,22 @@ if __name__ == '__main__':
     save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
     if not os.path.isfile(la.output_path_model() + foldername + save_file_name):
+        model.to(device)
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
         os.mkdir(la.output_path_model() + foldername)
         torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
     else:
         model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+        device = torch.device("cpu")
+        model.to(device)
         # evaluate model:
         model.eval()
-        device = torch.device("cpu")
         # word2vec_tracks already initialised above
         word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
         results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
 
         # write results in a file
-        f = open(la.output_path_model() + foldername + "/results.txt", "-w")
+        f = open(la.output_path_model() + foldername + "/results.txt", "w")
         f.write(results_str)
         f.close()
