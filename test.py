@@ -40,25 +40,33 @@ class Seq2Seq(nn.Module):
 
 
 # safes a tensor of shape (2262292, 200) in a file. concatenation of tracks and artists
-def get_track_artist_vectors(word2vec_tracks, word2vec_artists):
+def get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists):
     weights_tracks = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     weights_artists = torch.FloatTensor(word2vec_artists.wv.get_normed_vectors())
+    weights_albums = torch.FloatTensor(word2vec_albums.wv.get_normed_vectors())
+
     track_artist_dict = get_artist_dict(word2vec_tracks, word2vec_artists)
+    track_album_dict = get_album_dict(word2vec_tracks, word2vec_albums)
     # create tensor for returning the output
-    output = torch.zeros((len(word2vec_tracks.wv), 200), dtype=torch.float)
+    output = torch.zeros((len(word2vec_tracks.wv), 300), dtype=torch.float)
 
     for i in range(len(word2vec_tracks.wv)):
         track_vec = weights_tracks[i]
-        artist_vec_id = track_artist_dict[i]
-        artist_vec = weights_artists[artist_vec_id]
-        track_artist_cat = torch.cat((track_vec, artist_vec), dim=0)
+        # get artist_id and album_id
+        artist_id = track_artist_dict[i]
+        album_id = track_album_dict[i]
+        # get artist_vec and album_vec
+        artist_vec = weights_artists[artist_id]
+        album_vec = weights_albums[album_id]
+        track_artist_cat = torch.cat((track_vec, album_vec, artist_vec), dim=0)
         output[i] = track_artist_cat
         print("track_id: ", i)
-        print("artist_id: ", artist_vec_id)
+        print("artist_id: ", artist_id)
+        print("album_id: ", album_id)
         print("track_artist_cat.shape: ", track_artist_cat.shape)
         print("track_artist_cat: ", track_artist_cat)
     # safe output in a file
-    torch.save(output, la.output_path_model() + "/track_artist_embed.pt")
+    torch.save(output, la.output_path_model() + "/track_album_artist_embed.pt")
     print("output.shape = ", output.shape)
     print(output)
 
@@ -77,19 +85,20 @@ def get_artist_dict(word2vec_tracks, word2vec_artists):
             print("line " + str(index) + " in track_artist_dict_unique.csv")
     return track_artist_dict
 
+
 # Returns the following dictionary: artist_dict: track_id -> album_id
 def get_album_dict(word2vec_tracks, word2vec_albums):
     with open(la.path_track_album_dict_unique(), encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
-        track_artist_dict = {}
+        track_album_dict = {}
         for index, row in enumerate(csv_reader):
-            if row[0] not in track_artist_dict:
+            if row[0] not in track_album_dict:
                 track_id = word2vec_tracks.wv.get_index(row[0])
-                artist_id = word2vec_artists.wv.get_index(row[1])
-                track_artist_dict[track_id] = artist_id
-            print("line " + str(index) + " in track_artist_dict_unique.csv")
-    return track_artist_dict
+                artist_id = word2vec_albums.wv.get_index(row[1])
+                track_album_dict[track_id] = artist_id
+            print("line " + str(index) + " in track_album_dict_unique.csv")
+    return track_album_dict
 
 
 if __name__ == '__main__':
@@ -154,7 +163,7 @@ if __name__ == '__main__':
     x = torch.mean(x, dim=0)
     print(x)
     #output has to be of size one"""
-
+    """
     word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
     word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
     word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
@@ -174,7 +183,7 @@ if __name__ == '__main__':
     print(track_vec)
 
     # print(artist_vec.shape)
-    print(word2vec_albums.wv.similar_by_key("spotify:album:2VVvm4zJlUQm9XmBCvGN6z", topn=500))
+    print(word2vec_albums.wv.similar_by_key("spotify:album:2VVvm4zJlUQm9XmBCvGN6z", topn=500))"""
 
     # artist_vec = embeddings[index][100:]
 
@@ -188,3 +197,7 @@ if __name__ == '__main__':
                     "duration_ms": 209693, 
                     "album_name": "The World From The Side Of The Moon"
                     """
+    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+    word2vec_artists = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_artists/word2vec-song-vectors.model")
+    word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
+    get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
