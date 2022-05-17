@@ -7,8 +7,8 @@
 /netscratch/kamke/outputs/trained_models
 
 # Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
-2
-100
+1
+20
 0.01
 2000
 
@@ -20,7 +20,7 @@
 cuda
 
 # Parameter for network architecture (num recurrent layers, num recurrent dimension)
-10
+1
 100
 
 # path for weights matrix for embedded layer (path embedded weights, track_album_dict_unique, album2vec_model)

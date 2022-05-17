@@ -157,7 +157,7 @@ if __name__ == '__main__':
     foldername = "/seq2seq_v3_track_album_artist"
     save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
-    if not os.path.isfile(la.output_path_model() + foldername):
+    if not os.path.isfile(la.output_path_model() + foldername + save_file_name):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
         os.mkdir(la.output_path_model() + foldername)
