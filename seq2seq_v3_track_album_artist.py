@@ -12,6 +12,7 @@ import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
 import load_attributes as la
+import shutil
 
 
 def init_weights(m):
@@ -159,9 +160,10 @@ if __name__ == '__main__':
 
     if not os.path.isfile(la.output_path_model() + foldername + save_file_name):
         model.to(device)
+        os.mkdir(la.output_path_model() + foldername)
+        shutil.copyfile("attributes.txt", la.output_path_model() + foldername)
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        os.mkdir(la.output_path_model() + foldername)
         torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
     else:
         model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
@@ -173,7 +175,7 @@ if __name__ == '__main__':
         word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
         results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
 
-        # write results in a file
+        # write results in a file with setted attributes
         f = open(la.output_path_model() + foldername + "/results.txt", "w")
         f.write(results_str)
         f.close()
