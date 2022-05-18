@@ -129,7 +129,7 @@ if __name__ == '__main__':
     num_epochs = la.get_num_epochs()
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
-    # VOCAB_SIZE == 169657
+    # VOCAB_SIZE == 2262292
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
@@ -158,28 +158,6 @@ if __name__ == '__main__':
     foldername = la.get_folder_name()
     save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
-    """if not os.path.isfile(la.output_path_model() + foldername + save_file_name):
-        model.to(device)
-        os.mkdir(la.output_path_model() + foldername)
-        shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-        # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
-    else:
-        model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
-        device = torch.device("cpu")
-        model.to(device)
-        # evaluate model:
-        model.eval()
-        # word2vec_tracks already initialised above
-        word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-        results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
-
-        # write results in a file with setted attributes
-        f = open(la.output_path_model() + foldername + "/results.txt", "w")
-        f.write(results_str)
-        f.close()"""
-
     model.to(device)
     os.mkdir(la.output_path_model() + foldername)
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
@@ -194,10 +172,10 @@ if __name__ == '__main__':
     model.eval()
     # word2vec_tracks already initialised above
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(),
-                                      la.get_end_idx(), device)
+    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
+    f.write("last 100 losses: ")
     f.close()

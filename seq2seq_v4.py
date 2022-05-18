@@ -5,6 +5,8 @@ prediction: do_rank (take k largest values (indices) for the prediction)
             do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
                             largest values (indices) for the prediction)
 """
+import shutil
+
 import gensim
 import torch
 import torch.nn as nn
@@ -39,7 +41,7 @@ class Seq2Seq(nn.Module):
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        self.rnn = nn.LSTM(300, hid_dim, n_layers, batch_first=True, dropout=dropout)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
@@ -79,7 +81,7 @@ class Seq2Seq(nn.Module):
         return top_k
 
 
-def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+"""def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
@@ -96,17 +98,43 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
+        num_iterations = 1"""
+
+
+def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+    model.train()
+    num_iterations = 1
+    for epoch in range(num_epochs):
+        for i, (src, trg) in enumerate(dataloader):
+            src = src.to(device)
+            trg = trg.to(device)
+            # trg.shape = src.shape = (batch_size, seq_len)
+            output = model(src)
+            # output.shape = (batch_size, seq_len, vocab_size)
+            trg = trg.view(-1)
+            output = output.view(-1, 2262292)
+            optimizer.zero_grad()
+            loss = criterion(output, trg)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            optimizer.step()
+            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            num_iterations += 1
         num_iterations = 1
 
 
 if __name__ == '__main__':
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
+    device = torch.device(la.get_device())
+
     print("load pretrained embedding layer...")
 
     print("load word2vec from file")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
+    weights = torch.load(la.path_embedded_weights(), map_location=device)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
@@ -117,17 +145,13 @@ if __name__ == '__main__':
     num_epochs = la.get_num_epochs()
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
-    # VOCAB_SIZE == 169657
+    # VOCAB_SIZE == 2262292
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
 
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # device = torch.device('cpu')
-    device = torch.device(la.get_device())
-
     print("create Seq2Seq model...")
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
     print("finished")
 
     print("init weights...")
@@ -144,17 +168,31 @@ if __name__ == '__main__':
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True,
-                            collate_fn=ld.collate_fn_shifted_target)
+                            collate_fn=ld.collate_fn_shifted_target, num_workers=6)
     print("Created train data")
 
-    if not os.path.isfile(la.output_path_model() + '/seq2seq_v4.pth'):
-        # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v4.pth')
-    else:
-        model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v4.pth'))
-        # evaluate model:
-        model.eval()
-        # word2vec_tracks already initialised above
-        word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
+    foldername = la.get_folder_name()
+    save_file_name = "/seq2seq_v3_track_album_artist.pth"
+
+    model.to(device)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
+    train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+
+    model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    device = torch.device("cpu")
+    model.to(device)
+    # evaluate model:
+    model.eval()
+    # word2vec_tracks already initialised above
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
+                                      device)
+
+    # write results in a file with setted attributes
+    f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    f.write(results_str)
+    f.write("last 100 losses: ")
+    f.close()
