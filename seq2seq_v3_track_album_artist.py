@@ -77,7 +77,7 @@ class Seq2Seq(nn.Module):
         return top_k
 
 
-def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs):
     model.train()
     num_iterations = 1
     batch_size = dataloader.batch_size
@@ -94,16 +94,16 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
                 # src_i.shape == (seq_len)
                 # model(src_i).shape == (seq_len, vocab_size)
                 # model(src_i)[-1].shape == (vocab_size)
-                index = src_len[idx]-1
+                index = src_len[idx] - 1
                 # the output of the model is the last predicted track_id
                 batch_output[idx] = model(src_i)[index]
                 # output.shape == (vocab_size)
             # batch_output.shape = (batch_size, vocab_size)
             loss = criterion(batch_output, trg)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     print(f'The model has {count_parameters(model):,} trainable parameters')
     print("The size of the vocabulary is: ", VOCAB_SIZE)
 
-    optimizer = optim.Adam(model.parameters(), learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, eps=1e-4)
     criterion = nn.CrossEntropyLoss()
 
     print("Create train data...")
@@ -172,10 +172,10 @@ if __name__ == '__main__':
     model.eval()
     # word2vec_tracks already initialised above
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
+    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
+                                      device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
-    f.write("last 100 losses: ")
     f.close()
