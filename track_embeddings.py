@@ -40,9 +40,8 @@ def calc_mean_vector(model, track_uris):
 
 # ----------------------------------------------------------------------------------------------------------------------
 class Word2VecModel:
-    def __init__(self, word2vec_tracks, word2vec_artists):
+    def __init__(self, word2vec_tracks):
         self.word2vec_tracks = word2vec_tracks
-        self.word2vec_artists = word2vec_artists
 
     def predict(self, input, num_predictions):
         # calculate mean-vector of given tracks

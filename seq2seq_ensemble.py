@@ -3,6 +3,8 @@ import torch
 import load_attributes as la
 import seq2seq_v3
 import torch.nn as nn
+
+import track_embeddings
 from evaluation import eval
 
 import seq2seq_v3_track_album_artist
@@ -48,6 +50,11 @@ if __name__ == "__main__":
 
     filename = "/seq2seq_v3_track_album_artist.pth"
 
+    print("load word2vec models")
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    print("finished")
+
     print("create first Seq2Seq model...")
     model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_1" + filename))
@@ -55,7 +62,11 @@ if __name__ == "__main__":
     model_list.append(model_1)
     print("finished")
 
-    print("create second Seq2Seq model...")
+    print("create word2vec model")
+    model_2 = track_embeddings.Word2VecModel(word2vec_tracks)
+    model_list.append(model_2)
+
+    """print("create second Seq2Seq model...")
     model_2 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     model_2.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_2" + filename))
     model_2.eval()
@@ -81,14 +92,10 @@ if __name__ == "__main__":
     model_5.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_5" + filename))
     model_5.eval()
     model_list.append(model_5)
-    print("finished")
+    print("finished")"""
 
     # create ensemble model
     ensemble_model = Ensemble(model_list)
 
     # evaluate ensemble model:
-    print("load word2vec models for evaluation")
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print("finished")
     eval.evaluate_model(ensemble_model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
