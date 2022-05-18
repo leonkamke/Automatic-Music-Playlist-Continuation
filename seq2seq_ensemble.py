@@ -4,6 +4,8 @@ import load_attributes as la
 import seq2seq_v3
 import torch.nn as nn
 
+import seq2seq_v3_track_album_artist
+
 
 class Ensemble:
     def __init__(self, model_list):
@@ -43,11 +45,41 @@ if __name__ == "__main__":
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
 
+    filename = "/seq2seq_v3_track_album_artist.pth"
+
     print("create first Seq2Seq model...")
-    model_1 = seq2seq_v3.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
-    model_1.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v3.pth'))
+    model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_1.pth"))
     model_1.eval()
     model_list.append(model_1)
+    print("finished")
+
+    print("create second Seq2Seq model...")
+    model_2 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_2.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_2" + filename))
+    model_2.eval()
+    model_list.append(model_2)
+    print("finished")
+
+    print("create third Seq2Seq model...")
+    model_3 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_3.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_3" + filename))
+    model_3.eval()
+    model_list.append(model_3)
+    print("finished")
+
+    print("create fourth Seq2Seq model...")
+    model_4 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_4.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_4" + filename))
+    model_4.eval()
+    model_list.append(model_4)
+    print("finished")
+
+    print("create fifth Seq2Seq model...")
+    model_5 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_5.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_5" + filename))
+    model_5.eval()
+    model_list.append(model_5)
     print("finished")
 
     # create ensemble model

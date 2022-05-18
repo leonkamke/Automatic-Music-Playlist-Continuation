@@ -81,7 +81,7 @@ class Seq2Seq(nn.Module):
         return top_k
 
 
-"""def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
@@ -98,10 +98,10 @@ class Seq2Seq(nn.Module):
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
-        num_iterations = 1"""
+        num_iterations = 1
 
 
-def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+"""def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
@@ -120,7 +120,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
-        num_iterations = 1
+        num_iterations = 1"""
 
 
 if __name__ == '__main__':
