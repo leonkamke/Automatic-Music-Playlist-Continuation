@@ -167,12 +167,12 @@ if __name__ == '__main__':
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True,
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_shifted_target, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
-    save_file_name = "/seq2seq_v3_track_album_artist.pth"
+    save_file_name = "/seq2seq_v4_track_album_artist.pth"
 
     model.to(device)
     os.mkdir(la.output_path_model() + foldername)
