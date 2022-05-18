@@ -145,7 +145,7 @@ if __name__ == '__main__':
     print(f'The model has {count_parameters(model):,} trainable parameters')
     print("The size of the vocabulary is: ", VOCAB_SIZE)
 
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, eps=1e-8)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, eps=1e-7)
     criterion = nn.CrossEntropyLoss()
 
     print("Create train data...")
