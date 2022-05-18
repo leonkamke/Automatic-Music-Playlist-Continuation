@@ -151,7 +151,7 @@ if __name__ == '__main__':
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.NextTrackDatasetOnlyOneTarget(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True,
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_next_track_one_target)
     print("Created train data")
 
