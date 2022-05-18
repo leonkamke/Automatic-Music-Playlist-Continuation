@@ -3,6 +3,7 @@ import torch
 import load_attributes as la
 import seq2seq_v3
 import torch.nn as nn
+from evaluation import eval
 
 import seq2seq_v3_track_album_artist
 
@@ -86,7 +87,8 @@ if __name__ == "__main__":
     ensemble_model = Ensemble(model_list)
 
     # evaluate ensemble model:
+    print("load word2vec models for evaluation")
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    print("finished")
     eval.evaluate_model(ensemble_model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
-
