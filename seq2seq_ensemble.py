@@ -55,16 +55,17 @@ if __name__ == "__main__":
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("finished")
 
-    print("create first Seq2Seq model...")
+    """print("create first Seq2Seq model...")
     model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_2" + filename))
     model_1.eval()
     model_list.append(model_1)
-    print("finished")
+    print("finished")"""
 
     print("create word2vec model")
     model_2 = track_embeddings.Word2VecModel(word2vec_tracks)
     model_list.append(model_2)
+    print("finished")
 
     """print("create second Seq2Seq model...")
     model_2 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
@@ -87,12 +88,12 @@ if __name__ == "__main__":
     model_list.append(model_4)
     print("finished")"""
 
-    print("create fifth Seq2Seq model...")
+    """print("create fifth Seq2Seq model...")
     model_5 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     model_5.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_5" + filename))
     model_5.eval()
     model_list.append(model_5)
-    print("finished")
+    print("finished")"""
 
     # create ensemble model
     ensemble_model = Ensemble(model_list)
