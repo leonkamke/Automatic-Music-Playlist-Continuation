@@ -85,14 +85,14 @@ if __name__ == "__main__":
     model_4.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_4" + filename))
     model_4.eval()
     model_list.append(model_4)
-    print("finished")
+    print("finished")"""
 
     print("create fifth Seq2Seq model...")
     model_5 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     model_5.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_5" + filename))
     model_5.eval()
     model_list.append(model_5)
-    print("finished")"""
+    print("finished")
 
     # create ensemble model
     ensemble_model = Ensemble(model_list)
