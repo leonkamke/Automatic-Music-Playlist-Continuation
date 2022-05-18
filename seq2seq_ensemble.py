@@ -30,7 +30,7 @@ class Ensemble:
 if __name__ == "__main__":
     model_list = []
 
-    device = torch.device(la.get_device())
+    device = torch.device("cpu")
 
     print("load pretrained embedding layer")
     weights = torch.load(la.path_embedded_weights(), map_location=device)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     print("create first Seq2Seq model...")
     model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
-    model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_1.pth"))
+    model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_1" + filename))
     model_1.eval()
     model_list.append(model_1)
     print("finished")
