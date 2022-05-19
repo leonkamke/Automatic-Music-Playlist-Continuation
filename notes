@@ -3,17 +3,11 @@ Cuda version: 11.3
 Python version: 3.9.7
 
 TODO (important):
-- add genre vector, get genre with k-means clustering from tracks
+- add genre vector, get genre with k-means clustering applied on the set of all track vectors;
+    for each cluster compute mean vector (this vector represents the genre)
+- implement a transformer network
 - ensemble
-- maybe implement, that the evaluation results will be printed
-    in a text file(results, wich learning-machine, wich training parameters)
 - Maybe implements cold start problem (empty playlist)
-- train seq2seq_D2KLab.py with NVIDIA cluster:
-    necessary files for the training-scripts:
-    - seq2seq_enc_dec.py
-    - data_preprocessing/load_data.py
-    - models/gensim_word2vec/1_mil_playlists
 
 TODO(not important):
-- improve track_embeddings
-
+- improve track_embeddings (maybe spicy library)
