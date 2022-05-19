@@ -67,12 +67,12 @@ if __name__ == "__main__":
     model_list.append(model_2)
     print("finished")
 
-    print("create third Seq2Seq model...")
+    """print("create third Seq2Seq model...")
     model_3 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, 50, 1).to(device)
     model_3.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_all_2" + filename))
     model_3.eval()
     model_list.append(model_3)
-    print("finished")
+    print("finished")"""
 
     """
     print("create third Seq2Seq model...")
