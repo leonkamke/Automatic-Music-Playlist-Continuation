@@ -55,12 +55,12 @@ if __name__ == "__main__":
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("finished")
 
-    print("create first Seq2Seq model...")
+    """print("create first Seq2Seq model...")
     model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, 100, 1).to(device)
     model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_2" + filename))
     model_1.eval()
     model_list.append(model_1)
-    print("finished")
+    print("finished")"""
 
     print("create word2vec model for ensemble")
     model_2 = track_embeddings.Word2VecModel(word2vec_tracks)
