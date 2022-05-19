@@ -56,7 +56,7 @@ if __name__ == "__main__":
     print("finished")
 
     print("create first Seq2Seq model...")
-    model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
+    model_1 = seq2seq_v3_track_album_artist.Seq2Seq(VOCAB_SIZE, embedding_pre_trained, 100, 1).to(device)
     model_1.load_state_dict(torch.load(la.output_path_model() + "/seq2seq_v3_track_album_artist_2" + filename))
     model_1.eval()
     model_list.append(model_1)
