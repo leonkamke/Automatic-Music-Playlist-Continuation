@@ -62,7 +62,7 @@ if __name__ == "__main__":
     model_list.append(model_1)
     print("finished")
 
-    print("create word2vec model")
+    print("create word2vec model for ensemble")
     model_2 = track_embeddings.Word2VecModel(word2vec_tracks)
     model_list.append(model_2)
     print("finished")
@@ -100,4 +100,4 @@ if __name__ == "__main__":
     ensemble_model = Ensemble(model_list)
 
     # evaluate ensemble model:
-    eval.evaluate_model(ensemble_model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
+    eval.evaluate_model(ensemble_model, word2vec_tracks, word2vec_artists, 999500, 999999, device)
