@@ -102,7 +102,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             print("e = " + str(time.time()))
             loss.backward()
             print("f = " + str(time.time()))
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             print("g = " + str(time.time()))
             optimizer.step()
             print("h = " + str(time.time()))
