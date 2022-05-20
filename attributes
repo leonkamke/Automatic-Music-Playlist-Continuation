@@ -8,7 +8,7 @@
 
 # Parameters for training the model (n_epochs, batch_size, learning_rate, n_playlists_for_training)
 1
-20
+10
 0.01
 2000
 
@@ -21,7 +21,7 @@ cuda
 
 # Parameter for network architecture (num recurrent layers, num recurrent dimension)
 1
-100
+50
 
 # path for weights matrix for embedded layer (path embedded weights, track_album_dict_unique, album2vec_model, foldername_for_trained_model_with_eval_results)
 /netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track_album_artist_embed.pt
