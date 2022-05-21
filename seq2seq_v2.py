@@ -210,7 +210,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     dataset = ld.PlaylistDataset(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn, num_workers=6)
     print("Created train data")
 
     """if not os.path.isfile(la.output_path_model() + '/seq2seq_v2.pth'):
