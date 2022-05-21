@@ -4,6 +4,7 @@ training: Seq2Seq model which takes the output of the decoder into account for c
             Cross Entropy Loss
 prediction:
 """
+import shutil
 import gensim
 import torch
 import torch.nn as nn
@@ -38,7 +39,7 @@ class Encoder(nn.Module):
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        self.rnn = nn.LSTM(300, hid_dim, n_layers, batch_first=True, dropout=dropout)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
@@ -169,7 +170,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.FloatTensor(word2vec_tracks.wv.vectors)
+    weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
@@ -182,8 +183,8 @@ if __name__ == '__main__':
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 169657
     VOCAB_SIZE = len(word2vec_tracks.wv)
-    HID_DIM = 100
-    N_LAYERS = 1
+    HID_DIM = la.get_recurrent_dimension()
+    N_LAYERS = la.get_num_recurrent_layers()
 
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device(la.get_device())
@@ -212,7 +213,7 @@ if __name__ == '__main__':
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn)
     print("Created train data")
 
-    if not os.path.isfile(la.output_path_model() + '/seq2seq_v2.pth'):
+    """if not os.path.isfile(la.output_path_model() + '/seq2seq_v2.pth'):
         # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
         train(model, dataloader, optimizer, criterion, device, num_epochs)
         torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v2.pth')
@@ -222,4 +223,29 @@ if __name__ == '__main__':
         model.eval()
         # word2vec_tracks already initialised above
         word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)
+        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)"""
+    foldername = la.get_folder_name()
+    save_file_name = "/seq2seq_v2_track_album_artist.pth"
+
+    model.to(device)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
+    train(model, dataloader, optimizer, criterion, device, num_epochs)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+
+    model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    device = torch.device("cpu")
+    model.to(device)
+    # evaluate model:
+    model.eval()
+    # word2vec_tracks already initialised above
+    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
+                                      device)
+
+    # write results in a file with setted attributes
+    f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    f.write(results_str)
+    f.write("last 100 losses: ")
+    f.close()
