@@ -48,7 +48,7 @@ class Encoder(nn.Module):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
-
+        print("self.embedding.shape = ", x.shape)
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
@@ -171,6 +171,7 @@ if __name__ == '__main__':
     print("word2vec loaded from file")
 
     weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
+    print(weights.shape)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
