@@ -47,8 +47,8 @@ class Encoder(nn.Module):
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
+        print("x.shape == ", x.shape)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
-        print("self.embedding.shape = ", x.shape)
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
@@ -164,6 +164,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
 
 
 if __name__ == '__main__':
+    device = torch.device(la.get_device())
+
     print("load pretrained embedding layer...")
 
     print("load word2vec from file")
@@ -171,7 +173,7 @@ if __name__ == '__main__':
     print("word2vec loaded from file")
 
     weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
-    print(weights.shape)
+    weights = torch.load(la.path_embedded_weights(), map_location=device)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
