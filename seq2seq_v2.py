@@ -132,7 +132,7 @@ class Seq2Seq(nn.Module):
         # outputs.shape == (batch_size, num_predictions, self.vocab_size)
         return outputs
 
-    def predict(self, input, num_predictions):
+    def predict_1(self, input, num_predictions):
         input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
         # x.shape == (1, num_predictions, vocab_size)
@@ -142,6 +142,18 @@ class Seq2Seq(nn.Module):
         print("x.shape == ", x.shape)
         # x.shape == (num_predictions)
         return x
+
+    def predict(self, input, num_predictions):
+        input = torch.unsqueeze(input, dim=0)
+        x = self.forward(input, num_predictions)
+        # x.shape == (1, num_predictions, vocab_size)
+        x = torch.squeeze(x)
+        # x.shape == (num_predictions, vocab_size)
+        x = torch.mean(x, dim=0)
+        # x.shape == (vocab_size)
+        _, top_k = torch.topk(x, dim=0, k=num_predictions)
+        # top_k.shape == (num_predictions)
+        return top_k
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
