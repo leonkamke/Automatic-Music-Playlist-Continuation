@@ -135,6 +135,7 @@ class Seq2Seq(nn.Module):
         return outputs
 
     def predict(self, input, num_predictions):
+        input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
         # x.shape == (num_predictions, vocab_size)
         x = x.argmax(x, dim=1)
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     dataset = ld.PlaylistDataset(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn, num_workers=6)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn, num_workers=2)
     print("Created train data")
 
     """if not os.path.isfile(la.output_path_model() + '/seq2seq_v2.pth'):
