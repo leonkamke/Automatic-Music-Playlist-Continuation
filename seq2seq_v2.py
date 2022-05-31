@@ -135,9 +135,10 @@ class Seq2Seq(nn.Module):
     def predict(self, input, num_predictions):
         input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
-        # x.shape == (num_predictions, vocab_size)
-        print("xx.shape: " + str(x.shape))
-        x = x.argmax(x, dim=2)
+        # x.shape == (1, num_predictions, vocab_size)
+        x = torch.squeeze(x)
+        print("xx.shape ", x.shape)
+        x = torch.argmax(x, dim=1)
         # x.shape == (num_predictions)
         return x
 
