@@ -234,11 +234,12 @@ if __name__ == '__main__':
     os.mkdir(la.output_path_model() + foldername)
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train(model, dataloader, optimizer, criterion, device, num_epochs)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+
+    """train(model, dataloader, optimizer, criterion, device, num_epochs)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)"""
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
-    device = torch.device("cpu")
+    device = torch.device("cuda")
     model.to(device)
     # evaluate model:
     model.eval()
