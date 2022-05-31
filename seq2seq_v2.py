@@ -166,6 +166,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
 
 
 if __name__ == '__main__':
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device(la.get_device())
 
     print("load pretrained embedding layer...")
@@ -174,7 +175,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
+    # weights = torch.FloatTensor(word2vec_tracks.wv.get_normed_vectors())
     weights = torch.load(la.path_embedded_weights(), map_location=device)
     # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
@@ -190,9 +191,6 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
-
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device(la.get_device())
 
     print("create Seq2Seq model...")
     # Encoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0)
