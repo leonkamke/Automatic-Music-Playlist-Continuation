@@ -138,8 +138,8 @@ class Seq2Seq(nn.Module):
         # x.shape == (1, num_predictions, vocab_size)
         x = torch.squeeze(x)
         # x.shape == (num_predictions, vocab_size)
-        print("xx.shape ", x.shape)
         x = torch.argmax(x, dim=1)
+        print("x.shape == ", x.shape)
         # x.shape == (num_predictions)
         return x
 
