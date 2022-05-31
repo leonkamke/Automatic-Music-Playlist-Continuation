@@ -137,6 +137,7 @@ class Seq2Seq(nn.Module):
         x = self.forward(input, num_predictions)
         # x.shape == (1, num_predictions, vocab_size)
         x = torch.squeeze(x)
+        # x.shape == (num_predictions, vocab_size)
         print("xx.shape ", x.shape)
         x = torch.argmax(x, dim=1)
         # x.shape == (num_predictions)
@@ -240,7 +241,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)"""
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
-    device = torch.device("cuda")
+    device = torch.device("cpu")
     model.to(device)
     # evaluate model:
     model.eval()
