@@ -120,13 +120,14 @@ class Seq2Seq(nn.Module):
 
         x, (h_n, c_n) = self.encoder(src)
         # x.shape == (batch_size)
-
+        print("c")
         for i in range(num_predictions):
             output, (h_n, c_n) = self.decoder(x, h_n, c_n)
+            print("d")
             # output.shape == (batch_size, 1, vocab_size)
             # safe the output in outputs
             outputs[:, i, :] = output
-
+            print("e")
             # set next input for decoder
             x = torch.argmax(output, dim=1)
             # x.shape == (batch_size)
