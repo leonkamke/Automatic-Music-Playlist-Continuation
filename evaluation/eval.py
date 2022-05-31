@@ -16,7 +16,7 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
 
     # create evaluation dataset
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx, device=device)
+    evaluation_dataset = eval_data.EvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx)
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
