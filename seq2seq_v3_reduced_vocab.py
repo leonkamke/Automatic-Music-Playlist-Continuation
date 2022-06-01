@@ -150,7 +150,7 @@ if __name__ == '__main__':
     print("finished")
 
     print("init weights...")
-    # model.apply(init_weights)
+    model.apply(init_weights)
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
@@ -161,8 +161,8 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetOnlyOneTargetReduced(word2vec_tracks, word2vec_tracks_reduced,
-                                                      num_playlists_for_training)
+    dataset = ld.NextTrackDatasetOnlyOneTargetReducedFixedSteps(word2vec_tracks, word2vec_tracks_reduced,
+                                                      num_playlists_for_training, num_steps=10)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_next_track_one_target, num_workers=6)
     print("Created train data")
@@ -171,11 +171,11 @@ if __name__ == '__main__':
     save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
     model.to(device)
-    # os.mkdir(la.output_path_model() + foldername)
-    # shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    # train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-    # torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
