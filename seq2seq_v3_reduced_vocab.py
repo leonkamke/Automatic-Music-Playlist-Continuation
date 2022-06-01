@@ -101,7 +101,7 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
             # batch_output.shape = (batch_size, vocab_size)
             loss = criterion(batch_output, trg)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.25)
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.25)
             optimizer.step()
             print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
