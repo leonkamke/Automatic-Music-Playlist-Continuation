@@ -57,7 +57,7 @@ class Seq2Seq(nn.Module):
 
         return x
 
-    def predict_do_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -65,25 +65,24 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for id in top_k:
+            output.append(self.id_dict[int(id)])
+        output = torch.LongTensor(output)
+        return output
 
-    def predict(self, input, num_predictions):
+    def predict_do_summed_rank(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
-        print("c")
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
-        print("d")
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
-        print("e")
         # top_k.shape == (num_predictions)
         output = []
         for id in top_k:
             output.append(self.id_dict[int(id)])
-        print("f")
         output = torch.LongTensor(output)
-        print("g")
         return output
 
 
