@@ -87,50 +87,19 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
     num_iterations = 1
     for epoch in range(num_epochs):
         for i, (src, trg) in enumerate(dataloader):
-            print("a = " + str(time.time()))
             src = src.to(device)
             trg = trg.to(device)
-            print("b = " + str(time.time()))
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            print("c = " + str(time.time()))
             output = model(src)
-            print("d = " + str(time.time()))
-
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output.permute(0, 2, 1), trg)
-            print("e = " + str(time.time()))
-            loss.backward()
-            print("f = " + str(time.time()))
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-            print("g = " + str(time.time()))
-            optimizer.step()
-            print("h = " + str(time.time()))
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
-            num_iterations += 1
-        num_iterations = 1
-
-
-"""def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
-    model.train()
-    num_iterations = 1
-    for epoch in range(num_epochs):
-        for i, (src, trg) in enumerate(dataloader):
-            src = src.to(device)
-            trg = trg.to(device)
-            # trg.shape = src.shape = (batch_size, seq_len)
-            output = model(src)
-            # output.shape = (batch_size, seq_len, vocab_size)
-            trg = trg.view(-1)
-            output = output.view(-1, 2262292)
-            optimizer.zero_grad()
-            loss = criterion(output, trg)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
-        num_iterations = 1"""
+        num_iterations = 1
 
 
 if __name__ == '__main__':
@@ -159,6 +128,7 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
+    num_steps = 10
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
@@ -176,7 +146,8 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
+    dataset = ld.NextTrackDatasetShiftedTargetFixedStep(word2vec_tracks, num_playlists_for_training,
+                                                        num_steps=num_steps)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_shifted_target, num_workers=6)
     print("Created train data")
