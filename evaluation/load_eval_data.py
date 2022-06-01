@@ -69,7 +69,6 @@ class EvaluationDataset(Dataset):
                     track_id = self.word2vec_tracks.wv.get_index(row[0])
                     artist_id = self.word2vec_artists.wv.get_index(row[1])
                     track_artist_dict[track_id] = artist_id
-                print("line " + str(index) + " in track_artist_dict_unique.csv")
         return track_artist_dict
 
 
@@ -145,7 +144,6 @@ class SpotifyEvaluationDataset(Dataset):
                     track_id = self.word2vec_tracks.wv.get_index(row[0])
                     artist_id = self.word2vec_artists.wv.get_index(row[1])
                     track_artist_dict[track_id] = artist_id
-                print("line " + str(index) + " in track_artist_dict_unique.csv")
         return track_artist_dict
 
 
@@ -154,8 +152,8 @@ class FirstFiveEvaluationDataset(Dataset):
         # data loading
         self.word2vec_tracks = word2vec_tracks
         self.word2vec_artists = word2vec_artists
-        self.start_idx = 900000
-        self.end_idx = 999999
+        self.start_idx = start_idx
+        self.end_idx = end_idx
         self.src, self.trg = self.read_train_data()
         # artist_dict: track_id -> artist_id
         self.artist_dict = self.init_artist_dict()
@@ -175,7 +173,7 @@ class FirstFiveEvaluationDataset(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                if self.start_idx <= index < self.end_idx and len(row) >= 8:
+                if self.start_idx <= index < self.end_idx and len(row) >= 25:
                     src_i = row[2:7]
                     trg_i = row[7:-1]
                     src_uri.append(src_i)
@@ -207,5 +205,4 @@ class FirstFiveEvaluationDataset(Dataset):
                     track_id = self.word2vec_tracks.wv.get_index(row[0])
                     artist_id = self.word2vec_artists.wv.get_index(row[1])
                     track_artist_dict[track_id] = artist_id
-                print("line " + str(index) + " in track_artist_dict_unique.csv")
         return track_artist_dict
