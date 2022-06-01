@@ -101,7 +101,6 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
             output = model(src)
-            print("output.shape == ", output.shape)
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
