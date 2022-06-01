@@ -271,8 +271,8 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
                 if len(src_uri) >= self.num_rows_train:
                     break
                 elif len(row) > 2 + self.num_steps:
-                    src_i = row[2:self.num_steps]
-                    trg_i = row[3:self.num_steps+1]
+                    src_i = row[2:2+self.num_steps]
+                    trg_i = row[3:2+self.num_steps+1]
                     src_uri.append(src_i)
                     trg_uri.append(trg_i)
             # create lists of track indices according to the indices of the word2vec model
