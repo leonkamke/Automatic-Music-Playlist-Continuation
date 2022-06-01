@@ -160,7 +160,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
-        for i, (src, trg, trg_len) in enumerate(dataloader):
+        for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
