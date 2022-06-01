@@ -163,6 +163,7 @@ if __name__ == '__main__':
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.NextTrackDatasetOnlyOneTargetReducedFixedSteps(word2vec_tracks, word2vec_tracks_reduced,
                                                       num_playlists_for_training, num_steps=10)
+    print("len(dataset) = ", len(dataset))
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_next_track_one_target, num_workers=6)
     print("Created train data")
