@@ -173,7 +173,7 @@ class NextTrackDatasetOnlyOneTargetReducedFixedSteps(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                if index >= self.num_rows_train:
+                if len(src_uri) >= self.num_rows_train:
                     break
                 elif len(row) > 2 + self.num_steps:
                     src_i = row[2:2+self.num_steps]
@@ -228,6 +228,53 @@ class NextTrackDatasetShiftedTarget(Dataset):
                 elif len(row) > 3:
                     src_i = row[2:playlist_len - 1]
                     trg_i = row[3:playlist_len]
+                    src_uri.append(src_i)
+                    trg_uri.append(trg_i)
+            # create lists of track indices according to the indices of the word2vec model
+            src_idx = []
+            trg_idx = []
+            for i in range(len(src_uri)):
+                indices = []
+                for uri in src_uri[i]:
+                    indices.append(self.word2vec.wv.get_index(uri))
+                src_idx.append(torch.LongTensor(indices))
+                indices = []
+                for uri in trg_uri[i]:
+                    indices.append(self.word2vec.wv.get_index(uri))
+                trg_idx.append(torch.LongTensor(indices))
+            return src_idx, trg_idx
+
+
+class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
+    def __init__(self, word2vec, word2vec_reduced, num_rows_train, num_steps):
+        # data loading
+        self.num_steps = num_steps
+        self.word2vec = word2vec
+        self.word2vec_reduced = word2vec_reduced
+        self.num_rows_train = num_rows_train
+        self.src, self.trg = self.read_train_data()
+        self.n_samples = len(self.src)
+
+    def __getitem__(self, index):
+        return self.src[index], self.trg[index]
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        src_uri = []
+        trg_uri = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                playlist_len = len(row) - 2
+                if index >= self.num_rows_train:
+                    break
+                elif len(row) > 2 + self.num_steps:
+                    src_i = row[2:self.num_steps]
+                    trg_i = row[3:self.num_steps+1]
                     src_uri.append(src_i)
                     trg_uri.append(trg_i)
             # create lists of track indices according to the indices of the word2vec model
