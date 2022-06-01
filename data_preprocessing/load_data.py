@@ -285,7 +285,7 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
                 src_idx.append(torch.LongTensor(indices))
                 indices = []
                 for uri in trg_uri[i]:
-                    if uri in self.word2vec_reduced.wv.vocab:
+                    if uri in self.word2vec_reduced.wv.key_to_index:
                         indices.append(self.word2vec_reduced.wv.key_to_index[uri])
                     else:
                         indices.append(-1)
