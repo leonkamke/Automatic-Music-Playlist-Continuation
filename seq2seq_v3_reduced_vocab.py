@@ -80,7 +80,7 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         output = []
         for id in top_k:
-            output.append(self.id_dict[id])
+            output.append(self.id_dict[int(id)])
         print("f")
         output = torch.LongTensor(output)
         print("g")
