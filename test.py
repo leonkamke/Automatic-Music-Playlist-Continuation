@@ -7,6 +7,7 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import gensim
 import sys
 import load_attributes as la
+from data_preprocessing import load_data as ld
 
 
 class Seq2Seq(nn.Module):
@@ -184,14 +185,14 @@ if __name__ == "__main__":
     print(word2vec_tracks.alpha)"""
     # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
 
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    """word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print(word2vec_tracks.corpus_count)
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print(len(word2vec_artists.wv))
     word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
     print(len(word2vec_albums.wv))
 
-    get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)
+    get_track_album_artist_vectors(word2vec_tracks, word2vec_albums, word2vec_artists)"""
 
     """word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
     print(len(word2vec_tracks.wv))
@@ -200,3 +201,13 @@ if __name__ == "__main__":
     word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
     print(len(word2vec_albums.wv))"""
 
+    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+    word2vec_tracks_reduced = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
+    print(len(word2vec_tracks.wv))
+    print(len(word2vec_tracks_reduced.wv))
+
+    id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
+
+    id = 50000
+    print(word2vec_tracks_reduced.wv.index_to_key[id])
+    print(word2vec_tracks.wv.index_to_key[id_dict[id]])

@@ -25,11 +25,12 @@ def count_parameters(model):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0.0):
+    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, id_dict, dropout=0.0):
         super().__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
         self.vocab_size = vocab_size
+        self.id_dict = id_dict
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 200)
@@ -56,7 +57,7 @@ class Seq2Seq(nn.Module):
 
         return x
 
-    def predict(self, input, num_predictions):
+    def predict_do_rank(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -66,7 +67,7 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict_do_summed_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -74,7 +75,11 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for id in top_k:
+            output.append(self.id_dict[id])
+        output = torch.LongTensor(output)
+        return output
 
 
 def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs):
@@ -136,7 +141,8 @@ if __name__ == '__main__':
     N_LAYERS = la.get_num_recurrent_layers()
 
     print("create Seq2Seq model...")
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
+    id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
+    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS, id_dict)
     print("finished")
 
     print("init weights...")
@@ -161,11 +167,11 @@ if __name__ == '__main__':
     save_file_name = "/seq2seq_v3_track_album_artist.pth"
 
     model.to(device)
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    # os.mkdir(la.output_path_model() + foldername)
+    # shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    # train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
+    # torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")

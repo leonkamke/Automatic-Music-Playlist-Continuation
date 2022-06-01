@@ -263,3 +263,12 @@ def get_artist_dict(word2vec_tracks, word2vec_artists):
                 track_artist_dict[track_id] = artist_id
             print("line " + str(index) + " in track_artist_dict_unique.csv")
     return track_artist_dict
+
+
+def get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks):
+    output_dict = {}
+    for i in range(len(word2vec_tracks_reduced.wv)):
+        uri = word2vec_tracks_reduced.wv.index_to_key[i]
+        index = word2vec_tracks.wv.key_to_index[uri]
+        output_dict[i] = index
+    return output_dict
