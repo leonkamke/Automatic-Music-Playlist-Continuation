@@ -28,11 +28,12 @@ def count_parameters(model):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
+    def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, id_dict, dropout=0):
         super().__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
         self.vocab_size = vocab_size
+        self.id_dict = id_dict
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
@@ -67,7 +68,11 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for id in top_k:
+            output.append(self.id_dict[int(id)])
+        output = torch.LongTensor(output)
+        return output
 
     def predict_do_summed_rank(self, input, num_predictions):
         # input.shape == seq_len
@@ -78,7 +83,11 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for id in top_k:
+            output.append(self.id_dict[int(id)])
+        output = torch.LongTensor(output)
+        return output
 
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -133,7 +142,8 @@ if __name__ == '__main__':
     num_steps = 10
 
     print("create Seq2Seq model...")
-    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
+    id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
+    model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS, id_dict)
     print("finished")
 
     print("init weights...")
