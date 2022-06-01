@@ -140,7 +140,7 @@ if __name__ == '__main__':
     print("finished")
 
     print("init weights...")
-    model.apply(init_weights)
+    # model.apply(init_weights)
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
