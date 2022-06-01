@@ -190,10 +190,8 @@ class NextTrackDatasetOnlyOneTargetReducedFixedSteps(Dataset):
                     indices.append(self.word2vec.wv.get_index(uri))
                 src_idx.append(torch.LongTensor(indices))
                 if trg_uri[i] in self.word2vec_reduced.wv:
-                    print("key exists")
                     trg_index = self.word2vec_reduced.wv.get_index(trg_uri[i])
                 else:
-                    print("key don't exists")
                     trg_index = -1
                 trg_idx.append(trg_index)
                 src_len.append(len(indices))
@@ -270,7 +268,7 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
                 playlist_len = len(row) - 2
-                if index >= self.num_rows_train:
+                if len(src_uri) >= self.num_rows_train:
                     break
                 elif len(row) > 2 + self.num_steps:
                     src_i = row[2:self.num_steps]
@@ -287,7 +285,10 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
                 src_idx.append(torch.LongTensor(indices))
                 indices = []
                 for uri in trg_uri[i]:
-                    indices.append(self.word2vec.wv.get_index(uri))
+                    if uri in self.word2vec_reduced.wv.vocab:
+                        indices.append(self.word2vec_reduced.wv.key_to_index[uri])
+                    else:
+                        indices.append(-1)
                 trg_idx.append(torch.LongTensor(indices))
             return src_idx, trg_idx
 
