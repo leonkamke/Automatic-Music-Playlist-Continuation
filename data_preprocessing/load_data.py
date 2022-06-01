@@ -138,7 +138,7 @@ class NextTrackDatasetOnlyOneTargetReduced(Dataset):
                 for uri in src_uri[i]:
                     indices.append(self.word2vec.wv.get_index(uri))
                 src_idx.append(torch.LongTensor(indices))
-                if trg_uri[i] in self.word2vec_reduced:
+                if trg_uri[i] in self.word2vec_reduced.wv:
                     print("key exists")
                     trg_index = self.word2vec_reduced.wv.get_index(trg_uri[i])
                 else:
