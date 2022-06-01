@@ -135,7 +135,7 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    VOCAB_SIZE = len(word2vec_tracks.wv)
+    VOCAB_SIZE = len(word2vec_tracks_reduced.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
     num_steps = 10
