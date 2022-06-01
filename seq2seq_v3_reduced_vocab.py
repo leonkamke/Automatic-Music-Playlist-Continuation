@@ -70,15 +70,20 @@ class Seq2Seq(nn.Module):
     def predict(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
+        print("c")
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
+        print("d")
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
+        print("e")
         # top_k.shape == (num_predictions)
         output = []
         for id in top_k:
             output.append(self.id_dict[id])
+        print("f")
         output = torch.LongTensor(output)
+        print("g")
         return output
 
 
