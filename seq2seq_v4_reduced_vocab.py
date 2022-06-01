@@ -138,7 +138,7 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks_reduced.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
-    num_steps = 20
+    num_steps = 10
 
     print("create Seq2Seq model...")
     id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
