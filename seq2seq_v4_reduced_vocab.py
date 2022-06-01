@@ -87,25 +87,17 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
     num_iterations = 1
     for epoch in range(num_epochs):
         for i, (src, trg) in enumerate(dataloader):
-            print("a = " + str(time.time()))
             src = src.to(device)
             trg = trg.to(device)
-            print("b = " + str(time.time()))
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            print("c = " + str(time.time()))
             output = model(src)
-            print("d = " + str(time.time()))
-
+            print("output.shape == ", output.shape)
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output.permute(0, 2, 1), trg)
-            print("e = " + str(time.time()))
             loss.backward()
-            print("f = " + str(time.time()))
             # torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-            print("g = " + str(time.time()))
             optimizer.step()
-            print("h = " + str(time.time()))
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
