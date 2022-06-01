@@ -14,6 +14,7 @@ EMBED_WEIGHTS = 26
 TRACK_ALBUM_DICT_UNIQUE = 27
 ALBUM_TO_VEC_MODEL = 28
 FOLDER_NAME = 29
+TRACK_TO_VEC_REDUCED_MODEL = 32
 
 """
 Which line contains which training parameter
@@ -162,6 +163,14 @@ def path_track_to_vec_model():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_TO_VEC_MODEL:
+            file.close()
+            return row[:-1]
+
+
+def path_track_to_vec_reduced_model():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == TRACK_TO_VEC_REDUCED_MODEL:
             file.close()
             return row[:-1]
 

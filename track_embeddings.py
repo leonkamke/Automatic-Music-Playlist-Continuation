@@ -66,7 +66,7 @@ class Word2VecModel:
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     word2vec_tracks = None
-    if os.path.isfile("./models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model"):
+    if os.path.isfile("./models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model"):
         print("load model from file")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
         print("model loaded from file")
@@ -85,13 +85,14 @@ if __name__ == '__main__':
                 print(idx)
         print("build vocabulary...")
         # standart configuration: lr (alpha) = 0.025, epochs = 5, window_size = 5, min_alpha = 0.0001
-        word2vec_tracks = gensim.models.Word2Vec(min_count=1)  # AMD Ryzen 5 2600x with 6 cores
+        # mincount = all words/tracks which appear fewer than this number are not handled
+        word2vec_tracks = gensim.models.Word2Vec(min_count=6)  # AMD Ryzen 5 2600x with 6 cores
         word2vec_tracks.build_vocab(playlists, progress_per=1000)
         print("builded vocabulary")
         print("Train model (this can take a lot of time)...")
         word2vec_tracks.train(playlists, total_examples=word2vec_tracks.corpus_count, epochs=word2vec_tracks.epochs)
         # save model
-        word2vec_tracks.save("./models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+        word2vec_tracks.save("./models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
         # model.wv.save_word2vec_format("./models/word2vec-song-vectors.model")
         print("trained and saved the model")
 

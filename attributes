@@ -29,4 +29,7 @@ cuda
 /netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model
 /encoder_decoder_test
 
+# path for reduced track2vec model
+/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model
+
 # ----------------------------------------------------------------------------------------------------------------------------------------------------

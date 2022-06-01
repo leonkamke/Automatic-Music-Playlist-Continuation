@@ -115,6 +115,7 @@ if __name__ == '__main__':
 
     print("load word2vec from file")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     print("word2vec loaded from file")
 
     print("load pretrained embedding layer")
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    VOCAB_SIZE = len(word2vec_tracks.wv)
+    VOCAB_SIZE = len(word2vec_tracks_reduced.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
 
@@ -146,11 +147,12 @@ if __name__ == '__main__':
     print("The size of the vocabulary is: ", VOCAB_SIZE)
 
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetOnlyOneTarget(word2vec_tracks, num_playlists_for_training)
+    dataset = ld.NextTrackDatasetOnlyOneTargetReduced(word2vec_tracks, word2vec_tracks_reduced,
+                                                      num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
                             collate_fn=ld.collate_fn_next_track_one_target, num_workers=6)
     print("Created train data")
