@@ -103,9 +103,9 @@ class Decoder(nn.Module):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, encoder, decoder, vocab_size, device):
+    def __init__(self, encoder, decoder, vocab_size, id_dict, device):
         super().__init__()
-
+        self.id_dict = id_dict
         self.encoder = encoder
         self.decoder = decoder
         self.device = device
@@ -139,6 +139,11 @@ class Seq2Seq(nn.Module):
         # x.shape == (num_predictions, vocab_size)
         x = torch.argmax(x, dim=1)
         # x.shape == (num_predictions)
+        output = []
+        for id in x:
+            output.append(self.id_dict[int(id)])
+        output = torch.LongTensor(output)
+        return output
         return x
 
     def predict(self, input, num_predictions):
@@ -151,7 +156,11 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for id in top_k:
+            output.append(self.id_dict[int(id)])
+        output = torch.LongTensor(output)
+        return output
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
@@ -205,12 +214,13 @@ if __name__ == '__main__':
     num_steps = 10
 
     print("create Seq2Seq model...")
+    id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
     # Encoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0)
     encoder = Encoder(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     # Decoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
     decoder = Decoder(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS).to(device)
     # Seq2Seq params: (encoder, decoder, vocab_size, device)
-    model = Seq2Seq(encoder, decoder, VOCAB_SIZE, device)
+    model = Seq2Seq(encoder, decoder, VOCAB_SIZE, id_dict, device)
     print("finished")
 
     print("init weights...")
