@@ -104,7 +104,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
