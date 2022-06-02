@@ -6,7 +6,6 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import time
 import gensim
 import torch
 import torch.nn as nn
@@ -156,7 +155,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(word2vec_tracks, word2vec_tracks_reduced,
-                                                               num_playlists_for_training, num_steps=num_steps)
+                                                               num_playlists_for_training, num_steps)
     print("len(train_dataset) = ", len(dataset))
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
     print("Created train data")

@@ -17,7 +17,7 @@ import shutil
 
 def init_weights(m):
     for name, param in m.named_parameters():
-        nn.init.uniform_(param.data, -0.08, 0.08)
+        nn.init.uniform_(param.data, -0.1, 0.1)
 
 
 def count_parameters(model):
@@ -86,7 +86,7 @@ class Seq2Seq(nn.Module):
         return output
 
 
-def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs):
+def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
     batch_size = dataloader.batch_size
@@ -110,7 +110,7 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
             # batch_output.shape = (batch_size, vocab_size)
             loss = criterion(batch_output, trg)
             loss.backward()
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.25)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
             print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
