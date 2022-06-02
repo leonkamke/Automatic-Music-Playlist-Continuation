@@ -18,7 +18,7 @@ import load_attributes as la
 
 def init_weights(m):
     for name, param in m.named_parameters():
-        nn.init.uniform_(param.data, -0.08, 0.08)
+        nn.init.uniform_(param.data, -0.1, 0.1)
 
 
 def count_parameters(model):
@@ -144,7 +144,6 @@ class Seq2Seq(nn.Module):
             output.append(self.id_dict[int(id)])
         output = torch.LongTensor(output)
         return output
-        return x
 
     def predict(self, input, num_predictions):
         input = torch.unsqueeze(input, dim=0)
@@ -163,7 +162,7 @@ class Seq2Seq(nn.Module):
         return output
 
 
-def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
@@ -177,9 +176,9 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             # but Cross Entropy Loss requires output.shape = (batch_size, vocab_size, seq_len)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -212,6 +211,7 @@ if __name__ == '__main__':
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
     num_steps = 10
+    max_norm = 5
 
     print("create Seq2Seq model...")
     id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
@@ -235,7 +235,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     dataset = ld.EncoderDecoderReducedFixedStep(word2vec_tracks, word2vec_tracks_reduced, num_playlists_for_training,
-                                 num_steps=num_steps)
+                                                num_steps=num_steps)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=2)
     print("Created train data")
 
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
 
-    train(model, dataloader, optimizer, criterion, device, num_epochs)
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
