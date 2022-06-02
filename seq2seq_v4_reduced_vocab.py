@@ -59,7 +59,7 @@ class Seq2Seq(nn.Module):
 
         return x
 
-    def predict(self, input, num_predictions):
+    def predict_do_rank(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -73,7 +73,7 @@ class Seq2Seq(nn.Module):
         output = torch.LongTensor(output)
         return output
 
-    def predict_summed_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
