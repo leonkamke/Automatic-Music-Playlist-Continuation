@@ -17,7 +17,7 @@ import shutil
 
 def init_weights(m):
     for name, param in m.named_parameters():
-        nn.init.uniform_(param.data, -0.08, 0.08)
+        nn.init.uniform_(param.data, -0.1, 0.1)
 
 
 def count_parameters(model):
@@ -77,7 +77,7 @@ class Seq2Seq(nn.Module):
         return top_k
 
 
-def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs):
+"""def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs):
     model.train()
     num_iterations = 1
     batch_size = dataloader.batch_size
@@ -104,6 +104,27 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.25)
             optimizer.step()
             print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
+            num_iterations += 1
+        num_iterations = 1"""
+
+
+def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
+    model.train()
+    num_iterations = 1
+    for epoch in range(num_epochs):
+        for i, (src, trg) in enumerate(dataloader):
+            src = src.to(device)
+            # src.shape == (batch_size, seq_len)
+            trg = trg.to(device)
+            # trg.shape = (batch_size)
+            optimizer.zero_grad()
+            output = model(src)[:, -1, :]
+            # output.shape = (batch_size, vocab_size)
+            loss = criterion(output, trg)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
+            optimizer.step()
+            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -133,6 +154,8 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
+    max_norm = 5
+    num_steps = 10
 
     print("create Seq2Seq model...")
     model = Seq2Seq(VOCAB_SIZE, embedding_pre_trained, HID_DIM, N_LAYERS)
@@ -150,9 +173,8 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetOnlyOneTarget(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
-                            collate_fn=ld.collate_fn_next_track_one_target, num_workers=6)
+    dataset = ld.NextTrackDatasetOnlyOneTargetFixedStep(word2vec_tracks, num_playlists_for_training, num_steps)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
@@ -162,7 +184,7 @@ if __name__ == '__main__':
     os.mkdir(la.output_path_model() + foldername)
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
+    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))

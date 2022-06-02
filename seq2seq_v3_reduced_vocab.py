@@ -86,7 +86,7 @@ class Seq2Seq(nn.Module):
         return output
 
 
-def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
+"""def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
     batch_size = dataloader.batch_size
@@ -113,6 +113,27 @@ def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
             print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
+            num_iterations += 1
+        num_iterations = 1"""
+
+
+def train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
+    model.train()
+    num_iterations = 1
+    for epoch in range(num_epochs):
+        for i, (src, trg) in enumerate(dataloader):
+            src = src.to(device)
+            # src.shape == (batch_size, seq_len)
+            trg = trg.to(device)
+            # trg.shape = (batch_size)
+            optimizer.zero_grad()
+            output = model(src)[:, -1, :]
+            # output.shape = (batch_size, vocab_size)
+            loss = criterion(output, trg)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
+            optimizer.step()
+            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -143,6 +164,7 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks_reduced.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
+    max_norm = 5
 
     print("create Seq2Seq model...")
     id_dict = ld.get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks)
@@ -175,7 +197,7 @@ if __name__ == '__main__':
     os.mkdir(la.output_path_model() + foldername)
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs)
+    train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
