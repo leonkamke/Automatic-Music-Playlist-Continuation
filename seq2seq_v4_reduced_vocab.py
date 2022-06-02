@@ -50,7 +50,7 @@ class Seq2Seq(nn.Module):
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
-        # x.shape == (batch_size, seq_len, embed_dim == 100)
+        # x.shape == (batch_size, seq_len, embed_dim == 300)
 
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
@@ -77,7 +77,6 @@ class Seq2Seq(nn.Module):
     def predict(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
-        print(x.shape)
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
         # x.shape == (vocab_size)
@@ -91,7 +90,6 @@ class Seq2Seq(nn.Module):
 
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
-    start = time.time()
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):

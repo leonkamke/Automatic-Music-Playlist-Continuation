@@ -81,6 +81,7 @@ if __name__ == '__main__':
             for idx, row in enumerate(csv_reader):
                 if idx >= num_playlists_to_read:
                     break
+                # playlists.append(list(np.unique(row[2:])))
                 playlists.append(row[2:])
                 print(idx)
         print("build vocabulary...")
