@@ -105,11 +105,11 @@ class NextTrackDatasetOnlyOneTargetFixedStep(Dataset):
         self.num_steps = num_steps
         self.word2vec = word2vec
         self.num_rows_train = num_rows_train
-        self.src, self.trg, self.src_len = self.read_train_data()
+        self.src, self.trg = self.read_train_data()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index], self.src_len[index]
+        return self.src[index], self.trg[index]
 
     def __len__(self):
         return self.n_samples
@@ -132,7 +132,6 @@ class NextTrackDatasetOnlyOneTargetFixedStep(Dataset):
             # create lists of track indices according to the indices of the word2vec model
             src_idx = []
             trg_idx = []
-            src_len = []
             for i in range(len(src_uri)):
                 indices = []
                 for uri in src_uri[i]:
@@ -140,8 +139,7 @@ class NextTrackDatasetOnlyOneTargetFixedStep(Dataset):
                 src_idx.append(torch.LongTensor(indices))
                 trg_index = self.word2vec.wv.get_index(trg_uri[i])
                 trg_idx.append(trg_index)
-                src_len.append(len(indices))
-        return src_idx, trg_idx, src_len
+        return src_idx, trg_idx
 
 
 class NextTrackDatasetOnlyOneTargetReduced(Dataset):
