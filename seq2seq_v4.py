@@ -59,7 +59,7 @@ class Seq2Seq(nn.Module):
 
         return x, (h_n, c_n)
 
-    def predict_do_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -79,7 +79,7 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict(self, input, num_predictions):
+    def predict_sample(self, input, num_predictions):
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
         outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
