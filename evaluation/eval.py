@@ -96,8 +96,13 @@ and the artist level (any track by the same artist is a match)
 
 
 def calc_r_precision(prediction, ground_truth):
-    rel_tracks = np.intersect1d(prediction, ground_truth)
-    return float(len(rel_tracks)) / float(len(ground_truth))
+    # rel_tracks = np.intersect1d(prediction, ground_truth)
+    num_rel_tracks = 0
+    for id in prediction:
+        if id in ground_truth:
+            num_rel_tracks += 1
+    return float(num_rel_tracks) / float(len(ground_truth))
+    # return float(len(rel_tracks)) / float(len(ground_truth))
 
 
 def calc_dcg(prediction, ground_truth):
