@@ -86,7 +86,7 @@ class Seq2Seq(nn.Module):
         # outputs.shape = (num_predictions)
         x, (h_n, c_n) = self.forward(input)
         # x.shape == (1, seq_len, vocab_size)
-        idx = torch.argmax(x[-1])
+        idx = torch.argmax(x[0, -1])
         outputs[0] = idx
         idx = torch.unsqueeze(idx, dim=0)
         # idx.shape == (1, 1)
