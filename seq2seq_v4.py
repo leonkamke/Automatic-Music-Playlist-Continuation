@@ -174,8 +174,7 @@ if __name__ == '__main__':
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.NextTrackDatasetShiftedTargetFixedStep(word2vec_tracks, num_playlists_for_training,
                                                         num_steps=num_steps)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False,
-                            collate_fn=ld.collate_fn_shifted_target, num_workers=6)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()

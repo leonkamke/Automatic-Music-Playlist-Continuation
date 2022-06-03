@@ -64,6 +64,8 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
     ndcg_tracks_sum = ndcg_tracks_sum / len(evaluation_dataset)
     r_precision_artists_sum = r_precision_artists_sum / len(evaluation_dataset)
     ndcg_artists_sum = ndcg_artists_sum / len(evaluation_dataset)
+    r_precision = (r_precision_tracks_sum + r_precision_artists_sum) / 2.0
+    ndcg = (ndcg_tracks_sum + ndcg_artists_sum) / 2.0
 
     # print the results
     print("Results for evaluation dataset ----------------------------")
@@ -71,6 +73,8 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
     print("Average R-Precision(artists): " + str(r_precision_artists_sum))
     print("Average NDCG(tracks):       : " + str(ndcg_tracks_sum))
     print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
+    print("---> R-Precision            : " + str(r_precision))
+    print("---> NDCG                   : " + str(ndcg))
 
     output_string = "Results for evaluation dataset ----------------------------\n" + \
                     "start_idx: " + str(start_idx) + "\n" \
