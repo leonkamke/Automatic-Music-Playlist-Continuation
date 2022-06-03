@@ -57,11 +57,11 @@ class Seq2Seq(nn.Module):
         x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
 
-        return x
+        return x, (h_n, c_n)
 
     def predict_do_rank(self, input, num_predictions):
         # input.shape == seq_len
-        x = self.forward(input)
+        x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
         x = x[-1]
         # x.shape == (vocab_size)
@@ -71,7 +71,7 @@ class Seq2Seq(nn.Module):
 
     def predict_summed_rank(self, input, num_predictions):
         # input.shape == seq_len
-        x = self.forward(input)
+        x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
         # x.shape == (vocab_size)
@@ -80,11 +80,24 @@ class Seq2Seq(nn.Module):
         return top_k
 
     def predict(self, input, num_predictions):
-        x = self.forward(input)
-        # x.shape = (sep_len, vocab_size)
-        x = torch.argmax(x, dim=1)
-        # x.shape = (seq_len)
-        return x
+        # input.shape == seq_len
+        outputs = torch.zeros(num_predictions)
+        # outputs.shape = (num_predictions)
+        x, (h_n, c_n) = self.forward(input)
+        # x.shape == (seq_len, vocab_size)
+        idx = torch.argmax(x[-1])
+        outputs[0] = idx
+        for i in range(1, num_predictions):
+            x = self.embedding(idx)
+            # x.shape == (embed_dim == 300)
+            x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
+            # x.shape == (1, hid_dim), when batch_first=True
+            x = self.fc_out(x)
+            # x.shape == (1, vocab_size)
+            idx = torch.argmax(x[0])
+            outputs[i] = idx
+        # outputs.shape == (num_predictions)
+        return outputs
 
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
@@ -97,7 +110,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            output = model(src)
+            output, _ = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
