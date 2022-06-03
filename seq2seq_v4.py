@@ -45,6 +45,7 @@ class Seq2Seq(nn.Module):
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
+        self.log_softmax = nn.LogSoftmax(dim=-1)
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
@@ -69,7 +70,7 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict(self, input, num_predictions):
+    def predict_(self, input, num_predictions):
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -79,12 +80,13 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict_(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
         outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
         # outputs.shape = (num_predictions)
         x, (h_n, c_n) = self.forward(input)
+        x = self.log_softmax(x)
         # x.shape == (seq_len, vocab_size)
         idx = torch.argmax(x[-1])
         outputs[0] = idx
@@ -98,6 +100,7 @@ class Seq2Seq(nn.Module):
             x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
             # x.shape == (1, hid_dim)
             x = self.fc_out(x)
+            x = self.log_softmax(x)
             # x.shape == (1, vocab_size)
             outputs_vectors[i] = x[0]
             idx = torch.argmax(x[0])
@@ -181,11 +184,11 @@ if __name__ == '__main__':
     save_file_name = "/seq2seq_v4_track_album_artist.pth"
 
     model.to(device)
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    #os.mkdir(la.output_path_model() + foldername)
+    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    #train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
