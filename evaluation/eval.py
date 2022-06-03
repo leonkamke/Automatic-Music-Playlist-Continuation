@@ -32,8 +32,9 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
         print("length playlist: " + str(len(src)+len(trg)))
         # src (list of indices), trg (list of indices)
-        src = src.to(device)
-        trg = trg.to(device)
+        src = src.detach().cpu().numpy()
+        trg = trg.detach().cpu().numpy()
+
         num_predictions = len(trg)
         num_predictions = 500
         prediction = model.predict(src, num_predictions)

@@ -151,7 +151,7 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k.cpu().data
+        return top_k
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
