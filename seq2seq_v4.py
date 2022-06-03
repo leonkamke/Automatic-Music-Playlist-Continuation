@@ -163,7 +163,7 @@ if __name__ == '__main__':
     #train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
-    model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    # model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
     model.to(device)
     # evaluate model:
@@ -176,5 +176,5 @@ if __name__ == '__main__':
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
-    f.write("last 100 losses: ")
+    f.write("\nseq2seq_v4: ")
     f.close()
