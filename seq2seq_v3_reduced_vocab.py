@@ -213,4 +213,5 @@ if __name__ == '__main__':
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
+    f.write("\nseq2seq_v3_reduced_vocab: ")
     f.close()
