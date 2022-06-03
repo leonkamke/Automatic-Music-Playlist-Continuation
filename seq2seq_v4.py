@@ -69,10 +69,9 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict(self, input, num_predictions):
+    def predict_summed_rank(self, input, num_predictions):
         # input.shape == seq_len
         x = self.forward(input)
-        print(x.shape)
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
         # x.shape == (vocab_size)
@@ -80,6 +79,12 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
+    def predict(self, input, num_predictions):
+        x = self.forward(input)
+        # x.shape = (sep_len, vocab_size)
+        _, top_k = torch.argmax(x, dim=1)
+        # top_k.shape = (seq_len)
+        return top_k
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     start = time.time()
