@@ -168,7 +168,7 @@ if __name__ == '__main__':
     print("The size of the vocabulary is: ", VOCAB_SIZE)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
-    criterion = nn.CrossEntropyLoss(ignore_index=-1)
+    criterion = nn.CrossEntropyLoss()
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
