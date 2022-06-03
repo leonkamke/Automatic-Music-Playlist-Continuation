@@ -82,11 +82,14 @@ class Seq2Seq(nn.Module):
     def predict(self, input, num_predictions):
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
+        outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
         # outputs.shape = (num_predictions)
         x, (h_n, c_n) = self.forward(input)
         # x.shape == (seq_len, vocab_size)
         idx = torch.argmax(x[-1])
         outputs[0] = idx
+        outputs_vectors[0] = x[-1]
+
         # idx.shape == (1)
         for i in range(1, num_predictions):
             x = self.embedding(idx)
@@ -96,6 +99,7 @@ class Seq2Seq(nn.Module):
             # x.shape == (1, hid_dim)
             x = self.fc_out(x)
             # x.shape == (1, vocab_size)
+            outputs_vectors[i] = x[0]
             idx = torch.argmax(x[0])
             outputs[i] = idx
         # outputs.shape == (num_predictions)
