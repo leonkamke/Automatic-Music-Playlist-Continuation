@@ -173,9 +173,9 @@ class FirstFiveEvaluationDataset(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                if self.start_idx <= index < self.end_idx and len(row) >= 25:
-                    src_i = row[2:7]
-                    trg_i = row[7:-1]
+                if self.start_idx <= index < self.end_idx and len(row) > 2 + 10:
+                    src_i = row[2:2 + 10]
+                    trg_i = row[3:2 + 10 + 1]
                     src_uri.append(src_i)
                     trg_uri.append(trg_i)
                 if index > self.end_idx:
