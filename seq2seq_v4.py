@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print("Created train data")
 
     foldername = la.get_folder_name()
-    #save_file_name = "/seq2seq_v4_track_album_artist.pth"
+    save_file_name = "/seq2seq_v4_track_album_artist.pth"
 
     model.to(device)
     #os.mkdir(la.output_path_model() + foldername)
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     #train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
-    # model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
     model.to(device)
     # evaluate model:

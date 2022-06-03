@@ -263,5 +263,5 @@ if __name__ == '__main__':
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
-    f.write("last 100 losses: ")
+    f.write("\nseq2seq_v2")
     f.close()
