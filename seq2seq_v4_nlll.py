@@ -45,6 +45,7 @@ class Seq2Seq(nn.Module):
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
+        self.log_softmax = nn.LogSoftmax(dim=-1)
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
@@ -56,6 +57,8 @@ class Seq2Seq(nn.Module):
 
         x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
+
+        x = self.log_softmax(x)
 
         return x, (h_n, c_n)
 
@@ -168,7 +171,7 @@ if __name__ == '__main__':
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.NLLLoss()
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
@@ -200,5 +203,5 @@ if __name__ == '__main__':
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
-    f.write("\nseq2seq_v4: ")
+    f.write("\nseq2seq_v4_nlll: ")
     f.close()
