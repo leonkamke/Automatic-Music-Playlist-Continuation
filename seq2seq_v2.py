@@ -18,7 +18,7 @@ import load_attributes as la
 
 def init_weights(m):
     for name, param in m.named_parameters():
-        nn.init.uniform_(param.data, -0.08, 0.08)
+        nn.init.uniform_(param.data, -0.1, 0.1)
 
 
 def count_parameters(model):
@@ -132,18 +132,17 @@ class Seq2Seq(nn.Module):
         # outputs.shape == (batch_size, num_predictions, self.vocab_size)
         return outputs
 
-    def predict_1(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
         # x.shape == (1, num_predictions, vocab_size)
         x = torch.squeeze(x)
         # x.shape == (num_predictions, vocab_size)
         x = torch.argmax(x, dim=1)
-        print("x.shape == ", x.shape)
         # x.shape == (num_predictions)
         return x
 
-    def predict(self, input, num_predictions):
+    def predict_1(self, input, num_predictions):
         input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
         # x.shape == (1, num_predictions, vocab_size)
@@ -156,7 +155,7 @@ class Seq2Seq(nn.Module):
         return top_k
 
 
-def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
+def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
@@ -170,7 +169,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, clip=1):
             # but Cross Entropy Loss requires output.shape = (batch_size, vocab_size, seq_len)
             loss = criterion(output.permute(0, 2, 1), trg)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
             print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
@@ -203,6 +202,8 @@ if __name__ == '__main__':
     VOCAB_SIZE = len(word2vec_tracks.wv)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
+    max_norm = 5
+    num_steps = 10
 
     print("create Seq2Seq model...")
     # Encoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0)
@@ -224,31 +225,20 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     print("Create train data...")
-    dataset = ld.PlaylistDataset(word2vec_tracks, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=ld.collate_fn, num_workers=2)
+    dataset = ld.PlaylistDatasetFixedStep(word2vec_tracks, num_playlists_for_training, num_steps)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
     print("Created train data")
 
-    """if not os.path.isfile(la.output_path_model() + '/seq2seq_v2.pth'):
-        # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-        train(model, dataloader, optimizer, criterion, device, num_epochs)
-        torch.save(model.state_dict(), la.output_path_model() + '/seq2seq_v2.pth')
-    else:
-        model.load_state_dict(torch.load(la.output_path_model() + '/seq2seq_v2.pth'))
-        # evaluate model:
-        model.eval()
-        # word2vec_tracks already initialised above
-        word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-        eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(), device)"""
     foldername = la.get_folder_name()
     save_file_name = "/seq2seq_v2_track_album_artist.pth"
 
     model.to(device)
-    # os.mkdir(la.output_path_model() + foldername)
-    # shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
 
-    """train(model, dataloader, optimizer, criterion, device, num_epochs)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)"""
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
