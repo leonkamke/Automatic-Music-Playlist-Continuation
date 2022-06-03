@@ -181,7 +181,7 @@ if __name__ == '__main__':
                                       device)
 
     # write results in a file with setted attributes
-    f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    """f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
     f.write("\nseq2seq_v4_reduced_vocab: ")
-    f.close()
+    f.close()"""
