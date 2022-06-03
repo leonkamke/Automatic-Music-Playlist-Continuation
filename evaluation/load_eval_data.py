@@ -154,13 +154,13 @@ class FirstFiveEvaluationDataset(Dataset):
         self.word2vec_artists = word2vec_artists
         self.start_idx = start_idx
         self.end_idx = end_idx
-        self.src, self.trg = self.read_train_data()
+        self.src, self.trg, self.pids = self.read_train_data()
         # artist_dict: track_id -> artist_id
         self.artist_dict = self.init_artist_dict()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index]
+        return self.src[index], self.trg[index], self.pids[index]
 
     def __len__(self):
         return self.n_samples
@@ -169,11 +169,13 @@ class FirstFiveEvaluationDataset(Dataset):
         # read training data from "track_sequences"
         src_uri = []
         trg_uri = []
+        pid = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
                 if self.start_idx <= index < self.end_idx and len(row) > 10:
+                    pid.append(row[0])
                     src_i = row[2:7]
                     trg_i = row[7:-1]
                     src_uri.append(src_i)
@@ -192,7 +194,7 @@ class FirstFiveEvaluationDataset(Dataset):
                 for uri in trg_uri[i]:
                     indices.append(self.word2vec_tracks.wv.get_index(uri))
                 trg_idx.append(torch.LongTensor(indices))
-        return src_idx, trg_idx
+        return src_idx, trg_idx, pid
 
     def init_artist_dict(self):
         with open(la.path_track_artist_dict_unique(),
