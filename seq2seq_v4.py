@@ -85,16 +85,20 @@ class Seq2Seq(nn.Module):
         outputs = torch.zeros(num_predictions)
         # outputs.shape = (num_predictions)
         x, (h_n, c_n) = self.forward(input)
+        print("a x.shape == ", x.shape)
         # x.shape == (1, seq_len, vocab_size)
         idx = torch.argmax(x[0, -1])
+        print("b idx == ", idx)
         outputs[0] = idx
         idx = torch.unsqueeze(idx, dim=0)
         # idx.shape == (1, 1)
         for i in range(1, num_predictions):
             x = self.embedding(idx)
+            print("c x.shape == ", x.shape)
             # x.shape == (1, embed_dim == 300)
             x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
             # x.shape == (1, hid_dim), when batch_first=True
+            print("d")
             x = self.fc_out(x)
             # x.shape == (1, vocab_size)
             idx = torch.argmax(x[0])
