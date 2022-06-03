@@ -80,22 +80,22 @@ class Seq2Seq(nn.Module):
         return top_k
 
     def predict(self, input, num_predictions):
-        input = torch.unsqueeze(input, dim=0)
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
         # outputs.shape = (num_predictions)
         x, (h_n, c_n) = self.forward(input)
+        h_n = torch.squeeze(h_n)
+        c_n = torch.squeeze(c_n)
         print("a x.shape == ", x.shape)
         # x.shape == (1, seq_len, vocab_size)
         idx = torch.argmax(x[0, -1])
         print("b idx == ", idx)
         outputs[0] = idx
-        idx = torch.unsqueeze(idx, dim=0)
-        # idx.shape == (1, 1)
+        # idx.shape == (1)
         for i in range(1, num_predictions):
             x = self.embedding(idx)
             print("c x.shape == ", x.shape)
-            # x.shape == (1, embed_dim == 300)
+            # x.shape == (embed_dim == 300)
             x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
             # x.shape == (1, hid_dim), when batch_first=True
             print("d")
