@@ -94,10 +94,11 @@ class Seq2Seq(nn.Module):
         # idx.shape == (1)
         for i in range(1, num_predictions):
             x = self.embedding(idx)
+            x = torch.unsqueeze(x, dim=0)
             print("c x.shape == ", x.shape)
-            # x.shape == (embed_dim == 300)
+            # x.shape == (1, embed_dim == 300)
             x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
-            # x.shape == (1, hid_dim), when batch_first=True
+            # x.shape == (1, hid_dim)
             print("d")
             x = self.fc_out(x)
             # x.shape == (1, vocab_size)
