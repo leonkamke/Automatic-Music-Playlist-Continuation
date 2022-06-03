@@ -82,9 +82,10 @@ class Seq2Seq(nn.Module):
     def predict(self, input, num_predictions):
         x = self.forward(input)
         # x.shape = (sep_len, vocab_size)
-        _, top_k = torch.argmax(x, dim=1)
-        # top_k.shape = (seq_len)
-        return top_k
+        x = torch.argmax(x, dim=1)
+        # x.shape = (seq_len)
+        return x
+
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     start = time.time()
