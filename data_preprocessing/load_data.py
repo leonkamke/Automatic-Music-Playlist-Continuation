@@ -48,7 +48,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    playlists.append(row[2:])
+                    playlists.append(row[2:100])
         artist_sequences = []
         with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
             csv_reader = csv.reader(read_obj2)
@@ -56,7 +56,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    artist_sequences.append(row[2:])
+                    artist_sequences.append(row[2:100])
         return playlists, artist_sequences
 
     def uris_to_vector(self, uri_lists):

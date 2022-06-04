@@ -27,12 +27,13 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist,
+    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
                  dropout=0):
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
         self.track2artist = track2artist
+        self.artist2vec = artist2vec
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
@@ -67,8 +68,10 @@ class Autoencoder(nn.Module):
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
                 track_vector[new_track_id] = 1
 
-            artist_id = self.track2artist[track_id]
-            artist_vector[artist_id] = 1
+                artist_id = self.track2artist[track_id]
+                artist_uri = self.artist2vec.wv.index_to_key[artist_id]
+                artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
+                artist_vector[artist_id_reduced] = 1
 
         return torch.cat((track_vector, artist_vector))
 
@@ -121,7 +124,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    # word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
+    word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
     print("word2vec loaded from file")
 
     print("load track2artist dict")
@@ -135,13 +138,16 @@ if __name__ == '__main__':
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
     NUM_TRACKS = len(word2vec_tracks_reduced.wv)
-    NUM_ARTISTS = len(word2vec_artists.wv)
+    NUM_ARTISTS = len(word2vec_artists_reduced.wv)
     HID_DIM = la.get_recurrent_dimension()
     HID_DIM = 256
     max_norm = 5
 
     print("create Autoencoder model...")
-    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict)
+    # self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
+    #                  dropout=0
+    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict,
+                        word2vec_artists_reduced)
     print("finished")
 
     print("init weights...")
@@ -157,7 +163,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists, num_playlists_for_training)
+    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
