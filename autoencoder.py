@@ -66,6 +66,7 @@ class Autoencoder(nn.Module):
             if track_uri in self.track2vec_reduced.wv.key_to_index:
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
                 track_vector[new_track_id] = 1
+
             artist_id = self.track2artist[track_id]
             artist_vector[artist_id] = 1
 
@@ -120,6 +121,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    # word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
     print("word2vec loaded from file")
 
     print("load track2artist dict")
