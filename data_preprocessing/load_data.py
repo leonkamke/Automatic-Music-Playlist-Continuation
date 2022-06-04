@@ -38,7 +38,7 @@ class AutoencoderDataset(Dataset):
 
     def uris_to_vector(self, uri_list):
         vector = torch.zeros(len(self.track2vec.wv))
-        for uri in uri_list[0:len(uri_list)/2]:
+        for uri in uri_list:
             if uri in self.track2vec.wv.key_to_index:
                 print("exists")
                 uri_id = self.track2vec.wv.get_index(uri)
