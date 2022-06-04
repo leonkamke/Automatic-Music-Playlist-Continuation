@@ -106,6 +106,7 @@ if __name__ == '__main__':
     print("load pretrained embedding layer...")
 
     print("load word2vec from file")
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print("word2vec loaded from file")
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     max_norm = 5
 
     print("create Seq2Seq model...")
-    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM)
+    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced)
     print("finished")
 
     print("init weights...")
