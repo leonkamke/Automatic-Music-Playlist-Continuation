@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(word2vec_tracks, word2vec_artists, num_playlists_for_training)
+    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
