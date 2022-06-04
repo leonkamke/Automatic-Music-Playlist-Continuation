@@ -69,13 +69,14 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
-        for i, src in enumerate(dataloader):
+        for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
-            # src.shape = (batch_size, len(word2vec_tracks.wv))
+            trg = trg.to(device)
+            # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
-            loss = criterion(output, src)
+            loss = criterion(output, trg)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
