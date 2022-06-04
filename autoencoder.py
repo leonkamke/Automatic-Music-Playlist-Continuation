@@ -27,12 +27,11 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, artist2vec, track2artist,
+    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist,
                  dropout=0):
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
-        self.artist2vec = artist2vec
         self.track2artist = track2artist
 
         self.hid_dim = hid_dim

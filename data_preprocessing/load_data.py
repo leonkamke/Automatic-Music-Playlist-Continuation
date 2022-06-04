@@ -617,7 +617,6 @@ def get_artist_dict(word2vec_tracks, word2vec_artists):
                 track_id = word2vec_tracks.wv.get_index(row[0])
                 artist_id = word2vec_artists.wv.get_index(row[1])
                 track_artist_dict[track_id] = artist_id
-            print("line " + str(index) + " in track_artist_dict_unique.csv")
     return track_artist_dict
 
 
