@@ -57,7 +57,7 @@ class Autoencoder(nn.Module):
     def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
-        input_vector = torch.zeros(len(self.input_size))
+        input_vector = torch.zeros(self.input_size)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in input:
             track_uri = self.track2vec.wv.index_to_key[track_id]
