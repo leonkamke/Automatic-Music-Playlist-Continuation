@@ -159,7 +159,7 @@ if __name__ == '__main__':
     model.to(device)
     # evaluate model:
     model.eval()
-    results_str = eval.evaluate_model(model, word2vec_tracks_reduced, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
+    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
                                       device)
 
     # write results in a file with setted attributes
