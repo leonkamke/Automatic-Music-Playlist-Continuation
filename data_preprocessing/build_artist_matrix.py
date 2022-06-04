@@ -8,7 +8,7 @@ if __name__ == '__main__':
     print("word2vec loaded from file")
     print(len(word2vec_artists.wv))
     device = torch.device("cuda")
-    artists_matrix = torch.zeros(1000000, len(word2vec_artists.wv)).to(device)
+    artists_matrix = torch.zeros(1000000, len(word2vec_artists.wv))
 
     with open("/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/artist_sequences.csv", encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)

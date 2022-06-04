@@ -4,7 +4,7 @@ import torch
 
 if __name__ == '__main__':
     print("load word2vec from file")
-    word2vec_tracks = gensim.models.Word2Vec.load("/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model")
+    word2vec_tracks = gensim.models.Word2Vec.load("/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     print(len(word2vec_tracks.wv))
     playlist_matrix = torch.zeros(1000000, len(word2vec_tracks.wv))
