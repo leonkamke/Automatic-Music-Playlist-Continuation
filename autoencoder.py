@@ -61,10 +61,12 @@ class Autoencoder(nn.Module):
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in input:
             track_uri = self.track2vec.wv.index_to_key[track_id]
-            new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
-            input_vector[new_track_id] = 1
+            if track_uri in self.track2vec_reduced.wv.key_to_index
+                new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
+                input_vector[new_track_id] = 1
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)
+        print(output_vector)
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
         # transform the indices of the whole word2vec model
@@ -123,7 +125,7 @@ if __name__ == '__main__':
     HID_DIM = 256
     max_norm = 5
 
-    print("create Seq2Seq model...")
+    print("create Autoencoder model...")
     model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced)
     print("finished")
 
