@@ -1,11 +1,10 @@
 import csv
 import gensim
-import load_attributes as la
 import torch
 
 if __name__ == '__main__':
     print("load word2vec from file")
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_tracks = gensim.models.Word2Vec.load("/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     print(len(word2vec_tracks.wv))
     playlist_matrix = torch.zeros(1000000, len(word2vec_tracks))
