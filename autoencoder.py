@@ -65,18 +65,17 @@ class Autoencoder(nn.Module):
         return outputs
 
 
-def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
+def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
     for epoch in range(num_epochs):
-        for i, (src, trg) in enumerate(dataloader):
+        for i, src in enumerate(dataloader):
             src = src.to(device)
-            trg = trg.to(device)
-            # trg.shape = src.shape = (batch_size, seq_len)
+            # src.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
-            output, _ = model(src)
+            output = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
-            loss = criterion(output.permute(0, 2, 1), trg)
+            loss = criterion(output, src)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
