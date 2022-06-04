@@ -66,7 +66,6 @@ class Autoencoder(nn.Module):
                 input_vector[new_track_id] = 1
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)
-        print(output_vector)
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
         # transform the indices of the whole word2vec model
