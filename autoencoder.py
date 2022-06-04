@@ -32,7 +32,7 @@ class Autoencoder(nn.Module):
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
         self.num_artists = num_artists
-        self.input_size = num_tracks + num_artists
+        self.input_size = num_tracks
 
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
@@ -97,12 +97,6 @@ if __name__ == '__main__':
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print("word2vec loaded from file")
 
-    weights = torch.load(la.path_embedded_weights(), map_location=device)
-    # weights.shape == (2262292, 100)
-    # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
-    embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-    print("finished")
-
     # Training and model parameters
     learning_rate = la.get_learning_rate()
     num_epochs = la.get_num_epochs()
@@ -112,12 +106,11 @@ if __name__ == '__main__':
     NUM_TRACKS = len(word2vec_tracks.wv)
     NUM_ARTISTS = len(word2vec_artists.wv)
     HID_DIM = la.get_recurrent_dimension()
-    N_LAYERS = la.get_num_recurrent_layers()
-    num_steps = 10
+    HID_DIM = 256
     max_norm = 5
 
     print("create Seq2Seq model...")
-    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, 256)
+    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM)
     print("finished")
 
     print("init weights...")
@@ -133,13 +126,12 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.NextTrackDatasetShiftedTargetFixedStep(word2vec_tracks, num_playlists_for_training,
-                                                        num_steps=num_steps)
+    dataset = ld.AutoencoderDataset(word2vec_tracks, word2vec_artists, num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
-    save_file_name = "/seq2seq_v4_track_album_artist.pth"
+    save_file_name = "/autoencoder.pth"
 
     model.to(device)
     os.mkdir(la.output_path_model() + foldername)
@@ -159,5 +151,5 @@ if __name__ == '__main__':
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write(results_str)
-    f.write("\nseq2seq_v4_nlll: ")
+    f.write("\nautoencoder ")
     f.close()

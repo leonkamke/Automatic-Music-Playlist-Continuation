@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 import load_attributes as la
 
 
-class Autoencoder(Dataset):
+class AutoencoderDataset(Dataset):
     def __init__(self, track2vec, artist2vec, num_rows_train):
         # data loading
         self.track2vec = track2vec
@@ -22,8 +22,7 @@ class Autoencoder(Dataset):
 
     def read_train_data(self):
         # read training data from "track_sequences"
-        src_uri = []
-        trg_uri = []
+        src_vectors = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
@@ -31,30 +30,15 @@ class Autoencoder(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 3:
-                    is_odd = (len(row) - 2) % 2 == 1
-                    i = int(len(row) / 2 + 1)
-                    src_i = row[2:i]
-                    trg_i = row[i:len(row)]
-                    if is_odd:
-                        trg_i = row[i:len(row) - 1]
-                    src_uri.append(src_i)
-                    trg_uri.append(trg_i)
-            # create lists of track indices according to the indices of the word2vec model
-            src_idx = []
-            trg_idx = []
-            trg_len = []
-            for i in range(len(src_uri)):
-                indices = []
-                for uri in src_uri[i]:
-                    indices.append(self.word2vec.wv.get_index(uri))
-                src_idx.append(torch.LongTensor(indices))
-                indices = []
-                for uri in trg_uri[i]:
-                    indices.append(self.word2vec.wv.get_index(uri))
-                trg_idx.append(torch.LongTensor(indices))
-                trg_len.append(len(indices))
-        return src_idx, trg_idx, trg_len
+                    src_vectors.append(self.uris_to_vector(row[2:]))
+        return src_vectors
 
+    def uris_to_vector(self, uri_list):
+        vector = torch.zeros(len(self.track2vec.wv))
+        for uri in uri_list:
+            uri_id = self.track2vec.wv.get_index(uri)
+            vector[uri_id] = 1
+        return vector
 
 class PlaylistDataset(Dataset):
     def __init__(self, word2vec, num_rows_train):
