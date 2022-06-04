@@ -27,15 +27,18 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, dropout=0):
+    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, artist2vec, track2artist,
+                 dropout=0):
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
+        self.artist2vec = artist2vec
+        self.track2artist = track2artist
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
         self.num_artists = num_artists
-        self.input_size = num_tracks
+        self.input_size = num_tracks + num_artists
 
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
@@ -54,18 +57,28 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-    def predict(self, input, num_predictions):
-        # input is a list of track_id's
+    def map_sequence2vector(self, sequence):
         # input.shape == (seq_len)
-        input_vector = torch.zeros(self.input_size)
+        track_vector = torch.zeros(self.num_tracks)
+        artist_vector = torch.zeros(self.num_artists)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
-        for track_id in input:
+        for track_id in sequence:
             track_uri = self.track2vec.wv.index_to_key[track_id]
             if track_uri in self.track2vec_reduced.wv.key_to_index:
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
-                input_vector[new_track_id] = 1
+                track_vector[new_track_id] = 1
+            artist_id = self.track2artist[track_id]
+            artist_vector[artist_id] = 1
+
+        return torch.cat((track_vector, artist_vector))
+
+    def predict(self, input, num_predictions):
+        # input is a list of track_id's
+        # input.shape == (seq_len)
+        input_vector = self.map_sequence2vector(input)
+        # input_vector.shape == (num_tracks + num_artists)
         # forward the vector through the autoencoder
-        output_vector = self.forward(input_vector)
+        output_vector = self.forward(input_vector)[0:self.num_tracks]
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
         # transform the indices of the whole word2vec model
@@ -104,13 +117,15 @@ if __name__ == '__main__':
     # device = torch.device('cpu')
     device = torch.device(la.get_device())
 
-    print("load pretrained embedding layer...")
-
     print("load word2vec from file")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print("word2vec loaded from file")
+
+    print("load track2artist dict")
+    track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
+    print("loaded dict")
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -125,7 +140,7 @@ if __name__ == '__main__':
     max_norm = 5
 
     print("create Autoencoder model...")
-    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced)
+    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict)
     print("finished")
 
     print("init weights...")
