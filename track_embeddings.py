@@ -6,7 +6,7 @@ import argparse
 import json
 import csv
 
-from data_preprocessing import load_attributes as la
+import load_attributes as la
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import torch
 import csv
 from torch.utils.data import Dataset
-from data_preprocessing import load_attributes as la
+import load_attributes as la
 
 
 # Dataset which creates src tracks with size size_seed and the corresponding targets

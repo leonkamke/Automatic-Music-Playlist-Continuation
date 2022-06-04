@@ -1,6 +1,6 @@
 import csv
 import gensim
-from data_preprocessing import load_attributes as la
+import load_attributes as la
 import torch
 
 if __name__ == '__main__':

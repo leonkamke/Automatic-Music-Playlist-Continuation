@@ -2,7 +2,7 @@ import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
-from data_preprocessing import load_attributes as la
+import load_attributes as la
 
 
 class Autoencoder(Dataset):

@@ -13,7 +13,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-from data_preprocessing import load_attributes as la
+import load_attributes as la
 
 
 def init_weights(m):

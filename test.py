@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import csv
 import gensim
-from data_preprocessing import load_data as ld, load_attributes as la
+from data_preprocessing import load_data as ld
+import load_attributes as la
 
 
 class Seq2Seq(nn.Module):

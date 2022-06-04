@@ -1,6 +1,3 @@
-from os import listdir
-from os import path
-import argparse
 import csv
 import gensim
 import load_attributes as la
@@ -13,7 +10,7 @@ if __name__ == '__main__':
     print(len(word2vec_tracks.wv))
     playlist_matrix = torch.zeros(1000000, len(word2vec_tracks))
 
-    with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+    with open("/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_sequences.csv", encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv-track_sequences file
         for i, row in enumerate(csv_reader):
