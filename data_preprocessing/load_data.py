@@ -36,9 +36,11 @@ class AutoencoderDataset(Dataset):
     def uris_to_vector(self, uri_list):
         vector = torch.zeros(len(self.track2vec.wv))
         for uri in uri_list:
-            uri_id = self.track2vec.wv.get_index(uri)
-            vector[uri_id] = 1
+            if uri in self.track2vec.wv:
+                uri_id = self.track2vec.wv.get_index(uri)
+                vector[uri_id] = 1
         return vector
+
 
 class PlaylistDataset(Dataset):
     def __init__(self, word2vec, num_rows_train):
