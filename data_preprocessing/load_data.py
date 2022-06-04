@@ -36,7 +36,7 @@ class AutoencoderDataset(Dataset):
     def uris_to_vector(self, uri_list):
         vector = torch.zeros(len(self.track2vec.wv))
         for uri in uri_list:
-            if uri in self.track2vec.wv:
+            if uri in self.track2vec.wv.vocab:
                 uri_id = self.track2vec.wv.get_index(uri)
                 vector[uri_id] = 1
             else:
