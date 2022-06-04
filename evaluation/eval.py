@@ -8,7 +8,6 @@ from evaluation import load_eval_data as eval_data
 import numpy as np
 from collections import OrderedDict
 import torch
-import load_attributes as la
 
 
 def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx, device):

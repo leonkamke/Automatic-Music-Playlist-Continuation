@@ -44,7 +44,7 @@ NUM_RECURRENT_DIMENSION  = 23
 
 # Methods for getting the network architecture
 def get_num_recurrent_layers():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == NUM_RECURRENT_LAYERS:
             file.close()
@@ -52,7 +52,7 @@ def get_num_recurrent_layers():
 
 
 def get_recurrent_dimension():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == NUM_RECURRENT_DIMENSION:
             file.close()
@@ -61,7 +61,7 @@ def get_recurrent_dimension():
 
 # Method for getting the setted device
 def get_device():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == DEVICE:
             file.close()
@@ -70,7 +70,7 @@ def get_device():
 
 # Methods for the evaluation parameters -----------------------------------------------
 def get_start_idx():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == START_IDX:
             file.close()
@@ -78,7 +78,7 @@ def get_start_idx():
 
 
 def get_end_idx():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == END_IDX:
             file.close()
@@ -87,7 +87,7 @@ def get_end_idx():
 
 # Methods for the training parameters -------------------------------------------------
 def get_learning_rate():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == LEARNING_RATE:
             file.close()
@@ -95,7 +95,7 @@ def get_learning_rate():
 
 
 def get_num_playlists_training():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == NUM_PLAYLISTS_FOR_TRAINING:
             file.close()
@@ -103,7 +103,7 @@ def get_num_playlists_training():
 
 
 def get_num_epochs():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == N_EPOCHS:
             file.close()
@@ -111,7 +111,7 @@ def get_num_epochs():
 
 
 def get_batch_size():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == BATCH_SIZE:
             file.close()
@@ -120,7 +120,7 @@ def get_batch_size():
 
 # Methods for getting the pathes -------------------------------------------------------
 def path_track_sequences_path():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_SEQUENCES:
             file.close()
@@ -128,7 +128,7 @@ def path_track_sequences_path():
 
 
 def path_artist_sequences_path():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == ARTIST_SEQUENCES:
             file.close()
@@ -136,7 +136,7 @@ def path_artist_sequences_path():
 
 
 def get_folder_name():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == FOLDER_NAME:
             file.close()
@@ -144,7 +144,7 @@ def get_folder_name():
 
 
 def path_track_artist_dict_unique():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_ARTIST_DICT_UNIQUE:
             file.close()
@@ -152,7 +152,7 @@ def path_track_artist_dict_unique():
 
 
 def path_track_album_dict_unique():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_ALBUM_DICT_UNIQUE:
             file.close()
@@ -160,7 +160,7 @@ def path_track_album_dict_unique():
 
 
 def path_track_to_vec_model():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_TO_VEC_MODEL:
             file.close()
@@ -168,7 +168,7 @@ def path_track_to_vec_model():
 
 
 def path_track_to_vec_reduced_model():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_TO_VEC_REDUCED_MODEL:
             file.close()
@@ -176,7 +176,7 @@ def path_track_to_vec_reduced_model():
 
 
 def path_album_to_vec_model():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == ALBUM_TO_VEC_MODEL:
             file.close()
@@ -184,7 +184,7 @@ def path_album_to_vec_model():
 
 
 def path_artist_to_vec_model():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == ARTIST_TO_VEC_MODEL:
             file.close()
@@ -192,7 +192,7 @@ def path_artist_to_vec_model():
 
 
 def output_path_model():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == OUTPUT_PATH_MODEL:
             file.close()
@@ -200,7 +200,7 @@ def output_path_model():
 
 
 def path_embedded_weights():
-    file = open("attributes", "r")
+    file = open("../attributes", "r")
     for i, row in enumerate(file):
         if i == EMBED_WEIGHTS:
             file.close()

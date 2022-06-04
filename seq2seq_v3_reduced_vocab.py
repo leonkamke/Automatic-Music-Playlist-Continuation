@@ -11,7 +11,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from data_preprocessing import load_attributes as la
 import shutil
 
 

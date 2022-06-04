@@ -6,7 +6,6 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import time
 import gensim
 import torch
 import torch.nn as nn
@@ -15,7 +14,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from data_preprocessing import load_attributes as la
 
 
 def init_weights(m):

@@ -1,13 +1,8 @@
-import pandas as pd
-import numpy as np
 import torch
 import torch.nn as nn
 import csv
-from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import gensim
-import sys
-import load_attributes as la
-from data_preprocessing import load_data as ld
+from data_preprocessing import load_data as ld, load_attributes as la
 
 
 class Seq2Seq(nn.Module):

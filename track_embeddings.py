@@ -6,11 +6,7 @@ import argparse
 import json
 import csv
 
-import torch
-
-import evaluation.eval as eval
-import data_preprocessing.load_data as ld
-import load_attributes as la
+from data_preprocessing import load_attributes as la
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------

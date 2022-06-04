@@ -1,7 +1,6 @@
 import gensim
 import torch
-import load_attributes as la
-import seq2seq_v3
+from data_preprocessing import load_attributes as la
 import torch.nn as nn
 
 import track_embeddings

@@ -4,16 +4,14 @@ training: Seq2Seq model which takes the output of the decoder into account for c
             Cross Entropy Loss
 prediction:
 """
-import shutil
 import gensim
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from data_preprocessing import load_attributes as la
 
 
 def init_weights(m):
