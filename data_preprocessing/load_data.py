@@ -31,7 +31,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    half_idx = len(row[2:]) / 2
+                    half_idx = int(len(row[2:]) / 2)
                     src.append(self.uris_to_vector(row[2:half_idx]))
                     trg.append(self.uris_to_vector(row[2:]))
         return src, trg
