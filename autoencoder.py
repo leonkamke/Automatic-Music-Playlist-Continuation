@@ -92,7 +92,7 @@ if __name__ == '__main__':
     print("load pretrained embedding layer...")
 
     print("load word2vec from file")
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     print("word2vec loaded from file")
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    NUM_TRACKS = len(word2vec_tracks.wv)
+    NUM_TRACKS = len(word2vec_tracks_reduced.wv)
     NUM_ARTISTS = len(word2vec_artists.wv)
     HID_DIM = la.get_recurrent_dimension()
     HID_DIM = 256
