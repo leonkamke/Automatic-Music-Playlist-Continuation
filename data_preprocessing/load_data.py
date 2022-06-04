@@ -12,7 +12,7 @@ class AutoencoderDataset(Dataset):
         self.artist2vec = artist2vec
         self.num_rows_train = num_rows_train
         self.input = self.read_train_data()
-        self.n_samples = len(self.src)
+        self.n_samples = len(self.input)
 
     def __getitem__(self, index):
         return self.src[index]
@@ -39,6 +39,8 @@ class AutoencoderDataset(Dataset):
             if uri in self.track2vec.wv:
                 uri_id = self.track2vec.wv.get_index(uri)
                 vector[uri_id] = 1
+            else:
+                print("Dont exists")
         return vector
 
 
