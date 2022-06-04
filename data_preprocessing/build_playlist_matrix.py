@@ -7,7 +7,7 @@ if __name__ == '__main__':
     word2vec_tracks = gensim.models.Word2Vec.load("/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
     print("word2vec loaded from file")
     print(len(word2vec_tracks.wv))
-    playlist_matrix = torch.zeros(500000, len(word2vec_tracks.wv))
+    playlist_matrix = torch.zeros(500000, len(word2vec_tracks.wv), device=torch.device("cuda"))
 
     with open("/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_sequences.csv", encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
