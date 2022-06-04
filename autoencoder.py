@@ -155,7 +155,7 @@ if __name__ == '__main__':
     #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
-    device = torch.device("cuda")
+    device = torch.device("cpu")
     model.to(device)
     # evaluate model:
     model.eval()
