@@ -27,8 +27,11 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, num_tracks, num_artists, hid_dim, dropout=0):
+    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, dropout=0):
         super(Autoencoder, self).__init__()
+        self.track2vec = track2vec
+        self.track2vec_reduced = track2vec_reduced
+
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
         self.num_artists = num_artists
@@ -54,15 +57,25 @@ class Autoencoder(nn.Module):
     def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
+        input_vector = torch.zeros(len(self.input_size))
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
+        for track_id in input:
+            track_uri = self.track2vec.wv.index_to_key[track_id]
+            new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
+            input_vector[new_track_id] = 1
         # forward the vector through the autoencoder
-        # result is again a vector of 1s and 0s
-
-
+        output_vector = self.forward(input_vector)
+        # get the top k indices/tracks
+        _, top_k = torch.topk(output_vector, k=num_predictions)
+        # transform the indices of the whole word2vec model
+        output = []
+        for track_id in top_k:
+            track_uri = self.track2vec_reduced.wv.index_to_key[track_id]
+            new_track_id = self.track2vec.wv.key_to_index[track_uri]
+            output.append(new_track_id)
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
-        outputs = []
-        return outputs
+        return output
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
