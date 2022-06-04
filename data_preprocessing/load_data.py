@@ -15,7 +15,7 @@ class AutoencoderDataset(Dataset):
         self.n_samples = len(self.input)
 
     def __getitem__(self, index):
-        return self.src[index]
+        return self.input[index]
 
     def __len__(self):
         return self.n_samples
