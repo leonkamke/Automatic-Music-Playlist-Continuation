@@ -61,7 +61,7 @@ class Autoencoder(nn.Module):
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in input:
             track_uri = self.track2vec.wv.index_to_key[track_id]
-            if track_uri in self.track2vec_reduced.wv.key_to_index
+            if track_uri in self.track2vec_reduced.wv.key_to_index:
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
                 input_vector[new_track_id] = 1
         # forward the vector through the autoencoder
