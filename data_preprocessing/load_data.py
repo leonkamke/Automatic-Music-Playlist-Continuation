@@ -20,9 +20,9 @@ class AutoencoderDataset(Dataset):
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.track2vec.wv.key_to_index:
                 uri_id = self.track2vec.wv.get_index(uri)
-                src_vector[uri_id] = 1
+                trg_vector[uri_id] = 1
                 if i < len(self.playlists[index]) / 2:
-                    trg_vector[uri_id] = 1
+                    src_vector[uri_id] = 1
         return src_vector, trg_vector
 
     def __len__(self):
