@@ -11,31 +11,34 @@ class AutoencoderDataset(Dataset):
         self.track2vec = track2vec
         self.artist2vec = artist2vec
         self.num_rows_train = num_rows_train
-        self.input = self.read_train_data()
-        self.n_samples = len(self.input)
+        self.src, self.trg = self.read_train_data()
+        self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.input[index]
+        return self.src[index], self.trg[index]
 
     def __len__(self):
         return self.n_samples
 
     def read_train_data(self):
         # read training data from "track_sequences"
-        src_vectors = []
+        src = []
+        trg = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
                 if index >= self.num_rows_train:
                     break
-                elif len(row) > 3:
-                    src_vectors.append(self.uris_to_vector(row[2:]))
-        return src_vectors
+                elif len(row) > 5:
+                    half_idx = len(row[2:]) / 2
+                    src.append(self.uris_to_vector(row[2:half_idx]))
+                    trg.append(self.uris_to_vector(row[2:]))
+        return src, trg
 
     def uris_to_vector(self, uri_list):
         vector = torch.zeros(len(self.track2vec.wv))
-        for uri in uri_list:
+        for uri in uri_list[0:len(uri_list)/2]:
             if uri in self.track2vec.wv.key_to_index:
                 print("exists")
                 uri_id = self.track2vec.wv.get_index(uri)
