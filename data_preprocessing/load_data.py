@@ -11,19 +11,26 @@ class AutoencoderDataset(Dataset):
         self.track2vec = track2vec
         self.artist2vec = artist2vec
         self.num_rows_train = num_rows_train
-        self.src, self.trg = self.read_train_data()
-        self.n_samples = len(self.src)
+        self.playlists = self.read_train_data()
+        self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index]
+        src_vector = torch.zeros(len(self.track2vec.wv))
+        trg_vector = torch.zeros(len(self.track2vec.wv))
+        for i, uri in enumerate(self.playlists[index]):
+            if uri in self.track2vec.wv.key_to_index:
+                uri_id = self.track2vec.wv.get_index(uri)
+                src_vector[uri_id] = 1
+                if i < len(self.playlists[index]) / 2:
+                    trg_vector[uri_id] = 1
+        return src_vector, trg_vector
 
     def __len__(self):
         return self.n_samples
 
     def read_train_data(self):
         # read training data from "track_sequences"
-        src = []
-        trg = []
+        playlists = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
@@ -31,21 +38,25 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    half_idx = int(len(row[2:]) / 2)
-                    src.append(self.uris_to_vector(row[2:half_idx]))
-                    trg.append(self.uris_to_vector(row[2:]))
-        return src, trg
+                    playlists.append(row[2:])
+        return playlists
 
-    def uris_to_vector(self, uri_list):
-        vector = torch.zeros(len(self.track2vec.wv))
-        for uri in uri_list:
-            if uri in self.track2vec.wv.key_to_index:
-                print("exists")
-                uri_id = self.track2vec.wv.get_index(uri)
-                vector[uri_id] = 1
-            else:
-                print("Dont exists")
-        return vector
+    def uris_to_vector(self, uri_lists):
+        src = torch.zeros(len(uri_lists), len(self.track2vec.wv))
+        trg = torch.zeros(len(uri_lists), len(self.track2vec.wv))
+
+        for idx, uri_list in enumerate(uri_lists):
+            src_i = torch.zeros(len(self.track2vec.wv))
+            trg_i = torch.zeros(len(self.track2vec.wv))
+            for i, uri in enumerate(uri_list):
+                if uri in self.track2vec.wv.key_to_index:
+                    uri_id = self.track2vec.wv.get_index(uri)
+                    src_i[uri_id] = 1
+                    if i < len(uri_list)/2:
+                        trg_i[uri_id] = 1
+            src[idx] = src_i
+            trg[idx] = trg_i
+        return src, trg
 
 
 class PlaylistDataset(Dataset):
