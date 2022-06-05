@@ -111,6 +111,7 @@ class Autoencoder(nn.Module):
         return output
 
 
+
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
