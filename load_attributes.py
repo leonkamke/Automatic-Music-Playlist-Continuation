@@ -17,6 +17,7 @@ ALBUM_TO_VEC_MODEL = 28
 FOLDER_NAME = 29
 TRACK_TO_VEC_REDUCED_MODEL = 32
 ARTIST_TO_VEC_REDUCED_MODEL = 33
+AlBUM_TO_VEC_REDUCED_MODEL = 35
 
 """
 Which line contains which training parameter
@@ -197,6 +198,14 @@ def path_album_to_vec_model():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == ALBUM_TO_VEC_MODEL:
+            file.close()
+            return row[:-1]
+
+
+def path_album_to_vec_reduced_model():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == AlBUM_TO_VEC_REDUCED_MODEL:
             file.close()
             return row[:-1]
 

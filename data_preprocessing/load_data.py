@@ -641,6 +641,20 @@ def get_artist_dict(word2vec_tracks, word2vec_artists):
     return track_artist_dict
 
 
+# Returns the following dictionary: album_dict: track_id -> album_id
+def get_album_dict(word2vec_tracks, word2vec_albums):
+    with open(la.path_track_album_dict_unique(), encoding='utf8') as read_obj:
+        csv_reader = csv.reader(read_obj)
+        # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
+        track_album_dict = {}
+        for index, row in enumerate(csv_reader):
+            if row[0] not in track_album_dict:
+                track_id = word2vec_tracks.wv.get_index(row[0])
+                album_id = word2vec_albums.wv.get_index(row[1])
+                track_album_dict[track_id] = album_id
+    return track_album_dict
+
+
 def get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks):
     output_dict = {}
     for i in range(len(word2vec_tracks_reduced.wv)):

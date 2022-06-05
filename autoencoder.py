@@ -27,21 +27,28 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
-                 dropout=0):
+    def __init__(self, hid_dim, track2vec, artist2vec, album2vec, track2vec_reduced, artist2vec_reduced,
+                 album2vec_reduced, track2artist, track2album):
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
+        self.artist2vec = artist2vec
+        self.artist2vec_reduced = artist2vec_reduced
+        self.album2vec = album2vec
+        self.album2vec_reduced = album2vec_reduced
         self.track2artist = track2artist
-        self.artist2vec_reduced = artist2vec
+        self.track2album = track2album
 
         self.hid_dim = hid_dim
-        self.num_tracks = num_tracks
-        self.num_artists = num_artists
-        self.input_size = num_tracks + num_artists
+        self.num_tracks = len(track2vec.wv)
+        self.num_artists = len(artist2vec.wv)
+        self.num_albums = len(album2vec.wv)
+        self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
+        self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
+            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -61,6 +68,7 @@ class Autoencoder(nn.Module):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
         artist_vector = torch.zeros(self.num_artists)
+        album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             track_uri = self.track2vec.wv.index_to_key[track_id]
@@ -68,12 +76,19 @@ class Autoencoder(nn.Module):
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
                 track_vector[new_track_id] = 1
 
-                artist_id = self.track2artist[int(track_id)]
-                artist_uri = self.artist2vec_reduced.wv.index_to_key[artist_id]
-                artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
-                artist_vector[artist_id_reduced] = 1
+            artist_id = self.track2artist[int(track_id)]
+            artist_uri = self.artist2vec.wv.index_to_key[artist_id]
+            if artist_uri in self.artist2vec_reduced.wv.key_to_index:
+                new_artist_id = self.artist2vec_reduced.wv.key_to_index[artist_uri]
+                artist_vector[new_artist_id] = 1
 
-        return torch.cat((track_vector, artist_vector))
+            album_id = self.track2album[int(track_id)]
+            album_uri = self.album2vec.wv.index_to_key[album_id]
+            if album_uri in self.album2vec_reduced.wv.key_to_index:
+                new_album_id = self.album2vec_reduced.wv.key_to_index[album_uri]
+                album_vector[new_album_id] = 1
+
+        return torch.cat((track_vector, artist_vector, album_vector))
 
     def predict(self, input, num_predictions):
         # input is a list of track_id's
@@ -125,12 +140,14 @@ if __name__ == '__main__':
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
-
+    word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
+    word2vec_albums_reduced = gensim.models.Word2Vec.load(la.path_album_to_vec_reduced_model())
     print("word2vec loaded from file")
 
-    print("load track2artist dict")
+    print("load track2artist and track2album dict")
     track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
-    print("loaded dict")
+    track2album_dict = ld.get_album_dict(word2vec_tracks, word2vec_albums)
+    print("loaded dictionaries")
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -140,15 +157,15 @@ if __name__ == '__main__':
     # VOCAB_SIZE == 2262292
     NUM_TRACKS = len(word2vec_tracks_reduced.wv)
     NUM_ARTISTS = len(word2vec_artists_reduced.wv)
-    HID_DIM = la.get_recurrent_dimension()
     HID_DIM = 256
     max_norm = 5
 
     print("create Autoencoder model...")
-    # self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
-    #                  dropout=0
-    model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict,
-                        word2vec_artists_reduced)
+    # (self, hid_dim, track2vec, artist2vec, album2vec, track2vec_reduced, artist2vec_reduced,
+    #                  album2vec_reduced, track2artist, track2album, dropout=0):
+    model = Autoencoder(HID_DIM, word2vec_tracks, word2vec_artists, word2vec_albums, word2vec_tracks_reduced,
+                        word2vec_artists_reduced, word2vec_albums_reduced,
+                        track2artist_dict, track2album_dict)
     print("finished")
 
     print("init weights...")
@@ -164,7 +181,8 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, num_playlists_for_training)
+    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, word2vec_albums_reduced,
+                                    num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
@@ -172,11 +190,10 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    #os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-    # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")

@@ -29,9 +29,10 @@ cuda
 /netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model
 /encoder_decoder_test
 
-# path for (reduced track2vec, reduced artist2vec model, path album_sequences.csv)
+# path for (reduced track2vec, reduced artist2vec model, path album_sequences.csv, reduced album2vec)
 /netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model
 /netscratch/kamke/models/word2vec/1_mil_playlists_artists_reduced/word2vec-song-vectors.model
 /ds/audio/MPD/spotify_million_playlist_dataset_csv/data/album_sequences.csv
+/netscratch/kamke/models/word2vec/1_mil_playlists_albums_reduced/word2vec-song-vectors.model
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
