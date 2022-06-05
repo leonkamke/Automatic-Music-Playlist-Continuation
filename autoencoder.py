@@ -68,7 +68,7 @@ class Autoencoder(nn.Module):
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
                 track_vector[new_track_id] = 1
 
-                artist_id = self.track2artist[track_id]
+                artist_id = self.track2artist[int(track_id)]
                 artist_uri = self.artist2vec.wv.index_to_key[artist_id]
                 artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
                 artist_vector[artist_id_reduced] = 1
@@ -171,11 +171,11 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    #os.mkdir(la.output_path_model() + foldername)
+    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
