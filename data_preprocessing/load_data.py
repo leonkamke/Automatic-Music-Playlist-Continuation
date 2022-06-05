@@ -610,7 +610,8 @@ def collate_fn_next_track_one_target(data):
 
 
 def collate_fn_autoencoder(data):
-    print("data.shape = ", data.shape)
+    print("data.len = ", len(data))
+    print("data.size = ", data.size)
     src, trg = zip(*data)
     print("src.shape = ", src.shape)
     return src.to(torch.device("cuda")), trg.to(torch.device("cuda"))
