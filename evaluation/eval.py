@@ -81,7 +81,9 @@ def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx,
                     "Average R-Precision(tracks) : " + str(r_precision_tracks_sum) + "\n" + \
                     "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
                     "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
-                    "Average NDCG(artists):      : " + str(ndcg_artists_sum)
+                    "Average NDCG(artists):      : " + str(ndcg_artists_sum) + "\n" + \
+                    "---> R-Precision            : " + str(r_precision) + "\n" + \
+                    "---> NDCG                   : " + str(ndcg)
     return output_string
 
 

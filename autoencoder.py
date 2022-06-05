@@ -205,6 +205,6 @@ if __name__ == '__main__':
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    f.write("autoencoder: \n ")
     f.write(results_str)
-    f.write("\nautoencoder ")
     f.close()
