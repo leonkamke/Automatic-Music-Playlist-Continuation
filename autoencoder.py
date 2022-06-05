@@ -152,8 +152,8 @@ if __name__ == '__main__':
     print("album_size = ", len(word2vec_albums_reduced.wv))
 
     print("load track2artist and track2album dict")
-    track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
-    track2album_dict = ld.get_album_dict(word2vec_tracks, word2vec_albums)
+    # track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
+    # track2album_dict = ld.get_album_dict(word2vec_tracks, word2vec_albums)
     print("loaded dictionaries")
 
     # Training and model parameters
