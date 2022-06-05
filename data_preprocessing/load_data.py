@@ -614,7 +614,8 @@ def collate_fn_autoencoder(data):
     print("data.size = ", data.size)
     src, trg = zip(*data)
     print("src.shape = ", src.shape)"""
-    return data.to('cuda')
+    print(type(data))
+    return data
 
 
 # safes a tensor of shape (2262292, 200) in a file. concatenation of tracks and artists
