@@ -1,3 +1,5 @@
+import pickle
+
 import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
@@ -6,39 +8,43 @@ import load_attributes as la
 
 
 class AutoencoderDataset(Dataset):
-    def __init__(self, track2vec, artist2vec, album2vec, num_rows_train):
+    def __init__(self, trackuri_2_id, artisturi_2_id, albumuri_2_id, num_rows_train):
         # data loading
-        self.track2vec = track2vec
-        self.artist2vec = artist2vec
-        self.album2vec = album2vec
+        self.trackuri_2_id = trackuri_2_id
+        self.artisturi_2_id = artisturi_2_id
+        self.albumuri_2_id = albumuri_2_id
+        self.num_tracks = len(self.trackuri_2_id)
+        self.num_artists = len(self.artisturi_2_id)
+        self.num_albums = len(self.albumuri_2_id)
+
         self.num_rows_train = num_rows_train
         self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
         self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
-        tracks_src = torch.zeros(len(self.track2vec.wv))
-        tracks_trg = torch.zeros(len(self.track2vec.wv))
+        tracks_src = torch.zeros(self.num_tracks)
+        tracks_trg = torch.zeros(self.num_tracks)
         for i, uri in enumerate(self.playlists[index]):
-            if uri in self.track2vec.wv.key_to_index:
-                uri_id = self.track2vec.wv.get_index(uri)
+            if uri in self.trackuri_2_id:
+                uri_id = self.trackuri_2_id[uri]
                 tracks_trg[uri_id] = 1
                 if i < len(self.playlists[index]) / 2:
                     tracks_src[uri_id] = 1
 
-        artist_src = torch.zeros(len(self.artist2vec.wv))
-        artist_trg = torch.zeros(len(self.artist2vec.wv))
+        artist_src = torch.zeros(self.num_artists)
+        artist_trg = torch.zeros(self.num_artists)
         for i, uri in enumerate(self.artist_sequences[index]):
-            if uri in self.artist2vec.wv.key_to_index:
-                uri_id = self.artist2vec.wv.get_index(uri)
+            if uri in self.artisturi_2_id:
+                uri_id = self.artisturi_2_id[uri]
                 artist_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
 
-        album_src = torch.zeros(len(self.album2vec.wv))
-        album_trg = torch.zeros(len(self.album2vec.wv))
+        album_src = torch.zeros(self.num_albums)
+        album_trg = torch.zeros(self.num_albums)
         for i, uri in enumerate(self.album_sequences[index]):
-            if uri in self.album2vec.wv.key_to_index:
-                uri_id = self.album2vec.wv.get_index(uri)
+            if uri in self.albumuri_2_id:
+                uri_id = self.albumuri_2_id[uri]
                 album_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
                     album_src[uri_id] = 1
@@ -58,7 +64,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    playlists.append(row[2:100])
+                    playlists.append(row[2:])
 
         artist_sequences = []
         with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
@@ -67,7 +73,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    artist_sequences.append(row[2:100])
+                    artist_sequences.append(row[2:])
 
         album_sequences = []
         with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
@@ -76,26 +82,9 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    album_sequences.append(row[2:100])
+                    album_sequences.append(row[2:])
 
         return playlists, artist_sequences, album_sequences
-
-    def uris_to_vector(self, uri_lists):
-        src = torch.zeros(len(uri_lists), len(self.track2vec.wv))
-        trg = torch.zeros(len(uri_lists), len(self.track2vec.wv))
-
-        for idx, uri_list in enumerate(uri_lists):
-            src_i = torch.zeros(len(self.track2vec.wv))
-            trg_i = torch.zeros(len(self.track2vec.wv))
-            for i, uri in enumerate(uri_list):
-                if uri in self.track2vec.wv.key_to_index:
-                    uri_id = self.track2vec.wv.get_index(uri)
-                    src_i[uri_id] = 1
-                    if i < len(uri_list) / 2:
-                        trg_i[uri_id] = 1
-            src[idx] = src_i
-            trg[idx] = trg_i
-        return src, trg
 
 
 class PlaylistDataset(Dataset):
@@ -675,3 +664,53 @@ def get_reduced_to_normal_dict(word2vec_tracks_reduced, word2vec_tracks):
         index = word2vec_tracks.wv.key_to_index[uri]
         output_dict[i] = index
     return output_dict
+
+
+# get dictionary functions
+
+# albums_uri2id.pkl  id2track_uri.pkl     trackid2artistid.pkl         track_uri2id.pkl
+# artist_uri2id.pkl  trackid2albumid.pkl  trackid2reduced_trackid.pkl
+
+DICT_PATH = '/netscratch/kamke/dictionaries/'
+
+
+def get_albums_uri2id():
+    with open(DICT_PATH + 'albums_uri2id.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_id2track_uri():
+    with open(DICT_PATH + 'id2track_uri.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_trackid2artistid():
+    with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_trackuri2id():
+    with open(DICT_PATH + 'track_uri2id.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_artist_uri2id():
+    with open(DICT_PATH + 'artist_uri2id.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_trackid2albumid():
+    with open(DICT_PATH + 'trackid2albumid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_trackid2reduced_trackid():
+    with open(DICT_PATH + 'trackid2reduced_trackid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict

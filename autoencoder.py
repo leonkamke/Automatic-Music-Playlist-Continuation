@@ -6,7 +6,6 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import gensim
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -138,23 +137,18 @@ if __name__ == '__main__':
     # device = torch.device('cpu')
     device = torch.device(la.get_device())
 
-    print("load word2vec from file")
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
-    word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
-    word2vec_albums_reduced = gensim.models.Word2Vec.load(la.path_album_to_vec_reduced_model())
-    print("word2vec loaded from file")
+    print("load dictionaries from file")
+    trackuri_2_id = ld.get_trackuri2id()
+    artisturi_2_id = ld.get_artist_uri2id()
+    albumuri_2_id = ld.get_albums_uri2id()
 
-    print("track_size = ", len(word2vec_tracks_reduced.wv))
-    print("artist_size = ", len(word2vec_artists_reduced.wv))
-    print("album_size = ", len(word2vec_albums_reduced.wv))
+    track2artist_dict = ld.get_trackid2artistid()
+    track2album_dict = ld.get_trackid2albumid()
+    print("loaded dictionaries from file")
 
-    print("load track2artist and track2album dict")
-    track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
-    track2album_dict = ld.get_album_dict(word2vec_tracks, word2vec_albums)
-    print("loaded dictionaries")
+    print("track_size = ", len(trackuri_2_id))
+    print("artist_size = ", len(artisturi_2_id))
+    print("album_size = ", len(albumuri_2_id))
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -162,8 +156,8 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    NUM_TRACKS = len(word2vec_tracks_reduced.wv)
-    NUM_ARTISTS = len(word2vec_artists_reduced.wv)
+    NUM_TRACKS = len(trackuri_2_id)
+    NUM_ARTISTS = len(artisturi_2_id)
     HID_DIM = 256
     max_norm = 5
 
@@ -188,7 +182,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, word2vec_albums_reduced,
+    dataset = ld.AutoencoderDataset(trackuri_2_id, artisturi_2_id, albumuri_2_id,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6,
                             collate_fn=ld.collate_fn_autoencoder)
@@ -208,8 +202,7 @@ if __name__ == '__main__':
     model.to(device)
     # evaluate model:
     model.eval()
-    results_str = eval.evaluate_model(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
-                                      device)
+    results_str = eval.evaluate_model(model, la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")

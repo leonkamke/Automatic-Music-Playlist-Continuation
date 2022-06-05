@@ -3,16 +3,24 @@ Evaluation script.
 It considers how good a model recommends relevant tracks (R-Precision) and
 it evaluates the ordering of the recommendation (NDCG).
 """
+import gensim
 
 from evaluation import load_eval_data as eval_data
 import numpy as np
 from collections import OrderedDict
 import torch
 
+WORD2VEC_TRACKS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model"
+WORD2VEC_ARTISTS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model"
 
-def evaluate_model(model, word2vec_tracks, word2vec_artists, start_idx, end_idx, device):
+
+def evaluate_model(model, start_idx, end_idx, device):
+    print("load word2vec_tracks and word2vec_artists")
+    word2vec_tracks = gensim.models.Word2Vec.load(WORD2VEC_TRACKS_PATH)
+    word2vec_artists = gensim.models.Word2Vec.load(WORD2VEC_ARTISTS_PATH)
+    print("finished")
+
     print("start evaluation...")
-
     # create evaluation dataset
     print("create evaluation dataset...")
     evaluation_dataset = eval_data.SpotifyEvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx)
