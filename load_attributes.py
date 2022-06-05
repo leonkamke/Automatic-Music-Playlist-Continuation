@@ -6,6 +6,7 @@ Which line contains which path
 """
 TRACK_SEQUENCES = 1
 ARTIST_SEQUENCES = 2
+ALBUM_SEQUENCES = 34
 TRACK_ARTIST_DICT_UNIQUE = 3
 TRACK_TO_VEC_MODEL = 4
 ARTIST_TO_VEC_MODEL = 5
@@ -124,6 +125,14 @@ def path_track_sequences_path():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_SEQUENCES:
+            file.close()
+            return row[:-1]
+
+
+def path_album_sequences_path():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == ALBUM_SEQUENCES:
             file.close()
             return row[:-1]
 

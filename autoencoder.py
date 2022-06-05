@@ -125,6 +125,7 @@ if __name__ == '__main__':
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
+
     print("word2vec loaded from file")
 
     print("load track2artist dict")

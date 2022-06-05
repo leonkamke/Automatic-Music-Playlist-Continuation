@@ -6,12 +6,13 @@ import load_attributes as la
 
 
 class AutoencoderDataset(Dataset):
-    def __init__(self, track2vec, artist2vec, num_rows_train):
+    def __init__(self, track2vec, artist2vec, album2vec, num_rows_train):
         # data loading
         self.track2vec = track2vec
         self.artist2vec = artist2vec
+        self.album2vec = album2vec
         self.num_rows_train = num_rows_train
-        self.playlists, self.artist_sequences = self.read_train_data()
+        self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
         self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
@@ -33,7 +34,16 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
 
-        return torch.cat((tracks_src, artist_src)), torch.cat((tracks_trg, artist_trg))
+        album_src = torch.zeros(len(self.album2vec.wv))
+        album_trg = torch.zeros(len(self.album2vec.wv))
+        for i, uri in enumerate(self.album_sequences[index]):
+            if uri in self.album2vec.wv.key_to_index:
+                uri_id = self.album2vec.wv.get_index(uri)
+                album_trg[uri_id] = 1
+                if i < len(self.artist_sequences[index]) / 2:
+                    album_src[uri_id] = 1
+
+        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
 
     def __len__(self):
         return self.n_samples
@@ -48,7 +58,8 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    playlists.append(row[2:100])
+                    playlists.append(row[2:])
+
         artist_sequences = []
         with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
             csv_reader = csv.reader(read_obj2)
@@ -56,8 +67,18 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    artist_sequences.append(row[2:100])
-        return playlists, artist_sequences
+                    artist_sequences.append(row[2:])
+
+        album_sequences = []
+        with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
+            csv_reader = csv.reader(read_obj3)
+            for index, row in enumerate(csv_reader):
+                if index >= self.num_rows_train:
+                    break
+                elif len(row) > 5:
+                    album_sequences.append(row[2:])
+
+        return playlists, artist_sequences, album_sequences
 
     def uris_to_vector(self, uri_lists):
         src = torch.zeros(len(uri_lists), len(self.track2vec.wv))
