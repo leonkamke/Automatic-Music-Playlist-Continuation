@@ -48,7 +48,7 @@ class Autoencoder(nn.Module):
         self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
-            self.dropout(),
+            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -119,6 +119,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             trg = trg.to(device)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
+            print("src.shape == ", src.shape)
+            print("model.input_size == ", model.input_size)
             output = model(src)
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
