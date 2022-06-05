@@ -37,4 +37,4 @@ def build_id2track_uri():
 if __name__ == "__main__":
     with open(OUTPUT_PATH + 'track_uri2id.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
-        print(loaded_dict[2262291])
+        print(loaded_dict["spotify:track:6U7hJoo1kiTZI69cEF8uCD"])
