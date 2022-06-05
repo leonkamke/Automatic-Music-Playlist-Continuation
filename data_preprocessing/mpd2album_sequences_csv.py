@@ -15,8 +15,7 @@ parser.add_argument('--out_path', default=None, required=True)
 
 args = parser.parse_args()
 
-playlists_file = open("/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/album_sequences.csv",
-                      'w', newline='', encoding='utf8')
+playlists_file = open(path.join(args.out_path, 'album_sequences.csv'), 'w', newline='', encoding='utf8')
 playlists_writer = csv.writer(playlists_file)
 
 for mpd_slice in listdir(args.mpd_path):
