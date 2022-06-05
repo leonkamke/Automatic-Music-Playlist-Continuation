@@ -69,7 +69,7 @@ class Autoencoder(nn.Module):
                 track_vector[new_track_id] = 1
 
                 artist_id = self.track2artist[int(track_id)]
-                artist_uri = self.artist2vec.wv.index_to_key[artist_id]
+                artist_uri = self.artist2vec_reduced.wv.index_to_key[artist_id]
                 artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
                 artist_vector[artist_id_reduced] = 1
 
