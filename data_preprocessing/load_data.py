@@ -44,7 +44,7 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.artist_sequences[index]) / 2:
                     album_src[uri_id] = 1
 
-        return torch.cat((tracks_src, artist_src, album_src)).to(self.device), torch.cat((tracks_trg, artist_trg, album_trg)).to(self.device)
+        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
 
     def __len__(self):
         return self.n_samples
