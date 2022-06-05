@@ -614,7 +614,11 @@ def collate_fn_autoencoder(data):
     print("data.size = ", data.size)
     src, trg = zip(*data)
     print("src.shape = ", src.shape)"""
+
     print(type(data))
+    src, trg = zip(*data)
+    print(type(src))
+    print(type(trg))
     return data
 
 
