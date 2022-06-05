@@ -33,7 +33,7 @@ class Autoencoder(nn.Module):
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
         self.track2artist = track2artist
-        self.artist2vec = artist2vec
+        self.artist2vec_reduced = artist2vec
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
