@@ -116,8 +116,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     num_iterations = 1
     for epoch in range(num_epochs):
         for i, (src, trg) in enumerate(dataloader):
-            src = src.to(device)
-            trg = trg.to(device)
+            #src = src.to(device)
+            #trg = trg.to(device)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
@@ -189,8 +189,8 @@ if __name__ == '__main__':
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, word2vec_albums_reduced,
-                                    num_playlists_for_training, device)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
+                                    num_playlists_for_training)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6, collate_fn=ld.collate_fn_autoencoder)
     print("Created train data")
 
     foldername = la.get_folder_name()
