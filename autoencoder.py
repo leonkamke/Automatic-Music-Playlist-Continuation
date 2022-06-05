@@ -36,13 +36,14 @@ class Autoencoder(nn.Module):
         self.artist2vec_reduced = artist2vec_reduced
         self.album2vec = album2vec
         self.album2vec_reduced = album2vec_reduced
+
         self.track2artist = track2artist
         self.track2album = track2album
 
         self.hid_dim = hid_dim
-        self.num_tracks = len(track2vec.wv)
-        self.num_artists = len(artist2vec.wv)
-        self.num_albums = len(album2vec.wv)
+        self.num_tracks = len(track2vec_reduced.wv)
+        self.num_artists = len(artist2vec_reduced.wv)
+        self.num_albums = len(album2vec_reduced.wv)
         self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
         self.dropout = nn.Dropout(0.2)
