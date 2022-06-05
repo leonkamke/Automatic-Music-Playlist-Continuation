@@ -58,7 +58,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    playlists.append(row[2:])
+                    playlists.append(row[2:100])
 
         artist_sequences = []
         with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
@@ -67,7 +67,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    artist_sequences.append(row[2:])
+                    artist_sequences.append(row[2:100])
 
         album_sequences = []
         with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
@@ -76,7 +76,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    album_sequences.append(row[2:])
+                    album_sequences.append(row[2:100])
 
         return playlists, artist_sequences, album_sequences
 
