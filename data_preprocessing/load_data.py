@@ -6,7 +6,7 @@ import load_attributes as la
 
 
 class AutoencoderDataset(Dataset):
-    def __init__(self, track2vec, artist2vec, album2vec, num_rows_train):
+    def __init__(self, track2vec, artist2vec, album2vec, num_rows_train, device):
         # data loading
         self.track2vec = track2vec
         self.artist2vec = artist2vec
@@ -14,10 +14,11 @@ class AutoencoderDataset(Dataset):
         self.num_rows_train = num_rows_train
         self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
         self.n_samples = len(self.playlists)
+        self.device = device
 
     def __getitem__(self, index):
-        tracks_src = torch.zeros(len(self.track2vec.wv))
-        tracks_trg = torch.zeros(len(self.track2vec.wv))
+        tracks_src = torch.zeros(len(self.track2vec.wv), device=self.device)
+        tracks_trg = torch.zeros(len(self.track2vec.wv), device=self.device)
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.track2vec.wv.key_to_index:
                 uri_id = self.track2vec.wv.get_index(uri)
@@ -25,8 +26,8 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.playlists[index]) / 2:
                     tracks_src[uri_id] = 1
 
-        artist_src = torch.zeros(len(self.artist2vec.wv))
-        artist_trg = torch.zeros(len(self.artist2vec.wv))
+        artist_src = torch.zeros(len(self.artist2vec.wv), device=self.device)
+        artist_trg = torch.zeros(len(self.artist2vec.wv), device=self.device)
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.artist2vec.wv.key_to_index:
                 uri_id = self.artist2vec.wv.get_index(uri)
@@ -34,8 +35,8 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
 
-        album_src = torch.zeros(len(self.album2vec.wv))
-        album_trg = torch.zeros(len(self.album2vec.wv))
+        album_src = torch.zeros(len(self.album2vec.wv), device=self.device)
+        album_trg = torch.zeros(len(self.album2vec.wv), device=self.device)
         for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.album2vec.wv.key_to_index:
                 uri_id = self.album2vec.wv.get_index(uri)

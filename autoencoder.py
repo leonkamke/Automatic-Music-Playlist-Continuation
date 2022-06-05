@@ -111,7 +111,6 @@ class Autoencoder(nn.Module):
         return output
 
 
-
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
     num_iterations = 1
@@ -122,8 +121,10 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
+            del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
+            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.AutoencoderDataset(word2vec_tracks_reduced, word2vec_artists_reduced, word2vec_albums_reduced,
-                                    num_playlists_for_training)
+                                    num_playlists_for_training, device)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
