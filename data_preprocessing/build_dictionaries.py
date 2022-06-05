@@ -2,14 +2,13 @@ import pickle
 
 import gensim
 
-import load_attributes
 
 OUTPUT_PATH = "/netscratch/kamke/dictionaries/"
 
 
 def build_track_uri2id():
     print("build track_uri2id dict")
-    track2vec = gensim.models.Word2Vec.load(load_attributes.path_track_to_vec_model())
+    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         print(str(i))
