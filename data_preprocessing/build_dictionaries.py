@@ -35,6 +35,6 @@ def build_id2track_uri():
 
 
 if __name__ == "__main__":
-    with open(OUTPUT_PATH + 'id2track_uri.pkl', 'rb') as f:
+    with open(OUTPUT_PATH + 'track_uri2id.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         print(loaded_dict[2262291])
