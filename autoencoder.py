@@ -48,7 +48,7 @@ class Autoencoder(nn.Module):
         self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
-            self.dropout,
+            self.dropout(),
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -143,6 +143,10 @@ if __name__ == '__main__':
     word2vec_albums = gensim.models.Word2Vec.load(la.path_album_to_vec_model())
     word2vec_albums_reduced = gensim.models.Word2Vec.load(la.path_album_to_vec_reduced_model())
     print("word2vec loaded from file")
+
+    print("track_size = ", len(word2vec_tracks_reduced.wv))
+    print("artist_size = ", len(word2vec_artists_reduced.wv))
+    print("album_size = ", len(word2vec_albums_reduced.wv))
 
     print("load track2artist and track2album dict")
     track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
