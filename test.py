@@ -4,7 +4,7 @@ import csv
 import gensim
 from data_preprocessing import load_data as ld
 import load_attributes as la
-
+from evaluation import eval, load_eval_data
 
 class Seq2Seq(nn.Module):
     def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
     print("finished")
-
+    """
     uri_id = word2vec_tracks_reduced.wv.get_index(track_uri)
     uri_id2 = reducedTrackUri2reducedId[track_uri]
     print(uri_id, uri_id2)
@@ -329,4 +329,12 @@ if __name__ == "__main__":
         output.append(new_track_id)
 
     print(output == output1)
+    """
+    evaluation_dataset_old = load_eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists,
+                                                                            10000, 11000)
+    evaluation_dataset = load_eval_data.FirstFiveEvaluationDataset(trackUri2trackId, artistUri2artistId,
+                                                                            1000, 11000)
+
+    print(evaluation_dataset_old[100] == evaluation_dataset[100])
+
 
