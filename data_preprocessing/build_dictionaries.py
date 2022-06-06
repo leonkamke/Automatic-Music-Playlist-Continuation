@@ -120,7 +120,7 @@ def build_track_id2reduced_artist_id():
             artist_uri = artist2vec.wv.index_to_key[artist_id]
             if artist_uri in artist2vec_reduced.wv.key_to_index:
                 reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
-                if track_id not in dict:
+                if track_id not in dict.keys():
                     c += 1
                     dict[track_id] = reduced_artist_id
         print(len(dict))
