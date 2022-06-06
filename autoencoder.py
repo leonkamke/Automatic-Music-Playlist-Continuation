@@ -58,7 +58,7 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-    def predict_(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -78,7 +78,7 @@ class Autoencoder(nn.Module):
         # outputs.shape == (num_predictions)
         return output
 
-    def predict(self, input, num_predictions):
+    def predict_(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
