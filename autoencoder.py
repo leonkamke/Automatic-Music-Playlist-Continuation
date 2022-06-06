@@ -27,12 +27,13 @@ def count_parameters(model):
 
 class Autoencoder(nn.Module):
     def __init__(self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
-                 trackId2reducedAlbumId):
+                 trackId2reducedAlbumId, reducedTrackId2trackId):
 
         super(Autoencoder, self).__init__()
         self.trackId2reducedTrackId = trackId2reducedTrackId
         self.trackId2reducedArtistId = trackId2reducedArtistId
         self.trackId2reducedAlbumId = trackId2reducedAlbumId
+        self.reducedTrackId2trackId = reducedTrackId2trackId
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
@@ -70,10 +71,9 @@ class Autoencoder(nn.Module):
         _, top_k = torch.topk(output_vector, k=num_predictions)
         # transform the indices of the whole word2vec model
         output = []
-        for track_id in top_k:
-            track_uri = self.track2vec_reduced.wv.index_to_key[track_id]
-            new_track_id = self.track2vec.wv.key_to_index[track_uri]
-            output.append(new_track_id)
+        for reduced_track_id in top_k:
+            track_id = self.reducedTrackId2trackId[reduced_track_id]
+            output.append(track_id)
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
         return output
@@ -128,15 +128,11 @@ if __name__ == '__main__':
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
     reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
     reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
-
+    reduced_trackId2trackId = ld.get_reduced_trackid2trackid()
     trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
     trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     print("loaded dictionaries from file")
-
-    print("track_size = ", len(reducedTrackUri2reducedId))
-    print("artist_size = ", len(reducedArtistUri2reducedId))
-    print("album_size = ", len(reducedAlbumUri2reducedId))
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -146,15 +142,18 @@ if __name__ == '__main__':
     # VOCAB_SIZE == 2262292
     NUM_TRACKS = len(reducedTrackUri2reducedId)
     NUM_ARTISTS = len(reducedArtistUri2reducedId)
+    NUM_ALBUMS = len(reducedAlbumUri2reducedId)
+    print("track_size = ", NUM_TRACKS)
+    print("artist_size = ", NUM_ARTISTS)
+    print("album_size = ", NUM_ALBUMS)
     HID_DIM = 256
     max_norm = 5
 
     print("create Autoencoder model...")
-    # (self, hid_dim, track2vec, artist2vec, album2vec, track2vec_reduced, artist2vec_reduced,
-    #                  album2vec_reduced, track2artist, track2album, dropout=0):
-    model = Autoencoder(HID_DIM, word2vec_tracks, word2vec_artists, word2vec_albums, word2vec_tracks_reduced,
-                        word2vec_artists_reduced, word2vec_albums_reduced,
-                        track2artist_dict, track2album_dict)
+    # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
+    #                  trackId2reducedAlbumId, reducedTrackId2trackId)
+    model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
+                        trackId2reducedAlbumId, reduced_trackId2trackId)
     print("finished")
 
     print("init weights...")
@@ -162,7 +161,7 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the vocabulary is: ", NUM_TRACKS)
+    print("The size of the input-layer is: ", NUM_TRACKS + NUM_ARTISTS + NUM_ALBUMS)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
