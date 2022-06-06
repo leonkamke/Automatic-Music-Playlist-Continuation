@@ -63,6 +63,8 @@ class Autoencoder(nn.Module):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
+        _, top_k = torch.topk(input_vector, k=5)
+        print(top_k)
         # input_vector.shape == (num_tracks + num_artists)
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)[0:self.num_tracks]

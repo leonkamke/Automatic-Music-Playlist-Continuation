@@ -124,7 +124,6 @@ def evaluate_model_old(model, start_idx, end_idx, device):
         num_predictions = len(trg)
         # num_predictions = 500
         prediction = model.predict(src, num_predictions)
-        print(prediction)
 
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
