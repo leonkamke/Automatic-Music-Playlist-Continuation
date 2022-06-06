@@ -121,9 +121,9 @@ def build_track_id2reduced_artist_id():
                 reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
                 if track_id not in dict:
                     dict[track_id] = reduced_artist_id
+        print(len(dict))
         with open(OUTPUT_PATH + 'trackid2reduced_artistid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
-        print(len(dict))
 
 
 def build_track_id2reduced_album_id():
@@ -144,9 +144,9 @@ def build_track_id2reduced_album_id():
                 reduced_album_id = album2vec_reduced.wv.key_to_index[album_uri]
                 if track_id not in dict:
                     dict[track_id] = reduced_album_id
+        print(len(dict))
         with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
-        print(len(dict))
 
 
 def build_artist_uri2id():
