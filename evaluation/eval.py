@@ -15,11 +15,6 @@ WORD2VEC_ARTISTS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists_artis
 
 
 def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device):
-    print("load word2vec_tracks and word2vec_artists")
-    word2vec_tracks = gensim.models.Word2Vec.load(WORD2VEC_TRACKS_PATH)
-    word2vec_artists = gensim.models.Word2Vec.load(WORD2VEC_ARTISTS_PATH)
-    print("finished")
-
     print("start evaluation...")
     # create evaluation dataset
     print("create evaluation dataset...")
