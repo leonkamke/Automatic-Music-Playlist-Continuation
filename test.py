@@ -273,8 +273,10 @@ if __name__ == "__main__":
     new_track_id2 = trackId2reducedTrackId[track_id]
     print(new_track_id1, new_track_id2)
 
+    # test map_sequence2vector ----------------------------------------------------------------------------------
     sequence = [41000, 50000, 4, 80]
-    def map_sequence2vector_old(self, sequence):
+
+    def map_sequence2vector_old(sequence):
         track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
         # input.shape == (seq_len)
         track_vector = torch.zeros(1000000)
@@ -293,7 +295,7 @@ if __name__ == "__main__":
                     artist_vector[artist_id_reduced] = 1
         return torch.cat((track_vector, artist_vector))
 
-    def map_sequence2vector(self, sequence):
+    def map_sequence2vector(sequence):
         # input.shape == (seq_len)
         track_vector = torch.zeros(1000000)
         artist_vector = torch.zeros(1000000)
@@ -306,9 +308,7 @@ if __name__ == "__main__":
             if track_id in trackId2reducedArtistId:
                 new_artist_id = trackId2reducedArtistId[track_id]
                 artist_vector[int(new_artist_id)] = 1
-            """if track_id in self.trackId2reducedAlbumId:
-                new_album_id = self.trackId2reducedAlbumId[track_id]
-                album_vector[new_album_id] = 1"""
+
         # return torch.cat((track_vector, artist_vector, album_vector))
         return torch.cat((track_vector, artist_vector))
 
