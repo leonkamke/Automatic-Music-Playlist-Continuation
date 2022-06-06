@@ -28,8 +28,9 @@ class AutoencoderDataset(Dataset):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = 1
-                if i < len(self.playlists[index]) / 2:
-                    tracks_src[uri_id] = 1
+                tracks_src[uri_id] = 1
+                """if i < len(self.playlists[index]) / 2:
+                    tracks_src[uri_id] = 1"""
 
         """artist_src = torch.zeros(self.num_artists)
         artist_trg = torch.zeros(self.num_artists)
