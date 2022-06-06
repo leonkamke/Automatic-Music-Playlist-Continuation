@@ -165,7 +165,7 @@ def build_track_id2reduced_album_id():
                 my_dict[track_id] = reduced_album_id
         print(len(my_dict))
         with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
-            pickle.dump(dict, f1)
+            pickle.dump(my_dict, f1)
 
 
 def build_artist_uri2id():
