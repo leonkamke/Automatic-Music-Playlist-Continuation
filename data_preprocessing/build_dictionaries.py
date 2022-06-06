@@ -118,16 +118,19 @@ def build_track_id2reduced_artist_id():
         loaded_dict = pickle.load(f)
         my_dict = {}
         c = 0
+        d = 0
         for i in range(len(track2vec.wv)):
             track_id = i
             artist_id = loaded_dict[track_id]
             artist_uri = artist2vec.wv.index_to_key[artist_id]
+            d += 1
             if artist_uri in artist2vec_reduced.wv.key_to_index:
                 c += 1
                 reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
                 my_dict[track_id] = reduced_artist_id
         print(len(my_dict))
         print("c = ", c)
+        print("d = ", d)
         print("-----------")
         with open(OUTPUT_PATH + 'trackid2reduced_artistid.pkl', 'wb') as f1:
             pickle.dump(my_dict, f1)
