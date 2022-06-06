@@ -279,8 +279,8 @@ if __name__ == "__main__":
     def map_sequence2vector_old(sequence):
         track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
         # input.shape == (seq_len)
-        track_vector = torch.zeros(1000000)
-        artist_vector = torch.zeros(1000000)
+        track_vector = torch.zeros(600000)
+        artist_vector = torch.zeros(600000)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             track_uri = word2vec_tracks.wv.index_to_key[track_id]
@@ -297,8 +297,8 @@ if __name__ == "__main__":
 
     def map_sequence2vector(sequence):
         # input.shape == (seq_len)
-        track_vector = torch.zeros(1000000)
-        artist_vector = torch.zeros(1000000)
+        track_vector = torch.zeros(600000)
+        artist_vector = torch.zeros(600000)
         #album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
