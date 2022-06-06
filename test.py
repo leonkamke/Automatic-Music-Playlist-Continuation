@@ -335,6 +335,6 @@ if __name__ == "__main__":
     evaluation_dataset = load_eval_data.FirstFiveEvaluationDataset(trackUri2trackId, artistUri2artistId,
                                                                             1000, 11000)
 
-    print(evaluation_dataset_old[100] == evaluation_dataset[100])
+    print(torch.equal(evaluation_dataset_old[100], evaluation_dataset[100]))
 
 
