@@ -33,11 +33,13 @@ if __name__ == "__main__":
     HID_DIM = 256
 
     print("create Autoencoder model...")
+    save_file_name = "/autoencoder.pth"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
                         reduced_trackId2trackId)
-    print("finished")
+    model.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
+    print("created model")
 
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
@@ -57,3 +59,11 @@ if __name__ == "__main__":
     print(pid)
     print(playlist_name)
     print(len(playlist_ids))
+    num_predictions = 20
+    recommendations = model.predict(playlist_ids[0:10], num_predictions)
+
+    # print recommendations
+    for track_id in recommendations:
+        track_id = int(track_id)
+        print(word2vec_tracks.wv.index_to_key[track_id])
+
