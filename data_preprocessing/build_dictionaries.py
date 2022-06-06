@@ -110,9 +110,6 @@ def build_track_id2reduced_artist_id():
         '/netscratch/kamke/models/word2vec/1_mil_playlists_artists_reduced/word2vec-song-vectors.model')
     artist2vec = gensim.models.Word2Vec.load(
         '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
-    print("len(track2vec) = ", len(track2vec.wv))
-    print("len(artist2vec_reduced) = ", len(artist2vec_reduced.wv))
-    print("len(artist2vec) = ", len(artist2vec.wv))
 
     with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
@@ -136,6 +133,7 @@ def build_track_id2reduced_album_id():
         '/netscratch/kamke/models/word2vec/1_mil_playlists_albums_reduced/word2vec-song-vectors.model')
     album2vec = gensim.models.Word2Vec.load(
         '/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
+
     with open(DICT_PATH + 'trackid2albumid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         my_dict = {}
@@ -146,7 +144,7 @@ def build_track_id2reduced_album_id():
             if album_uri in album2vec_reduced.wv.key_to_index:
                 reduced_album_id = album2vec_reduced.wv.key_to_index[album_uri]
                 my_dict[track_id] = reduced_album_id
-        print(len(dict))
+        print(len(my_dict))
         with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
 
