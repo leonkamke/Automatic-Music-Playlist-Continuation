@@ -72,7 +72,7 @@ class Autoencoder(nn.Module):
         # transform the indices of the whole word2vec model
         output = []
         for reduced_track_id in top_k:
-            track_id = self.reducedTrackId2trackId[reduced_track_id]
+            track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
             output.append(track_id)
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
