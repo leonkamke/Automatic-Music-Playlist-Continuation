@@ -336,9 +336,9 @@ if __name__ == "__main__":
                                                                             1000, 11000)
     pid1, src1, trg1 = evaluation_dataset[100]
     pid2, src2, trg2 = evaluation_dataset_old[100]
-    print(pid1, src1, trg1)
-    print(pid2, src2, trg2)
+    print(pid1, pid2)
+    print(src1, src2)
+    print(trg1, trg2)
 
-    print(torch.equal(evaluation_dataset_old[100], evaluation_dataset[100]))
 
 
