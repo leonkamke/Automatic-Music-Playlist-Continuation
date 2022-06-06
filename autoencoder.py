@@ -198,10 +198,10 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    # os.mkdir(la.output_path_model() + foldername)
+    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
@@ -212,8 +212,7 @@ if __name__ == '__main__':
     trackUri2trackId = ld.get_trackuri2id()
     artistUri2artistId = ld.get_artist_uri2id()
     # model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device
-    results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
-                                      la.get_start_idx(), la.get_end_idx(), device)
+    results_str = eval.evaluate_model_old(model, la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")

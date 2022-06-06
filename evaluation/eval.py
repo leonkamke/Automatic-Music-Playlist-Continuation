@@ -32,7 +32,7 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
 
     for i, (src, trg, pid) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
-        print("PID = " + str(pid) + ", length playlist: " + str(len(src)+len(trg)))
+        print("PID = " + str(pid) + ", length playlist: " + str(len(src) + len(trg)))
         # src (list of indices), trg (list of indices)
         src = src.to(device)
         trg = trg.to(device)
@@ -80,8 +80,9 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
 
     output_string = "Results for evaluation dataset ----------------------------\n" + \
                     "start_idx: " + str(start_idx) + "\n" \
-                    "end_idx: " + str(end_idx) + "\n" \
-                    "Average R-Precision(tracks) : " + str(r_precision_tracks_sum) + "\n" + \
+                                                     "end_idx: " + str(end_idx) + "\n" \
+                                                                                  "Average R-Precision(tracks) : " + str(
+        r_precision_tracks_sum) + "\n" + \
                     "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
                     "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
                     "Average NDCG(artists):      : " + str(ndcg_artists_sum) + "\n" + \
@@ -90,9 +91,16 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
     return output_string
 
 
-def evaluate_model_old(model, word2vec_tracks, word2vec_artists, start_idx, end_idx, device):
-    print("start evaluation...")
+PATH_TRACK2VEC_MODEL = '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model'
+PATH_ARTIST2VEC_MODEL = '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model'
 
+
+def evaluate_model_old(model, start_idx, end_idx, device):
+    print("start evaluation...")
+    print("load word2vec_models")
+    word2vec_tracks = gensim.models.Word2Vec.load(PATH_TRACK2VEC_MODEL)
+    word2vec_artists = gensim.models.Word2Vec.load(PATH_ARTIST2VEC_MODEL)
+    print("finished")
     # create evaluation dataset
     print("create evaluation dataset...")
     evaluation_dataset = eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists, start_idx, end_idx)
@@ -109,7 +117,7 @@ def evaluate_model_old(model, word2vec_tracks, word2vec_artists, start_idx, end_
 
     for i, (src, trg, pid) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
-        print("PID = " + str(pid) + ", length playlist: " + str(len(src)+len(trg)))
+        print("PID = " + str(pid) + ", length playlist: " + str(len(src) + len(trg)))
         # src (list of indices), trg (list of indices)
         src = src.to(device)
         trg = trg.to(device)
@@ -157,12 +165,14 @@ def evaluate_model_old(model, word2vec_tracks, word2vec_artists, start_idx, end_
 
     output_string = "Results for evaluation dataset ----------------------------\n" + \
                     "start_idx: " + str(start_idx) + "\n" \
-                    "end_idx: " + str(end_idx) + "\n" \
-                    "Average R-Precision(tracks) : " + str(r_precision_tracks_sum) + "\n" + \
+                                                     "end_idx: " + str(end_idx) + "\n" \
+                                                                                  "Average R-Precision(tracks) : " + str(
+        r_precision_tracks_sum) + "\n" + \
                     "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
                     "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
                     "Average NDCG(artists):      : " + str(ndcg_artists_sum)
     return output_string
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 """

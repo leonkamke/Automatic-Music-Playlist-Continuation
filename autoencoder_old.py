@@ -184,8 +184,7 @@ if __name__ == '__main__':
     model.to(device)
     # evaluate model:
     model.eval()
-    results_str = eval.evaluate_model_old(model, word2vec_tracks, word2vec_artists, la.get_start_idx(), la.get_end_idx(),
-                                      device)
+    results_str = eval.evaluate_model_old(model, la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
