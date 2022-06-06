@@ -110,6 +110,10 @@ def build_track_id2reduced_artist_id():
         '/netscratch/kamke/models/word2vec/1_mil_playlists_artists_reduced/word2vec-song-vectors.model')
     artist2vec = gensim.models.Word2Vec.load(
         '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
+    print("len(track2vec) = ", len(track2vec.wv))
+    print("len(artist2vec_reduced) = ", len(artist2vec_reduced.wv))
+    print("len(artist2vec) = ", len(artist2vec.wv))
+
     with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         dict = {}
