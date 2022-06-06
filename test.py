@@ -333,7 +333,7 @@ if __name__ == "__main__":
     evaluation_dataset_old = load_eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists,
                                                                             10000, 11000)
     evaluation_dataset = load_eval_data.FirstFiveEvaluationDataset(trackUri2trackId, artistUri2artistId,
-                                                                            1000, 11000)
+                                                                            10000, 11000)
     pid1, src1, trg1 = evaluation_dataset[100]
     pid2, src2, trg2 = evaluation_dataset_old[100]
     print(pid1, pid2)
