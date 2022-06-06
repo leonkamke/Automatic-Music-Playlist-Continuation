@@ -270,7 +270,7 @@ if __name__ == "__main__":
     track_uri = word2vec_tracks.wv.index_to_key[track_id]
     if track_uri in word2vec_tracks_reduced.wv.key_to_index:
         new_track_id1 = word2vec_tracks_reduced.wv.key_to_index[track_uri]
-    new_track_id2 = trackId2reducedTrackId
+    new_track_id2 = trackId2reducedTrackId[track_id]
     print(new_track_id1, new_track_id2)
 
 
