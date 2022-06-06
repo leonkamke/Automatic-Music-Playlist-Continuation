@@ -217,18 +217,37 @@ if __name__ == "__main__":
     trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
     trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
+
+    trackId2artistId = ld.get_trackid2artistid()
+    trackUri2trackId = ld.get_trackuri2id()
+    artistUri2artistId = ld.get_artist_uri2id()
     print("loaded dictionaries from file")
 
+    # test the lengths of the dictionaries -------------------------------------------------------------------------
+    print("reducedTrackUri2reducedId.len ", len(set(reducedTrackUri2reducedId.values())))
+    print("reducedArtistUri2reducedId.len ", len(set(reducedArtistUri2reducedId.values())))
+    print("reducedAlbumUri2reducedId.len ", len(set(reducedAlbumUri2reducedId.values())))
+
+    print("reduced_trackId2trackId.len ", len(set(reduced_trackId2trackId.values())))
+    print("trackId2reducedTrackId.len ", len(set(trackId2reducedTrackId.values())))
+    print("trackId2reducedArtistId.len ", len(set(trackId2reducedArtistId.values())))
+    print("trackId2reducedAlbumId.len ", len(set(trackId2reducedAlbumId.values())))
+
+    print("trackId2artistId.len ", len(set(trackId2artistId.values())))
+    print("trackUri2trackId.len ", len(set(trackUri2trackId.values())))
+    print("artistUri2artistId.len ", len(set(artistUri2artistId.values())))
+
+    # test the mapping of the dictionaries -------------------------------------------------------------------------
     """
     artist_name": "Ty Dolla $ign",
     "track_uri": "spotify:track:7t2bFihaDvhIrd2gn2CWJO",
     "artist_uri": "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq",
     "album_uri": "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
     """
-
     track_uri = "spotify:track:7t2bFihaDvhIrd2gn2CWJO"
     artist_uri = "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq"
     album_uri = "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
+
 
 
 
