@@ -90,6 +90,79 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
     return output_string
 
 
+def evaluate_model_old(model, word2vec_tracks, word2vec_artists, start_idx, end_idx, device):
+    print("start evaluation...")
+
+    # create evaluation dataset
+    print("create evaluation dataset...")
+    evaluation_dataset = eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists, start_idx, end_idx)
+    print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
+          " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
+    print("finished")
+
+    # loop over all evaluation playlists
+    print("start computing R-Precision and NDCG:")
+    r_precision_tracks_sum = 0.0
+    r_precision_artists_sum = 0.0
+    ndcg_tracks_sum = 0.0
+    ndcg_artists_sum = 0.0
+
+    for i, (src, trg, pid) in enumerate(evaluation_dataset):
+        print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
+        print("PID = " + str(pid) + ", length playlist: " + str(len(src)+len(trg)))
+        # src (list of indices), trg (list of indices)
+        src = src.to(device)
+        trg = trg.to(device)
+        num_predictions = len(trg)
+        # num_predictions = 500
+        prediction = model.predict(src, num_predictions)
+
+        # prediction is of shape len(trg)
+        # first compute R-Precision and NDCG for tracks
+        r_precision_tracks = calc_r_precision(prediction, trg)
+        ndcg_tracks = calc_ndcg(prediction, trg)
+        r_precision_tracks_sum += r_precision_tracks
+        ndcg_tracks_sum += ndcg_tracks
+
+        # convert prediction and target to list's of artist id's
+        artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
+
+        # calculate for the artists R-Precision and artists NDCG
+        r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
+        ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
+        r_precision_artists_sum += r_precision_artists
+        ndcg_artists_sum += ndcg_artists
+
+        print("R-Precision(tracks) : " + str(r_precision_tracks))
+        print("R-Precision(artists): " + str(r_precision_artists))
+        print("NDCG(tracks):       : " + str(ndcg_tracks))
+        print("NDCG(artists):      : " + str(ndcg_artists))
+        print(" ")
+
+    r_precision_tracks_sum = r_precision_tracks_sum / len(evaluation_dataset)
+    ndcg_tracks_sum = ndcg_tracks_sum / len(evaluation_dataset)
+    r_precision_artists_sum = r_precision_artists_sum / len(evaluation_dataset)
+    ndcg_artists_sum = ndcg_artists_sum / len(evaluation_dataset)
+    r_precision = (r_precision_tracks_sum + r_precision_artists_sum) / 2.0
+    ndcg = (ndcg_tracks_sum + ndcg_artists_sum) / 2.0
+
+    # print the results
+    print("Results for evaluation dataset ----------------------------")
+    print("Average R-Precision(tracks) : " + str(r_precision_tracks_sum))
+    print("Average R-Precision(artists): " + str(r_precision_artists_sum))
+    print("Average NDCG(tracks):       : " + str(ndcg_tracks_sum))
+    print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
+    print("---> R-Precision            : " + str(r_precision))
+    print("---> NDCG                   : " + str(ndcg))
+
+    output_string = "Results for evaluation dataset ----------------------------\n" + \
+                    "start_idx: " + str(start_idx) + "\n" \
+                    "end_idx: " + str(end_idx) + "\n" \
+                    "Average R-Precision(tracks) : " + str(r_precision_tracks_sum) + "\n" + \
+                    "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
+                    "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
+                    "Average NDCG(artists):      : " + str(ndcg_artists_sum)
+    return output_string
 
 # ----------------------------------------------------------------------------------------------------------------------
 """
