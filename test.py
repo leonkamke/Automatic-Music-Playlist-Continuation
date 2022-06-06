@@ -274,7 +274,7 @@ if __name__ == "__main__":
     print(new_track_id1, new_track_id2)
 
     # test map_sequence2vector ----------------------------------------------------------------------------------
-    sequence = [41000, 50000, 4, 80]
+    sequence = [4000, 1000, 6, 81]
 
     def map_sequence2vector_old(sequence):
         track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
