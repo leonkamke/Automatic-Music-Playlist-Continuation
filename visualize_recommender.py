@@ -43,6 +43,14 @@ if __name__ == "__main__":
     evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
 
-    src, trg, pid = evaluation_dataset[4877]
+    """
+    "name": "sleep", 
+            "collaborative": "false", 
+            "pid": 10246, 
+            "modified_at": 1496188800, 
+            "num_tracks": 33,
+    """
+
+    src, trg, pid = evaluation_dataset[4246]
     print(pid)
     print(len(evaluation_dataset))
