@@ -41,10 +41,9 @@ class Autoencoder(nn.Module):
         self.num_albums = num_albums
         self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
-        self.dropout = nn.Dropout(0.2)
+        # self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
-            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -201,10 +200,10 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    #os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
