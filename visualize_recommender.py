@@ -70,9 +70,16 @@ if __name__ == "__main__":
             "num_tracks": 117, 
             "num_albums": 52, 
             "num_followers": 3,  
+            
+    "name": "christmas", 
+            "collaborative": "false", 
+            "pid": 842, 
+            "modified_at": 1479340800, 
+            "num_tracks": 136, 
+            "num_albums": 19, 
     """
 
-    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[840]
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[842]
     print(pid)
     print(playlist_name)
     print(len(playlist_ids))
