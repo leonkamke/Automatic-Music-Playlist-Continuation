@@ -248,6 +248,15 @@ if __name__ == "__main__":
     artist_uri = "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq"
     album_uri = "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
 
+    # reducedTrackuri_2_id, reducedArtisturi_2_id
+    # ==
+    # tracks_reduced, artists_reduced
+    word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
+    word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
+
+    uri_id = word2vec_tracks_reduced.wv.get_index(track_uri)
+    uri_id2 = reducedTrackUri2reducedId[track_uri]
+    print(uri_id, uri_id2)
 
 
 
