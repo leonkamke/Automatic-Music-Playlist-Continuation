@@ -312,7 +312,7 @@ if __name__ == "__main__":
         # return torch.cat((track_vector, artist_vector, album_vector))
         return torch.cat((track_vector, artist_vector))
 
-    print(torch.eq(map_sequence2vector_old(sequence), map_sequence2vector(sequence)))
+    print(torch.equal(map_sequence2vector_old(sequence), map_sequence2vector(sequence)))
 
 
 
