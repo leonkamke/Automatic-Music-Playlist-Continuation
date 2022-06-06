@@ -14,7 +14,7 @@ WORD2VEC_TRACKS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists/word2v
 WORD2VEC_ARTISTS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model"
 
 
-def evaluate_model(model, start_idx, end_idx, device):
+def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device):
     print("load word2vec_tracks and word2vec_artists")
     word2vec_tracks = gensim.models.Word2Vec.load(WORD2VEC_TRACKS_PATH)
     word2vec_artists = gensim.models.Word2Vec.load(WORD2VEC_ARTISTS_PATH)
@@ -23,7 +23,7 @@ def evaluate_model(model, start_idx, end_idx, device):
     print("start evaluation...")
     # create evaluation dataset
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.SpotifyEvaluationDataset(word2vec_tracks, word2vec_artists, start_idx, end_idx)
+    evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, start_idx, end_idx)
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
@@ -53,7 +53,7 @@ def evaluate_model(model, start_idx, end_idx, device):
         ndcg_tracks_sum += ndcg_tracks
 
         # convert prediction and target to list's of artist id's
-        artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
+        artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
 
         # calculate for the artists R-Precision and artists NDCG
         r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)

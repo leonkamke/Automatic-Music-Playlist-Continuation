@@ -212,6 +212,7 @@ if __name__ == "__main__":
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
     reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
     reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
+
     reduced_trackId2trackId = ld.get_reduced_trackid2trackid()
     trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
     trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
@@ -224,5 +225,11 @@ if __name__ == "__main__":
     "artist_uri": "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq",
     "album_uri": "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
     """
+
+    track_uri = "spotify:track:7t2bFihaDvhIrd2gn2CWJO"
+    artist_uri = "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq"
+    album_uri = "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
+
+
 
 

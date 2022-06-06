@@ -83,15 +83,13 @@ Spotify Evaluation Dataset contains:
 
 
 class SpotifyEvaluationDataset(Dataset):
-    def __init__(self, word2vec_tracks, word2vec_artists, start_idx, end_idx):
+    def __init__(self, trackUri2trackId, artistUri2artistId, start_idx, end_idx):
         # data loading
-        self.word2vec_tracks = word2vec_tracks
-        self.word2vec_artists = word2vec_artists
+        self.trackUri2trackId = trackUri2trackId
+        self.artistUri2artistId = artistUri2artistId
         self.start_idx = start_idx
         self.end_idx = end_idx
         self.src, self.trg, self.pids = self.read_train_data()
-        # artist_dict: track_id -> artist_id
-        self.artist_dict = self.init_artist_dict()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
@@ -127,26 +125,13 @@ class SpotifyEvaluationDataset(Dataset):
             for i in range(len(src_uri)):
                 indices = []
                 for uri in src_uri[i]:
-                    indices.append(self.word2vec_tracks.wv.get_index(uri))
+                    indices.append(self.trackUri2trackId[uri])
                 src_idx.append(torch.LongTensor(indices))
                 indices = []
                 for uri in trg_uri[i]:
-                    indices.append(self.word2vec_tracks.wv.get_index(uri))
+                    indices.append(self.trackUri2trackId[uri])
                 trg_idx.append(torch.LongTensor(indices))
         return src_idx, trg_idx, pids
-
-    def init_artist_dict(self):
-        with open(la.path_track_artist_dict_unique(),
-                  encoding='utf8') as read_obj:
-            csv_reader = csv.reader(read_obj)
-            # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
-            track_artist_dict = {}
-            for index, row in enumerate(csv_reader):
-                if row[0] not in track_artist_dict:
-                    track_id = self.word2vec_tracks.wv.get_index(row[0])
-                    artist_id = self.word2vec_artists.wv.get_index(row[1])
-                    track_artist_dict[track_id] = artist_id
-        return track_artist_dict
 
 
 class FirstFiveEvaluationDataset(Dataset):
