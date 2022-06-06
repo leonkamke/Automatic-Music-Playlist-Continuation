@@ -87,6 +87,7 @@ class AutoencoderDataset(Dataset):
 
         return playlists, artist_sequences, album_sequences
 
+
 # ----------------------------------------------------------------------------------------------------------------
 
 class AutoencoderDatasetOld(Dataset):

@@ -58,25 +58,6 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-    def map_sequence2vector(self, sequence):
-        # input.shape == (seq_len)
-        track_vector = torch.zeros(self.num_tracks)
-        artist_vector = torch.zeros(self.num_artists)
-        # map sequence to vector of 1s and 0s (vector.shape == (input_size))
-        for track_id in sequence:
-            track_uri = self.track2vec.wv.index_to_key[track_id]
-            if track_uri in self.track2vec_reduced.wv.key_to_index:
-                new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
-                track_vector[new_track_id] = 1
-
-                artist_id = self.track2artist[int(track_id)]
-                artist_uri = self.artist2vec.wv.index_to_key[artist_id]
-                if artist_uri in self.artist2vec_reduced.wv.key_to_index:
-                    artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
-                    artist_vector[artist_id_reduced] = 1
-
-        return torch.cat((track_vector, artist_vector))
-
     def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
@@ -95,6 +76,25 @@ class Autoencoder(nn.Module):
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
         return output
+
+    def map_sequence2vector(self, sequence):
+        # input.shape == (seq_len)
+        track_vector = torch.zeros(self.num_tracks)
+        artist_vector = torch.zeros(self.num_artists)
+        # map sequence to vector of 1s and 0s (vector.shape == (input_size))
+        for track_id in sequence:
+            track_uri = self.track2vec.wv.index_to_key[track_id]
+            if track_uri in self.track2vec_reduced.wv.key_to_index:
+                new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
+                track_vector[new_track_id] = 1
+
+                artist_id = self.track2artist[int(track_id)]
+                artist_uri = self.artist2vec.wv.index_to_key[artist_id]
+                if artist_uri in self.artist2vec_reduced.wv.key_to_index:
+                    artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
+                    artist_vector[artist_id_reduced] = 1
+
+        return torch.cat((track_vector, artist_vector))
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.AutoencoderDatasetOld(word2vec_tracks_reduced, word2vec_artists_reduced, num_playlists_for_training)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()

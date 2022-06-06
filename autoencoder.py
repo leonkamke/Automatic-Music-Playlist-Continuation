@@ -27,19 +27,18 @@ def count_parameters(model):
 
 class Autoencoder(nn.Module):
     def __init__(self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
-                 trackId2reducedAlbumId, reducedTrackId2trackId):
+                 reducedTrackId2trackId):
 
         super(Autoencoder, self).__init__()
         self.trackId2reducedTrackId = trackId2reducedTrackId
         self.trackId2reducedArtistId = trackId2reducedArtistId
-        self.trackId2reducedAlbumId = trackId2reducedAlbumId
         self.reducedTrackId2trackId = reducedTrackId2trackId
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
         self.num_artists = num_artists
         self.num_albums = num_albums
-        self.input_size = self.num_tracks # + self.num_artists + self.num_albums
+        self.input_size = self.num_tracks + self.num_artists # + self.num_albums
 
         # self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
@@ -103,17 +102,17 @@ class Autoencoder(nn.Module):
     def map_sequence2vector(self, sequence):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
-        #artist_vector = torch.zeros(self.num_artists)
+        artist_vector = torch.zeros(self.num_artists)
         #album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
                 track_vector[int(new_track_id)] = 1
-            """if track_id in self.trackId2reducedArtistId:
+            if track_id in self.trackId2reducedArtistId:
                 new_artist_id = self.trackId2reducedArtistId[track_id]
-                artist_vector[new_artist_id] = 1
-            if track_id in self.trackId2reducedAlbumId:
+                artist_vector[int(new_artist_id)] = 1
+            """if track_id in self.trackId2reducedAlbumId:
                 new_album_id = self.trackId2reducedAlbumId[track_id]
                 album_vector[new_album_id] = 1"""
         # return torch.cat((track_vector, artist_vector, album_vector))
