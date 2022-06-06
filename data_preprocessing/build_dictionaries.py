@@ -21,6 +21,20 @@ def build_track_uri2id():
     print("finished")
 
 
+def build_reducedTrackUri2reducedTrackID():
+    print("build track_uri2id dict")
+    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
+    dict = {}
+    for i in range(len(track2vec.wv)):
+        print(str(i))
+        id = i
+        uri = track2vec.wv.index_to_key[id]
+        dict[uri] = id
+    with open(OUTPUT_PATH + 'reduced_track_uri2reduced_id.pkl', 'wb') as f:
+        pickle.dump(dict, f)
+    print("finished")
+
+
 def build_id2track_uri():
     print("build track_uri2id dict")
     track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
@@ -37,13 +51,16 @@ def build_id2track_uri():
 
 def build_track_id2reduced_track_id():
     print("build track_id 2 reduced_track_id")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
+    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    track2vec_reduced = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         print(str(i))
         id = i
         uri = track2vec.wv.index_to_key[id]
-        dict[id] = uri
+        if uri in track2vec_reduced.wv.key_to_index:
+            reduced_id = track2vec_reduced.wv.key_to_index[uri]
+            dict[id] = reduced_id
     with open(OUTPUT_PATH + 'trackid2reduced_trackid.pkl', 'wb') as f:
         pickle.dump(dict, f)
     print("finished")
@@ -116,10 +133,5 @@ def build_trackid2albumid():
 #track_all_id2artist_id
 #track_all_id2album_id
 if __name__ == "__main__":
-    build_track_uri2id()
-    build_id2track_uri()
+    build_reducedTrackUri2reducedTrackID()
     build_track_id2reduced_track_id()
-    build_artist_uri2id()
-    build_album_uri2id()
-    build_trackid2artistid()
-    build_trackid2albumid()
