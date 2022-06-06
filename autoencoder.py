@@ -41,9 +41,10 @@ class Autoencoder(nn.Module):
         self.num_albums = num_albums
         self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
-        # self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
+            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -59,6 +60,24 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
+    def predict_(self, input, num_predictions):
+        # input is a list of track_id's
+        # input.shape == (seq_len)
+        input_vector = self.map_sequence2vector(input)
+        # input_vector.shape == (num_tracks + num_artists)
+        # forward the vector through the autoencoder
+        output_vector = self.forward(input_vector)[0:self.num_tracks]
+        # get the top k indices/tracks
+        _, top_k = torch.topk(output_vector, k=num_predictions)
+        # transform the indices of the whole word2vec model
+        output = []
+        for reduced_track_id in top_k:
+            track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
+            output.append(track_id)
+        # output has to be a list of track_id's
+        # outputs.shape == (num_predictions)
+        return output
+
     def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
@@ -66,6 +85,11 @@ class Autoencoder(nn.Module):
         # input_vector.shape == (num_tracks + num_artists)
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)[0:self.num_tracks]
+        # Don't predict the input values -> set propabilities of input track_id's to 0
+        for track_id in input:
+            if track_id in self.trackId2reducedTrackId:
+                track_id_reduced = self.trackId2reducedTrackId[track_id]
+                output_vector[track_id_reduced] = 0
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
         # transform the indices of the whole word2vec model
