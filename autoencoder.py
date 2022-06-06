@@ -41,10 +41,9 @@ class Autoencoder(nn.Module):
         self.num_albums = num_albums
         self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
-        self.dropout = nn.Dropout(0.2)
+        # self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
-            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
