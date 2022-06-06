@@ -62,14 +62,21 @@ if __name__ == "__main__":
             "num_tracks": 51, 
             "num_albums": 46, 
             "num_followers": 2, 
+            
+    "name": "black", 
+            "collaborative": "false", 
+            "pid": 835, 
+            "modified_at": 1504915200, 
+            "num_tracks": 207, 
+            "num_albums": 157, 
     """
 
-    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[720]
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[835]
     print(pid)
     print(playlist_name)
     print(len(playlist_ids))
     num_predictions = 20
-    recommendation_ids = model.predict(playlist_ids[0:10], num_predictions)
+    recommendation_ids = model.predict(playlist_ids[0:20], num_predictions)
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
