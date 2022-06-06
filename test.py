@@ -251,12 +251,18 @@ if __name__ == "__main__":
     # reducedTrackuri_2_id, reducedArtisturi_2_id
     # ==
     # tracks_reduced, artists_reduced
+    print("load word2vec models")
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
+    print("finished")
 
     uri_id = word2vec_tracks_reduced.wv.get_index(track_uri)
     uri_id2 = reducedTrackUri2reducedId[track_uri]
     print(uri_id, uri_id2)
+
+    artist_id = word2vec_artists_reduced.wv.get_index(artist_uri)
+    artist_id2 = reducedArtistUri2reducedId[artist_uri]
+    print(artist_id, artist_id2)
 
 
 
