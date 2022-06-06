@@ -251,12 +251,12 @@ if __name__ == "__main__":
     # reducedTrackuri_2_id, reducedArtisturi_2_id
     # ==
     # tracks_reduced, artists_reduced
-    print("load word2vec models")
+    """print("load word2vec models")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     word2vec_tracks_reduced = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_artists_reduced = gensim.models.Word2Vec.load(la.path_artist_to_vec_reduced_model())
-    print("finished")
+    print("finished")"""
     """
     uri_id = word2vec_tracks_reduced.wv.get_index(track_uri)
     uri_id2 = reducedTrackUri2reducedId[track_uri]
@@ -330,15 +330,18 @@ if __name__ == "__main__":
 
     print(output == output1)
     """
-    evaluation_dataset_old = load_eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists,
+    """evaluation_dataset_old = load_eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists,
                                                                             10000, 11000)
     evaluation_dataset = load_eval_data.FirstFiveEvaluationDataset(trackUri2trackId, artistUri2artistId,
-                                                                            10000, 11000)
-    pid1, src1, trg1 = evaluation_dataset[100]
+                                                                            10000, 11000)"""
+    """pid1, src1, trg1 = evaluation_dataset[100]
     pid2, src2, trg2 = evaluation_dataset_old[100]
     print(pid1, pid2)
     print(src1, src2)
-    print(trg1, trg2)
+    print(trg1, trg2)"""
 
+    # track id 289770 -> reduced_track id 284291
+    print(len(trackId2reducedTrackId))
+    print(trackId2reducedTrackId[289770])
 
 
