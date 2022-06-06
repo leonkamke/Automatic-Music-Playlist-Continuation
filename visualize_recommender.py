@@ -44,14 +44,16 @@ if __name__ == "__main__":
     print("finished")
 
     """
-    "name": "sleep", 
+    "name": "Bachata Playlist", 
             "collaborative": "false", 
-            "pid": 10246, 
-            "modified_at": 1496188800, 
-            "num_tracks": 33,
+            "pid": 720, 
+            "modified_at": 1340150400, 
+            "num_tracks": 51, 
+            "num_albums": 46, 
+            "num_followers": 2, 
     """
 
-    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[3]
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[720]
     print(pid)
     print(playlist_name)
-    print(len(evaluation_dataset))
+    print(len(playlist_ids))
