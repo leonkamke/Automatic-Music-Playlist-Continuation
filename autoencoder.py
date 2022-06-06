@@ -171,9 +171,9 @@ if __name__ == '__main__':
 
     print("create Autoencoder model...")
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
-    #                  trackId2reducedAlbumId, reducedTrackId2trackId)
+    #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
-                        trackId2reducedAlbumId, reduced_trackId2trackId)
+                        reduced_trackId2trackId)
     print("finished")
 
     print("init weights...")
