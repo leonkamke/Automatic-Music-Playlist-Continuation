@@ -109,7 +109,7 @@ class Autoencoder(nn.Module):
         for track_id in sequence:
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
-                track_vector[new_track_id] = 1
+                track_vector[int(new_track_id)] = 1
             """if track_id in self.trackId2reducedArtistId:
                 new_artist_id = self.trackId2reducedArtistId[track_id]
                 artist_vector[new_artist_id] = 1
