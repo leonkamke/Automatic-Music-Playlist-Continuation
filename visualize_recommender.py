@@ -77,12 +77,20 @@ if __name__ == "__main__":
             "modified_at": 1479340800, 
             "num_tracks": 136, 
             "num_albums": 19, 
+            
+    "name": "Hits", 
+            "collaborative": "false", 
+            "pid": 37, 
+            "modified_at": 1456790400, 
+            "num_tracks": 72, 
+            "num_albums": 69,
     """
 
-    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[35]
-    print(pid)
-    print(playlist_name)
-    print(len(playlist_ids))
+    playlist_id = 37
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
+    print("Playlist ID: ", pid)
+    print("Playlist name: ", playlist_name)
+    print("Length of the playlist: ", len(playlist_ids))
     num_predictions = 20
     recommendation_ids = model.predict(playlist_ids[0:-1], num_predictions)
 
