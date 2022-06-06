@@ -71,8 +71,9 @@ class Autoencoder(nn.Module):
 
                 artist_id = self.track2artist[int(track_id)]
                 artist_uri = self.artist2vec.wv.index_to_key[artist_id]
-                artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
-                artist_vector[artist_id_reduced] = 1
+                if artist_uri in self.artist2vec_reduced.wv.key_to_index:
+                    artist_id_reduced = self.artist2vec_reduced.wv.key_to_index[artist_uri]
+                    artist_vector[artist_id_reduced] = 1
 
         return torch.cat((track_vector, artist_vector))
 
