@@ -116,9 +116,9 @@ class Autoencoder(nn.Module):
                 new_track_id = self.trackId2reducedTrackId[track_id]
                 print("new_track_id: ", new_track_id)
                 track_vector[new_track_id] = 1
-            if track_id in self.trackId2reducedArtistId:
-                new_artist_id = self.trackId2reducedArtistId[track_id]
-                artist_vector[int(new_artist_id)] = 1
+                if track_id in self.trackId2reducedArtistId:
+                    new_artist_id = self.trackId2reducedArtistId[track_id]
+                    artist_vector[new_artist_id] = 1
             """if track_id in self.trackId2reducedAlbumId:
                 new_album_id = self.trackId2reducedAlbumId[track_id]
                 album_vector[new_album_id] = 1"""
