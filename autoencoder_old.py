@@ -85,11 +85,14 @@ class Autoencoder(nn.Module):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
         artist_vector = torch.zeros(self.num_artists)
+        print("track_vector.shape: ", track_vector.shape)
+        print("artist_vector.shape ", artist_vector.shape)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             track_uri = self.track2vec.wv.index_to_key[track_id]
             if track_uri in self.track2vec_reduced.wv.key_to_index:
                 new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
+                print("new_track_id: ", new_track_id)
                 track_vector[new_track_id] = 1
 
                 artist_id = self.track2artist[int(track_id)]
