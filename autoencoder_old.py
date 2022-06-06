@@ -28,12 +28,13 @@ def count_parameters(model):
 
 class Autoencoder(nn.Module):
     def __init__(self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
-                 dropout=0):
+                 artist2vec_reduced, dropout=0):
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
         self.track2artist = track2artist
         self.artist2vec = artist2vec
+        self.artist2vec_reduced = artist2vec_reduced
 
         self.hid_dim = hid_dim
         self.num_tracks = num_tracks
@@ -171,11 +172,11 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    #os.mkdir(la.output_path_model() + foldername)
+    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
