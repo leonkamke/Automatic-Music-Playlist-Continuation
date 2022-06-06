@@ -112,6 +112,7 @@ class Autoencoder(nn.Module):
         #album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
+            track_id = int(track_id)
             print("track_id: ", track_id)
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
