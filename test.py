@@ -316,16 +316,16 @@ if __name__ == "__main__":
 
     _, top_k = torch.topk(a, k=100)
 
+    output1 = []
+    for reduced_track_id in top_k:
+        track_id = reduced_trackId2trackId[int(reduced_track_id)]
+        output1.append(track_id)
+
     output = []
     for track_id in top_k:
         track_uri = word2vec_tracks_reduced.wv.index_to_key[track_id]
         new_track_id = word2vec_tracks.wv.key_to_index[track_uri]
         output.append(new_track_id)
-
-    output1 = []
-    for reduced_track_id in top_k:
-        track_id = reduced_trackId2trackId[int(reduced_track_id)]
-        output1.append(track_id)
 
     print(output == output1)
 
