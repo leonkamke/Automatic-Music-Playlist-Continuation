@@ -59,6 +59,7 @@ class Autoencoder(nn.Module):
         return decoded
 
     def predict(self, input, num_predictions):
+        print("input: ", input)
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -67,6 +68,7 @@ class Autoencoder(nn.Module):
         output_vector = self.forward(input_vector)[0:self.num_tracks]
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
+        print("top_k: ", top_k)
         # transform the indices of the whole word2vec model
         output = []
         for reduced_track_id in top_k:

@@ -61,12 +61,14 @@ class Autoencoder(nn.Module):
     def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
+        print("input: ", input)
         input_vector = self.map_sequence2vector(input)
         # input_vector.shape == (num_tracks + num_artists)
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)[0:self.num_tracks]
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
+        print("top_k: ", top_k)
         # transform the indices of the whole word2vec model
         output = []
         for track_id in top_k:
@@ -146,8 +148,8 @@ if __name__ == '__main__':
     max_norm = 5
 
     print("create Autoencoder model...")
-    # self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
-    #                  dropout=0
+    # (self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
+    #                  artist2vec_reduced, dropout=0)
     model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict,
                         word2vec_artists, word2vec_artists_reduced)
     print("finished")
@@ -157,7 +159,7 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the vocabulary is: ", NUM_TRACKS)
+    print("The size of the input-layer is: ", model.input_size)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
