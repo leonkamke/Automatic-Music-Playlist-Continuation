@@ -119,7 +119,8 @@ def build_track_id2reduced_artist_id():
             artist_uri = artist2vec.wv.index_to_key[artist_id]
             if artist_uri in artist2vec_reduced.wv.key_to_index:
                 reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
-                dict[track_id] = reduced_artist_id
+                if track_id not in dict:
+                    dict[track_id] = reduced_artist_id
         with open(OUTPUT_PATH + 'trackid2reduced_artistid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
         print(len(dict))
@@ -141,7 +142,8 @@ def build_track_id2reduced_album_id():
             album_uri = album2vec.wv.index_to_key[album_id]
             if album_uri in album2vec_reduced.wv.key_to_index:
                 reduced_album_id = album2vec_reduced.wv.key_to_index[album_uri]
-                dict[track_id] = reduced_album_id
+                if track_id not in dict:
+                    dict[track_id] = reduced_album_id
         with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
         print(len(dict))
@@ -200,7 +202,7 @@ def build_trackid2artistid():
 
 
 def build_trackid2albumid():
-    print("build trackid2artistid")
+    print("build trackid2albumid")
     track2vec = gensim.models.Word2Vec.load(
         '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
     album2vec = gensim.models.Word2Vec.load(
@@ -224,8 +226,8 @@ def build_trackid2albumid():
 # track_all_id2artist_id
 # track_all_id2album_id
 if __name__ == "__main__":
-    build_trackid2artistid()
-    build_trackid2albumid()
+    """build_trackid2artistid()
+    build_trackid2albumid()"""
 
     build_track_id2reduced_artist_id()
     build_track_id2reduced_album_id()
