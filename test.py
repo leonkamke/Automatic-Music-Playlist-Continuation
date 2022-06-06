@@ -273,6 +273,46 @@ if __name__ == "__main__":
     new_track_id2 = trackId2reducedTrackId[track_id]
     print(new_track_id1, new_track_id2)
 
+    sequence = [41000, 50000, 4, 80]
+    def map_sequence2vector_old(self, sequence):
+        track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
+        # input.shape == (seq_len)
+        track_vector = torch.zeros(1000000)
+        artist_vector = torch.zeros(1000000)
+        # map sequence to vector of 1s and 0s (vector.shape == (input_size))
+        for track_id in sequence:
+            track_uri = word2vec_tracks.wv.index_to_key[track_id]
+            if track_uri in word2vec_tracks_reduced.wv.key_to_index:
+                new_track_id = word2vec_tracks_reduced.wv.key_to_index[track_uri]
+                track_vector[new_track_id] = 1
+
+                artist_id = track2artist_dict[int(track_id)]
+                artist_uri = word2vec_artists.wv.index_to_key[artist_id]
+                if artist_uri in word2vec_artists_reduced.wv.key_to_index:
+                    artist_id_reduced = word2vec_tracks_reduced.wv.key_to_index[artist_uri]
+                    artist_vector[artist_id_reduced] = 1
+        return torch.cat((track_vector, artist_vector))
+
+    def map_sequence2vector(self, sequence):
+        # input.shape == (seq_len)
+        track_vector = torch.zeros(1000000)
+        artist_vector = torch.zeros(1000000)
+        #album_vector = torch.zeros(self.num_albums)
+        # map sequence to vector of 1s and 0s (vector.shape == (input_size))
+        for track_id in sequence:
+            if track_id in trackId2reducedTrackId:
+                new_track_id = trackId2reducedTrackId[track_id]
+                track_vector[int(new_track_id)] = 1
+            if track_id in trackId2reducedArtistId:
+                new_artist_id = trackId2reducedArtistId[track_id]
+                artist_vector[int(new_artist_id)] = 1
+            """if track_id in self.trackId2reducedAlbumId:
+                new_album_id = self.trackId2reducedAlbumId[track_id]
+                album_vector[new_album_id] = 1"""
+        # return torch.cat((track_vector, artist_vector, album_vector))
+        return torch.cat((track_vector, artist_vector))
+
+    print(torch.eq(map_sequence2vector_old(sequence), map_sequence2vector(sequence)))
 
 
 

@@ -116,7 +116,7 @@ class Autoencoder(nn.Module):
                 new_album_id = self.trackId2reducedAlbumId[track_id]
                 album_vector[new_album_id] = 1"""
         # return torch.cat((track_vector, artist_vector, album_vector))
-        return track_vector
+        return torch.cat((track_vector, artist_vector))
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
