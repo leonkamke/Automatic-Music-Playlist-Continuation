@@ -342,6 +342,7 @@ if __name__ == "__main__":
 
     # track id 289770 -> reduced_track id 284291
     print(len(trackId2reducedTrackId))
+    print(289770 in trackId2reducedTrackId)
     print(trackId2reducedTrackId[289770])
 
 
