@@ -314,7 +314,8 @@ if __name__ == "__main__":
     a = map_sequence2vector(sequence)
     print(torch.equal(map_sequence2vector_old(sequence), a))
 
-    _, top_k = torch.topk(a, k=100)
+    _, top_k = torch.topk(a, k=10)
+    print(top_k)
 
     output1 = []
     for reduced_track_id in top_k:
