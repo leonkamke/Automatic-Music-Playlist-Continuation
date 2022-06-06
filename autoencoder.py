@@ -28,6 +28,7 @@ def count_parameters(model):
 class Autoencoder(nn.Module):
     def __init__(self, hid_dim, track2vec, artist2vec, album2vec, track2vec_reduced, artist2vec_reduced,
                  album2vec_reduced, track2artist, track2album):
+        # trackId2reducedTrackId, trackId2reducedArtistId, trackId2reducedAlbumId
         super(Autoencoder, self).__init__()
         self.track2vec = track2vec
         self.track2vec_reduced = track2vec_reduced
@@ -64,6 +65,25 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
+    def predict(self, input, num_predictions):
+        # input is a list of track_id's
+        # input.shape == (seq_len)
+        input_vector = self.map_sequence2vector(input)
+        # input_vector.shape == (num_tracks + num_artists)
+        # forward the vector through the autoencoder
+        output_vector = self.forward(input_vector)[0:self.num_tracks]
+        # get the top k indices/tracks
+        _, top_k = torch.topk(output_vector, k=num_predictions)
+        # transform the indices of the whole word2vec model
+        output = []
+        for track_id in top_k:
+            track_uri = self.track2vec_reduced.wv.index_to_key[track_id]
+            new_track_id = self.track2vec.wv.key_to_index[track_uri]
+            output.append(new_track_id)
+        # output has to be a list of track_id's
+        # outputs.shape == (num_predictions)
+        return output
+
     def map_sequence2vector(self, sequence):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
@@ -89,25 +109,6 @@ class Autoencoder(nn.Module):
                 album_vector[new_album_id] = 1
 
         return torch.cat((track_vector, artist_vector, album_vector))
-
-    def predict(self, input, num_predictions):
-        # input is a list of track_id's
-        # input.shape == (seq_len)
-        input_vector = self.map_sequence2vector(input)
-        # input_vector.shape == (num_tracks + num_artists)
-        # forward the vector through the autoencoder
-        output_vector = self.forward(input_vector)[0:self.num_tracks]
-        # get the top k indices/tracks
-        _, top_k = torch.topk(output_vector, k=num_predictions)
-        # transform the indices of the whole word2vec model
-        output = []
-        for track_id in top_k:
-            track_uri = self.track2vec_reduced.wv.index_to_key[track_id]
-            new_track_id = self.track2vec.wv.key_to_index[track_uri]
-            output.append(new_track_id)
-        # output has to be a list of track_id's
-        # outputs.shape == (num_predictions)
-        return output
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
@@ -139,7 +140,8 @@ if __name__ == '__main__':
 
     print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
-
+    reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
+    reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
 
     trackuri_2_id = ld.get_trackuri2id()
     artisturi_2_id = ld.get_artist_uri2id()
@@ -185,7 +187,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, artisturi_2_id, albumuri_2_id,
+    dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6,
                             collate_fn=ld.collate_fn_autoencoder)

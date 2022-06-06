@@ -3,13 +3,13 @@ import pickle
 
 import gensim
 
-
 OUTPUT_PATH = "/netscratch/kamke/dictionaries/"
 
 
 def build_track_uri2id():
     print("build track_uri2id dict")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         id = i
@@ -23,7 +23,8 @@ def build_track_uri2id():
 
 def build_reducedTrackUri2reducedTrackID():
     print("build track_uri2id dict")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         id = i
@@ -67,7 +68,8 @@ def build_reducedAlbumUri2reducedAlbumID():
 
 def build_id2track_uri():
     print("build track_uri2id dict")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         id = i
@@ -81,8 +83,10 @@ def build_id2track_uri():
 
 def build_track_id2reduced_track_id():
     print("build track_id 2 reduced_track_id")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
-    track2vec_reduced = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    track2vec_reduced = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
         id = i
@@ -96,9 +100,57 @@ def build_track_id2reduced_track_id():
     print("finished")
 
 
+DICT_PATH = '/netscratch/kamke/dictionaries/'
+
+
+def build_track_id2reduced_artist_id():
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    artist2vec_reduced = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_artists_reduced/word2vec-song-vectors.model')
+    artist2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
+    with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        dict = {}
+        for i in range(len(track2vec.wv)):
+            track_id = i
+            artist_id = loaded_dict[track_id]
+            artist_uri = artist2vec.wv.index_to_key[artist_id]
+            if artist_uri in artist2vec_reduced.wv.key_to_index:
+                reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
+                dict[track_id] = reduced_artist_id
+        with open(OUTPUT_PATH + 'trackid2reduced_artistid.pkl', 'wb') as f1:
+            pickle.dump(dict, f1)
+        print(len(dict))
+
+
+def build_track_id2reduced_album_id():
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    album2vec_reduced = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_albums_reduced/word2vec-song-vectors.model')
+    album2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
+    with open(DICT_PATH + 'trackid2albumid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        dict = {}
+        for i in range(len(track2vec.wv)):
+            track_id = i
+            album_id = loaded_dict[track_id]
+            album_uri = album2vec.wv.index_to_key[album_id]
+            if album_uri in album2vec_reduced.wv.key_to_index:
+                reduced_album_id = album2vec_reduced.wv.key_to_index[album_uri]
+                dict[track_id] = reduced_album_id
+        with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
+            pickle.dump(dict, f1)
+        print(len(dict))
+
+
 def build_artist_uri2id():
     print("build artist_uri2id dict")
-    word2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
+    word2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(word2vec.wv)):
         id = i
@@ -112,7 +164,8 @@ def build_artist_uri2id():
 
 def build_album_uri2id():
     print("build artist_uri2id dict")
-    word2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
+    word2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(word2vec.wv)):
         id = i
@@ -126,9 +179,12 @@ def build_album_uri2id():
 
 def build_trackid2artistid():
     print("build trackid2artistid")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
-    artist2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
-    with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv', encoding='utf8') as read_obj:
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    artist2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model')
+    with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_artist_dict_unique.csv',
+              encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
         track_artist_dict = {}
@@ -145,9 +201,12 @@ def build_trackid2artistid():
 
 def build_trackid2albumid():
     print("build trackid2artistid")
-    track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
-    album2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
-    with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_album_dict_unique.csv', encoding='utf8') as read_obj:
+    track2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
+    album2vec = gensim.models.Word2Vec.load(
+        '/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
+    with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/track_album_dict_unique.csv',
+              encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file and create dictionary of track_uri -> artist_uri
         track_album_dict = {}
@@ -162,17 +221,10 @@ def build_trackid2albumid():
     print("finished")
 
 
-#track_all_id2artist_id
-#track_all_id2album_id
+# track_all_id2artist_id
+# track_all_id2album_id
 if __name__ == "__main__":
-    build_track_uri2id()
-    build_reducedTrackUri2reducedTrackID()
-    build_reducedArtistUri2reducedArtistID()
-    build_reducedAlbumUri2reducedAlbumID()
-    build_id2track_uri()
-    build_track_id2reduced_track_id()
-    build_artist_uri2id()
-    build_album_uri2id()
-    build_trackid2artistid()
-    build_trackid2albumid()
+    build_track_id2reduced_artist_id()
+    build_track_id2reduced_album_id()
+
 
