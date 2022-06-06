@@ -8,14 +8,14 @@ import load_attributes as la
 
 
 class AutoencoderDataset(Dataset):
-    def __init__(self, trackuri_2_id, artisturi_2_id, albumuri_2_id, num_rows_train):
+    def __init__(self, reducedTrackuri_2_id, reducedArtisturi_2_id, reducedAlbumuri_2_id, num_rows_train):
         # data loading
-        self.trackuri_2_id = trackuri_2_id
-        self.artisturi_2_id = artisturi_2_id
-        self.albumuri_2_id = albumuri_2_id
-        self.num_tracks = len(self.trackuri_2_id)
-        self.num_artists = len(self.artisturi_2_id)
-        self.num_albums = len(self.albumuri_2_id)
+        self.reducedTrackuri_2_id = reducedTrackuri_2_id
+        self.reducedArtisturi_2_id = reducedArtisturi_2_id
+        self.reducedAlbumuri_2_id = reducedAlbumuri_2_id
+        self.num_tracks = len(self.reducedTrackuri_2_id)
+        self.num_artists = len(self.reducedArtisturi_2_id)
+        self.num_albums = len(self.reducedAlbumuri_2_id)
 
         self.num_rows_train = num_rows_train
         self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
@@ -25,8 +25,8 @@ class AutoencoderDataset(Dataset):
         tracks_src = torch.zeros(self.num_tracks)
         tracks_trg = torch.zeros(self.num_tracks)
         for i, uri in enumerate(self.playlists[index]):
-            if uri in self.trackuri_2_id:
-                uri_id = self.trackuri_2_id[uri]
+            if uri in self.reducedTrackuri_2_id:
+                uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = 1
                 if i < len(self.playlists[index]) / 2:
                     tracks_src[uri_id] = 1
@@ -34,8 +34,8 @@ class AutoencoderDataset(Dataset):
         artist_src = torch.zeros(self.num_artists)
         artist_trg = torch.zeros(self.num_artists)
         for i, uri in enumerate(self.artist_sequences[index]):
-            if uri in self.artisturi_2_id:
-                uri_id = self.artisturi_2_id[uri]
+            if uri in self.reducedArtisturi_2_id:
+                uri_id = self.reducedArtisturi_2_id[uri]
                 artist_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
@@ -43,8 +43,8 @@ class AutoencoderDataset(Dataset):
         album_src = torch.zeros(self.num_albums)
         album_trg = torch.zeros(self.num_albums)
         for i, uri in enumerate(self.album_sequences[index]):
-            if uri in self.albumuri_2_id:
-                uri_id = self.albumuri_2_id[uri]
+            if uri in self.reducedAlbumuri_2_id:
+                uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
                     album_src[uri_id] = 1
@@ -712,5 +712,23 @@ def get_trackid2albumid():
 
 def get_trackid2reduced_trackid():
     with open(DICT_PATH + 'trackid2reduced_trackid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_reducedTrackUri2reducedTrackID():
+    with open(DICT_PATH + 'reduced_track_uri2reduced_id.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_reducedArtistUri2reducedArtistID():
+    with open(DICT_PATH + 'reduced_artist_uri2reduced_id.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
+def get_reducedAlbumUri2reducedAlbumID():
+    with open(DICT_PATH + 'reduced_album_uri2reduced_id.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         return loaded_dict

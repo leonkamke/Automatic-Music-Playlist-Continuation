@@ -138,10 +138,12 @@ if __name__ == '__main__':
     device = torch.device(la.get_device())
 
     print("load dictionaries from file")
+    reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
+
+
     trackuri_2_id = ld.get_trackuri2id()
     artisturi_2_id = ld.get_artist_uri2id()
     albumuri_2_id = ld.get_albums_uri2id()
-    ld.get_
 
     track2artist_dict = ld.get_trackid2artistid()
     track2album_dict = ld.get_trackid2albumid()
@@ -183,7 +185,7 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
-    dataset = ld.AutoencoderDataset(trackuri_2_id, artisturi_2_id, albumuri_2_id,
+    dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, artisturi_2_id, albumuri_2_id,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6,
                             collate_fn=ld.collate_fn_autoencoder)
