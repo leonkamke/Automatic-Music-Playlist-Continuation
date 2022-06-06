@@ -243,3 +243,44 @@ class FirstFiveEvaluationDataset(Dataset):
                     indices.append(self.trackUri2trackId[uri])
                 trg_idx.append(torch.LongTensor(indices))
         return src_idx, trg_idx, pids
+
+
+class VisualizeDataset(Dataset):
+    def __init__(self, trackUri2trackId, artistUri2artistId, start_idx, end_idx):
+        # data loading
+        self.trackUri2trackId = trackUri2trackId
+        self.artistUri2artistId = artistUri2artistId
+        self.start_idx = start_idx
+        self.end_idx = end_idx
+        self.playlist_uris, self.playlist_ids, self.pids, self.playlist_names = self.read_train_data()
+        self.n_samples = len(self.pids)
+
+    def __getitem__(self, index):
+        return self.playlist_uris[index], self.playlist_ids[index], self.pids[index], self.playlist_names[index]
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        playlist_uris = []
+        pids = []
+        names = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                if self.start_idx <= index < self.end_idx:
+                    playlist_uris.append(row[2:])
+                    pids.append(row[0])
+                    names.append(row[1])
+                if index > self.end_idx:
+                    break
+            # create lists of track indices according to the indices of the word2vec model
+            playlist_ids = []
+            for i in range(len(playlist_uris)):
+                indices = []
+                for uri in playlist_uris[i]:
+                    indices.append(self.trackUri2trackId[uri])
+                playlist_ids.append(indices)
+        return playlist_uris, playlist_ids, pids, names

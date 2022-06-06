@@ -40,7 +40,7 @@ if __name__ == "__main__":
     print("finished")
 
     print("create dataset")
-    evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
+    evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
 
     """
@@ -51,6 +51,7 @@ if __name__ == "__main__":
             "num_tracks": 33,
     """
 
-    src, trg, pid = evaluation_dataset[4246]
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[3]
     print(pid)
+    print(playlist_name)
     print(len(evaluation_dataset))
