@@ -6,6 +6,15 @@ from evaluation import eval
 from autoencoder import Autoencoder
 from evaluation import load_eval_data as eval_data
 
+
+def trackIds2trackUris(track_ids, track2vec):
+    track_uris = []
+    for track_id in track_ids:
+        track_id = int(track_id)
+        track_uris.append(track2vec.wv.index_to_key[track_id])
+    return track_uris
+
+
 if __name__ == "__main__":
     device = torch.device("cpu")
 
@@ -60,10 +69,8 @@ if __name__ == "__main__":
     print(playlist_name)
     print(len(playlist_ids))
     num_predictions = 20
-    recommendations = model.predict(playlist_ids[0:10], num_predictions)
+    recommendation_ids = model.predict(playlist_ids[0:10], num_predictions)
 
     # print recommendations
-    for track_id in recommendations:
-        track_id = int(track_id)
-        print(word2vec_tracks.wv.index_to_key[track_id])
+    print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
 
