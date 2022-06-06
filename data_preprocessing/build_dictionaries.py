@@ -195,7 +195,7 @@ def build_trackid2artistid():
                 track_artist_dict[track_id] = artist_id
         print(len(track_artist_dict))
     with open(OUTPUT_PATH + 'trackid2artistid.pkl', 'wb') as f:
-        pickle.dump(dict, f)
+        pickle.dump(track_artist_dict, f)
     print("finished")
 
 
@@ -217,13 +217,16 @@ def build_trackid2albumid():
                 track_album_dict[track_id] = artist_id
         print(len(track_album_dict))
     with open(OUTPUT_PATH + 'trackid2albumid.pkl', 'wb') as f:
-        pickle.dump(dict, f)
+        pickle.dump(track_album_dict, f)
     print("finished")
 
 
 # track_all_id2artist_id
 # track_all_id2album_id
 if __name__ == "__main__":
+    build_trackid2artistid()
+    build_trackid2albumid()
+
     build_track_id2reduced_artist_id()
     build_track_id2reduced_album_id()
 
