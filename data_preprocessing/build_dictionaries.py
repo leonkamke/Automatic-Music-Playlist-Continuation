@@ -12,7 +12,6 @@ def build_track_uri2id():
     track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
-        print(str(i))
         id = i
         uri = track2vec.wv.index_to_key[id]
         dict[uri] = id
@@ -26,10 +25,10 @@ def build_reducedTrackUri2reducedTrackID():
     track2vec = gensim.models.Word2Vec.load('/netscratch/kamke/models/word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(track2vec.wv)):
-        print(str(i))
         id = i
         uri = track2vec.wv.index_to_key[id]
         dict[uri] = id
+    print(len(dict))
     with open(OUTPUT_PATH + 'reduced_track_uri2reduced_id.pkl', 'wb') as f:
         pickle.dump(dict, f)
     print("finished")
@@ -41,10 +40,10 @@ def build_reducedArtistUri2reducedArtistID():
         '/netscratch/kamke/models/word2vec/1_mil_playlists_artists_reduced/word2vec-song-vectors.model')
     dict = {}
     for i in range(len(artist2vec.wv)):
-        print(str(i))
         id = i
         uri = artist2vec.wv.index_to_key[id]
         dict[uri] = id
+    print(len(dict))
     with open(OUTPUT_PATH + 'reduced_artist_uri2reduced_id.pkl', 'wb') as f:
         pickle.dump(dict, f)
     print("finished")
@@ -163,6 +162,14 @@ def build_trackid2albumid():
 #track_all_id2artist_id
 #track_all_id2album_id
 if __name__ == "__main__":
+    build_track_uri2id()
+    build_reducedTrackUri2reducedTrackID()
     build_reducedArtistUri2reducedArtistID()
     build_reducedAlbumUri2reducedAlbumID()
+    build_id2track_uri()
+    build_track_id2reduced_track_id()
+    build_artist_uri2id()
+    build_album_uri2id()
+    build_trackid2artistid()
+    build_trackid2albumid()
 
