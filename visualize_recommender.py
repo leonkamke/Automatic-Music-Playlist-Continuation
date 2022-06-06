@@ -45,3 +45,4 @@ if __name__ == "__main__":
 
     src, trg, pid = evaluation_dataset[4877]
     print(pid)
+    print(len(evaluation_dataset))
