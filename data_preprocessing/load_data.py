@@ -26,6 +26,7 @@ class AutoencoderDataset(Dataset):
         tracks_trg = torch.zeros(self.num_tracks)
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.reducedTrackuri_2_id:
+                print("dict contains uri")
                 uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = 1
                 if i < len(self.playlists[index]) / 2:

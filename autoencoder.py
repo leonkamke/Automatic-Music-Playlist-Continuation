@@ -59,7 +59,7 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-    def predict_(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -77,7 +77,7 @@ class Autoencoder(nn.Module):
         # outputs.shape == (num_predictions)
         return output
 
-    def predict(self, input, num_predictions):
+    def predict_(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -130,10 +130,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
-            del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
-            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
