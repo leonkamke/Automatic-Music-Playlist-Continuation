@@ -79,7 +79,7 @@ if __name__ == "__main__":
             "num_albums": 19, 
     """
 
-    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[842]
+    playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[35]
     print(pid)
     print(playlist_name)
     print(len(playlist_ids))
