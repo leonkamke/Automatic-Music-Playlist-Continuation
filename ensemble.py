@@ -50,10 +50,10 @@ if __name__ == "__main__":
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     print("loaded dictionaries from file")
 
-    """print("create word2vec model for ensemble")
+    print("create word2vec model for ensemble")
     model_word2vec = track_embeddings.Word2VecModel(word2vec_tracks)
     model_list.append(model_word2vec)
-    print("finished")"""
+    print("finished")
 
     print("create autoencoder for ensemble")
     NUM_TRACKS = len(reducedTrackUri2reducedId)
@@ -64,12 +64,14 @@ if __name__ == "__main__":
     save_file_name = "/autoencoder.pth"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
-    model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
+    autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
                         reduced_trackId2trackId)
-    model.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
+    autoencoder.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
+    model_list.append(autoencoder)
     print("created model")
     print("finished")
 
+    print("model_list.len = ", len(model_list))
 
     # create ensemble model
     ensemble_model = Ensemble(model_list)
