@@ -197,7 +197,7 @@ if __name__ == "__main__":
     word2vec_albums = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
     print(len(word2vec_albums.wv))"""
 
-    word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
+    """word2vec_tracks = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model")
     word2vec_tracks_reduced = gensim.models.Word2Vec.load("models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
     print(len(word2vec_tracks.wv))
     print(len(word2vec_tracks_reduced.wv))
@@ -206,4 +206,23 @@ if __name__ == "__main__":
 
     id = 50000
     print(word2vec_tracks_reduced.wv.index_to_key[id])
-    print(word2vec_tracks.wv.index_to_key[id_dict[id]])
+    print(word2vec_tracks.wv.index_to_key[id_dict[id]])"""
+
+    print("load dictionaries from file")
+    reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
+    reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
+    reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
+    reduced_trackId2trackId = ld.get_reduced_trackid2trackid()
+    trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
+    trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
+    trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
+    print("loaded dictionaries from file")
+
+    """
+    artist_name": "Ty Dolla $ign",
+    "track_uri": "spotify:track:7t2bFihaDvhIrd2gn2CWJO",
+    "artist_uri": "spotify:artist:7c0XG5cIJTrrAgEC3ULPiq",
+    "album_uri": "spotify:album:3SHx7bBQFI4J8QRr6D5cOK"
+    """
+
+
