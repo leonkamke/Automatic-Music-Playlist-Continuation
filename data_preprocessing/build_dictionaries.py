@@ -117,21 +117,14 @@ def build_track_id2reduced_artist_id():
     with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         my_dict = {}
-        c = 0
-        d = 0
         for i in range(len(track2vec.wv)):
             track_id = i
             artist_id = loaded_dict[track_id]
             artist_uri = artist2vec.wv.index_to_key[artist_id]
-            d += 1
             if artist_uri in artist2vec_reduced.wv.key_to_index:
-                c += 1
                 reduced_artist_id = artist2vec_reduced.wv.key_to_index[artist_uri]
                 my_dict[track_id] = reduced_artist_id
         print(len(my_dict))
-        print("c = ", c)
-        print("d = ", d)
-        print("-----------")
         with open(OUTPUT_PATH + 'trackid2reduced_artistid.pkl', 'wb') as f1:
             pickle.dump(my_dict, f1)
 
@@ -145,15 +138,14 @@ def build_track_id2reduced_album_id():
         '/netscratch/kamke/models/word2vec/1_mil_playlists_albums/word2vec-song-vectors.model')
     with open(DICT_PATH + 'trackid2albumid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
-        dict = {}
+        my_dict = {}
         for i in range(len(track2vec.wv)):
             track_id = i
             album_id = loaded_dict[track_id]
             album_uri = album2vec.wv.index_to_key[album_id]
             if album_uri in album2vec_reduced.wv.key_to_index:
                 reduced_album_id = album2vec_reduced.wv.key_to_index[album_uri]
-                if track_id not in dict:
-                    dict[track_id] = reduced_album_id
+                my_dict[track_id] = reduced_album_id
         print(len(dict))
         with open(OUTPUT_PATH + 'trackid2reduced_albumid.pkl', 'wb') as f1:
             pickle.dump(dict, f1)
