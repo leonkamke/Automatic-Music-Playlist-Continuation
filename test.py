@@ -274,7 +274,7 @@ if __name__ == "__main__":
     print(new_track_id1, new_track_id2)
 
     # test map_sequence2vector ----------------------------------------------------------------------------------
-    sequence = [4000, 1000, 6, 81]
+    sequence = [41000, 50000, 4, 80]
 
     def map_sequence2vector_old(sequence):
         track2artist_dict = ld.get_artist_dict(word2vec_tracks, word2vec_artists)
@@ -291,7 +291,7 @@ if __name__ == "__main__":
                 artist_id = track2artist_dict[int(track_id)]
                 artist_uri = word2vec_artists.wv.index_to_key[artist_id]
                 if artist_uri in word2vec_artists_reduced.wv.key_to_index:
-                    artist_id_reduced = word2vec_tracks_reduced.wv.key_to_index[artist_uri]
+                    artist_id_reduced = word2vec_artists_reduced.wv.key_to_index[artist_uri]
                     artist_vector[artist_id_reduced] = 1
         return torch.cat((track_vector, artist_vector))
 
