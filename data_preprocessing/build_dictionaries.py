@@ -116,6 +116,7 @@ def build_track_id2reduced_artist_id():
 
     with open(DICT_PATH + 'trackid2artistid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
+        print(len(loaded_dict))
         dict = {}
         c = 0
         for i in range(len(track2vec.wv)):
