@@ -31,7 +31,7 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.playlists[index]) / 2:
                     tracks_src[uri_id] = 1
 
-        artist_src = torch.zeros(self.num_artists)
+        """artist_src = torch.zeros(self.num_artists)
         artist_trg = torch.zeros(self.num_artists)
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.reducedArtisturi_2_id:
@@ -47,9 +47,10 @@ class AutoencoderDataset(Dataset):
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
-                    album_src[uri_id] = 1
+                    album_src[uri_id] = 1"""
 
-        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
+        # return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
+        return tracks_src, tracks_trg
 
     def __len__(self):
         return self.n_samples

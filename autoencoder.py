@@ -39,7 +39,7 @@ class Autoencoder(nn.Module):
         self.num_tracks = num_tracks
         self.num_artists = num_artists
         self.num_albums = num_albums
-        self.input_size = self.num_tracks + self.num_artists + self.num_albums
+        self.input_size = self.num_tracks # + self.num_artists + self.num_albums
 
         # self.dropout = nn.Dropout(0.2)
         # input_size -> hid_dim
@@ -103,20 +103,21 @@ class Autoencoder(nn.Module):
     def map_sequence2vector(self, sequence):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
-        artist_vector = torch.zeros(self.num_artists)
-        album_vector = torch.zeros(self.num_albums)
+        #artist_vector = torch.zeros(self.num_artists)
+        #album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
                 track_vector[new_track_id] = 1
-            if track_id in self.trackId2reducedArtistId:
+            """if track_id in self.trackId2reducedArtistId:
                 new_artist_id = self.trackId2reducedArtistId[track_id]
                 artist_vector[new_artist_id] = 1
             if track_id in self.trackId2reducedAlbumId:
                 new_album_id = self.trackId2reducedAlbumId[track_id]
-                album_vector[new_album_id] = 1
-        return torch.cat((track_vector, artist_vector, album_vector))
+                album_vector[new_album_id] = 1"""
+        # return torch.cat((track_vector, artist_vector, album_vector))
+        return track_vector
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
