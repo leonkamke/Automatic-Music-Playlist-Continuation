@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # self, num_tracks, num_artists, hid_dim, track2vec, track2vec_reduced, track2artist, artist2vec,
     #                  dropout=0
     model = Autoencoder(NUM_TRACKS, NUM_ARTISTS, HID_DIM, word2vec_tracks, word2vec_tracks_reduced, track2artist_dict,
-                        word2vec_artists_reduced)
+                        word2vec_artists, word2vec_artists_reduced)
     print("finished")
 
     print("init weights...")
