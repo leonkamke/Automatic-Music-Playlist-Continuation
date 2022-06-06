@@ -58,8 +58,7 @@ class Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-    def predict(self, input, num_predictions):
-        print("input: ", input)
+    def predict_(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -70,7 +69,6 @@ class Autoencoder(nn.Module):
         output_vector = self.forward(input_vector)[0:self.num_tracks]
         # get the top k indices/tracks
         _, top_k = torch.topk(output_vector, k=num_predictions)
-        print("top_k: ", top_k)
         # transform the indices of the whole word2vec model
         output = []
         for reduced_track_id in top_k:
@@ -80,7 +78,7 @@ class Autoencoder(nn.Module):
         # outputs.shape == (num_predictions)
         return output
 
-    def predict_(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
@@ -107,16 +105,12 @@ class Autoencoder(nn.Module):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
         artist_vector = torch.zeros(self.num_artists)
-        print("track_vector.shape: ", track_vector.shape)
-        print("artist_vector.shape ", artist_vector.shape)
         #album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             track_id = int(track_id)
-            print("track_id: ", track_id)
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
-                print("new_track_id: ", new_track_id)
                 track_vector[new_track_id] = 1
                 if track_id in self.trackId2reducedArtistId:
                     new_artist_id = self.trackId2reducedArtistId[track_id]
