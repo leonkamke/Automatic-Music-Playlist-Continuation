@@ -26,24 +26,18 @@ def count_parameters(model):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, hid_dim, track2vec, artist2vec, album2vec, track2vec_reduced, artist2vec_reduced,
-                 album2vec_reduced, track2artist, track2album):
-        # trackId2reducedTrackId, trackId2reducedArtistId, trackId2reducedAlbumId
-        super(Autoencoder, self).__init__()
-        self.track2vec = track2vec
-        self.track2vec_reduced = track2vec_reduced
-        self.artist2vec = artist2vec
-        self.artist2vec_reduced = artist2vec_reduced
-        self.album2vec = album2vec
-        self.album2vec_reduced = album2vec_reduced
+    def __init__(self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
+                 trackId2reducedAlbumId):
 
-        self.track2artist = track2artist
-        self.track2album = track2album
+        super(Autoencoder, self).__init__()
+        self.trackId2reducedTrackId = trackId2reducedTrackId
+        self.trackId2reducedArtistId = trackId2reducedArtistId
+        self.trackId2reducedAlbumId = trackId2reducedAlbumId
 
         self.hid_dim = hid_dim
-        self.num_tracks = len(track2vec_reduced.wv)
-        self.num_artists = len(artist2vec_reduced.wv)
-        self.num_albums = len(album2vec_reduced.wv)
+        self.num_tracks = num_tracks
+        self.num_artists = num_artists
+        self.num_albums = num_albums
         self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
         self.dropout = nn.Dropout(0.2)
@@ -91,23 +85,15 @@ class Autoencoder(nn.Module):
         album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
-            track_uri = self.track2vec.wv.index_to_key[track_id]
-            if track_uri in self.track2vec_reduced.wv.key_to_index:
-                new_track_id = self.track2vec_reduced.wv.key_to_index[track_uri]
+            if track_id in self.trackId2reducedTrackId:
+                new_track_id = self.trackId2reducedTrackId[track_id]
                 track_vector[new_track_id] = 1
-
-            artist_id = self.track2artist[int(track_id)]
-            artist_uri = self.artist2vec.wv.index_to_key[artist_id]
-            if artist_uri in self.artist2vec_reduced.wv.key_to_index:
-                new_artist_id = self.artist2vec_reduced.wv.key_to_index[artist_uri]
+            if track_id in self.trackId2reducedArtistId:
+                new_artist_id = self.trackId2reducedArtistId[track_id]
                 artist_vector[new_artist_id] = 1
-
-            album_id = self.track2album[int(track_id)]
-            album_uri = self.album2vec.wv.index_to_key[album_id]
-            if album_uri in self.album2vec_reduced.wv.key_to_index:
-                new_album_id = self.album2vec_reduced.wv.key_to_index[album_uri]
+            if track_id in self.trackId2reducedAlbumId:
+                new_album_id = self.trackId2reducedAlbumId[track_id]
                 album_vector[new_album_id] = 1
-
         return torch.cat((track_vector, artist_vector, album_vector))
 
 
@@ -116,8 +102,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     num_iterations = 1
     for epoch in range(num_epochs):
         for i, (src, trg) in enumerate(dataloader):
-            #src = src.to(device)
-            #trg = trg.to(device)
+            src = src.to(device)
+            trg = trg.to(device)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
@@ -143,17 +129,14 @@ if __name__ == '__main__':
     reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
     reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
 
-    trackuri_2_id = ld.get_trackuri2id()
-    artisturi_2_id = ld.get_artist_uri2id()
-    albumuri_2_id = ld.get_albums_uri2id()
-
-    track2artist_dict = ld.get_trackid2artistid()
-    track2album_dict = ld.get_trackid2albumid()
+    trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
+    trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
+    trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     print("loaded dictionaries from file")
 
-    print("track_size = ", len(trackuri_2_id))
-    print("artist_size = ", len(artisturi_2_id))
-    print("album_size = ", len(albumuri_2_id))
+    print("track_size = ", len(reducedTrackUri2reducedId))
+    print("artist_size = ", len(reducedArtistUri2reducedId))
+    print("album_size = ", len(reducedAlbumUri2reducedId))
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -161,8 +144,8 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    NUM_TRACKS = len(trackuri_2_id)
-    NUM_ARTISTS = len(artisturi_2_id)
+    NUM_TRACKS = len(reducedTrackUri2reducedId)
+    NUM_ARTISTS = len(reducedArtistUri2reducedId)
     HID_DIM = 256
     max_norm = 5
 

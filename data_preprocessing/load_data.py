@@ -716,6 +716,12 @@ def get_trackid2reduced_trackid():
         return loaded_dict
 
 
+def get_reduced_trackid2trackid():
+    with open(DICT_PATH + 'reduced_trackid2trackid.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        return loaded_dict
+
+
 def get_trackid2reduced_artistid():
     with open(DICT_PATH + 'trackid2reduced_artistid.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
