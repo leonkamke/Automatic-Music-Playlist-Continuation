@@ -97,7 +97,7 @@ PATH_ARTIST2VEC_MODEL = '/netscratch/kamke/models/word2vec/1_mil_playlists_artis
 
 def evaluate_model_old(model, start_idx, end_idx, device):
     print("start evaluation...")
-    print("load word2vec_models")
+    print("load word2vec_models for evaluation")
     word2vec_tracks = gensim.models.Word2Vec.load(PATH_TRACK2VEC_MODEL)
     word2vec_artists = gensim.models.Word2Vec.load(PATH_ARTIST2VEC_MODEL)
     print("finished")
@@ -124,6 +124,7 @@ def evaluate_model_old(model, start_idx, end_idx, device):
         num_predictions = len(trg)
         # num_predictions = 500
         prediction = model.predict(src, num_predictions)
+        print(prediction)
 
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks

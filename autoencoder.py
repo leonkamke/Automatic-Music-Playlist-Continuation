@@ -181,7 +181,7 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the input-layer is: ", NUM_TRACKS + NUM_ARTISTS + NUM_ALBUMS)
+    print("The size of the input-layer is: ", model.input_size)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
