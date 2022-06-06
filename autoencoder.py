@@ -214,9 +214,9 @@ if __name__ == '__main__':
     trackId2artistId = ld.get_trackid2artistid()
     trackUri2trackId = ld.get_trackuri2id()
     artistUri2artistId = ld.get_artist_uri2id()
-    # model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device
-    results_str = eval.evaluate_model_old(model, la.get_start_idx(), la.get_end_idx(), device)
-
+    # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
+    results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+                                      la.get_start_idx(), la.get_end_idx(), device)
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write("autoencoder: \n ")
