@@ -170,7 +170,7 @@ class SpotifyEvaluationDataset(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
-                if self.start_idx <= index < self.end_idx and len(row) >= 10:
+                if self.start_idx <= index < self.end_idx:
                     is_odd = len(row) % 2 == 1
                     i = int(len(row) / 2 + 1)
                     pids.append(row[0])
