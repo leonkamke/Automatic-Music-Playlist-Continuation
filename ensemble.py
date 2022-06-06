@@ -50,11 +50,11 @@ if __name__ == "__main__":
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     print("loaded dictionaries from file")
 
-    print("create word2vec model for ensemble")
+    """print("create word2vec model for ensemble")
     model_word2vec = track_embeddings.Word2VecModel(word2vec_tracks)
     model_list.append(model_word2vec)
-    print("finished")
-
+    print("finished")"""
+    # 15, 12
     print("create autoencoder for ensemble")
     NUM_TRACKS = len(reducedTrackUri2reducedId)
     NUM_ARTISTS = len(reducedArtistUri2reducedId)
