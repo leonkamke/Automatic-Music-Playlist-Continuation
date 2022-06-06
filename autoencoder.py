@@ -27,7 +27,7 @@ def count_parameters(model):
 
 class Autoencoder(nn.Module):
     def __init__(self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
-                 reducedTrackId2trackId):
+                 trackId2reducedAlbumId, reducedTrackId2trackId):
 
         super(Autoencoder, self).__init__()
         self.trackId2reducedTrackId = trackId2reducedTrackId
@@ -38,11 +38,12 @@ class Autoencoder(nn.Module):
         self.num_tracks = num_tracks
         self.num_artists = num_artists
         self.num_albums = num_albums
-        self.input_size = self.num_tracks + self.num_artists # + self.num_albums
+        self.input_size = self.num_tracks + self.num_artists + self.num_albums
 
-        # self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(0.15)
         # input_size -> hid_dim
         self.encoder = torch.nn.Sequential(
+            self.dropout,
             nn.Linear(self.input_size, hid_dim),
             nn.Sigmoid()
         )
@@ -103,7 +104,7 @@ class Autoencoder(nn.Module):
         # input.shape == (seq_len)
         track_vector = torch.zeros(self.num_tracks)
         artist_vector = torch.zeros(self.num_artists)
-        #album_vector = torch.zeros(self.num_albums)
+        album_vector = torch.zeros(self.num_albums)
         # map sequence to vector of 1s and 0s (vector.shape == (input_size))
         for track_id in sequence:
             track_id = int(track_id)
@@ -113,9 +114,9 @@ class Autoencoder(nn.Module):
                 if track_id in self.trackId2reducedArtistId:
                     new_artist_id = self.trackId2reducedArtistId[track_id]
                     artist_vector[new_artist_id] = 1
-            """if track_id in self.trackId2reducedAlbumId:
-                new_album_id = self.trackId2reducedAlbumId[track_id]
-                album_vector[new_album_id] = 1"""
+                if track_id in self.trackId2reducedAlbumId:
+                    new_album_id = self.trackId2reducedAlbumId[track_id]
+                    album_vector[new_album_id] = 1
         # return torch.cat((track_vector, artist_vector, album_vector))
         return torch.cat((track_vector, artist_vector))
 
@@ -174,7 +175,7 @@ if __name__ == '__main__':
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
-                        reduced_trackId2trackId)
+                        trackId2reducedAlbumId, reduced_trackId2trackId)
     print("finished")
 
     print("init weights...")
@@ -189,7 +190,6 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     print("Create train data...")
-    # dataset = ld.NextTrackDatasetShiftedTarget(word2vec_tracks, num_playlists_for_training)
     dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=6)
@@ -199,10 +199,10 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    # os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")

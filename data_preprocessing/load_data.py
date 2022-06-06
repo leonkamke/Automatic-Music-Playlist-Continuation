@@ -1,5 +1,5 @@
 import pickle
-
+import random
 import torch
 import csv
 from torch.nn.utils.rnn import pad_sequence
@@ -22,8 +22,13 @@ class AutoencoderDataset(Dataset):
         self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
+        rand = random.random()
         tracks_src = torch.zeros(self.num_tracks)
         tracks_trg = torch.zeros(self.num_tracks)
+        artist_src = torch.zeros(self.num_artists)
+        artist_trg = torch.zeros(self.num_artists)
+        album_src = torch.zeros(self.num_albums)
+        album_trg = torch.zeros(self.num_albums)
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
@@ -31,26 +36,22 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.playlists[index]) / 2:
                     tracks_src[uri_id] = 1
 
-        artist_src = torch.zeros(self.num_artists)
-        artist_trg = torch.zeros(self.num_artists)
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.reducedArtisturi_2_id:
                 uri_id = self.reducedArtisturi_2_id[uri]
                 artist_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
-        """
-        album_src = torch.zeros(self.num_albums)
-        album_trg = torch.zeros(self.num_albums)
+
         for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.reducedAlbumuri_2_id:
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
-                    album_src[uri_id] = 1"""
+                    album_src[uri_id] = 1
 
-        # return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
-        return torch.cat((tracks_src, artist_src)), torch.cat((tracks_trg, artist_trg))
+        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
+        # return torch.cat((tracks_src, artist_src)), torch.cat((tracks_trg, artist_trg))
 
     def __len__(self):
         return self.n_samples
@@ -65,7 +66,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    playlists.append(row[2:100])
+                    playlists.append(row[2:])
 
         artist_sequences = []
         with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
@@ -74,7 +75,7 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    artist_sequences.append(row[2:100])
+                    artist_sequences.append(row[2:])
 
         album_sequences = []
         with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
@@ -83,7 +84,89 @@ class AutoencoderDataset(Dataset):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    album_sequences.append(row[2:100])
+                    album_sequences.append(row[2:])
+
+        return playlists, artist_sequences, album_sequences
+
+
+class AutoencoderHideAndSeekDataset(Dataset):
+    def __init__(self, reducedTrackuri_2_id, reducedArtisturi_2_id, reducedAlbumuri_2_id, num_rows_train):
+        # data loading
+        self.reducedTrackuri_2_id = reducedTrackuri_2_id
+        self.reducedArtisturi_2_id = reducedArtisturi_2_id
+        self.reducedAlbumuri_2_id = reducedAlbumuri_2_id
+        self.num_tracks = len(self.reducedTrackuri_2_id)
+        self.num_artists = len(self.reducedArtisturi_2_id)
+        self.num_albums = len(self.reducedAlbumuri_2_id)
+
+        self.num_rows_train = num_rows_train
+        self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
+        self.n_samples = len(self.playlists)
+
+    def __getitem__(self, index):
+        rand = random.random()
+        tracks_src = torch.zeros(self.num_tracks)
+        tracks_trg = torch.zeros(self.num_tracks)
+        artist_src = torch.zeros(self.num_artists)
+        artist_trg = torch.zeros(self.num_artists)
+        album_src = torch.zeros(self.num_albums)
+        album_trg = torch.zeros(self.num_albums)
+        if rand <= 0.66:
+            for i, uri in enumerate(self.playlists[index]):
+                if uri in self.reducedTrackuri_2_id:
+                    uri_id = self.reducedTrackuri_2_id[uri]
+                    tracks_trg[uri_id] = 1
+                    if i < len(self.playlists[index]) / 2:
+                        tracks_src[uri_id] = 1
+        else:
+            for i, uri in enumerate(self.artist_sequences[index]):
+                if uri in self.reducedArtisturi_2_id:
+                    uri_id = self.reducedArtisturi_2_id[uri]
+                    artist_trg[uri_id] = 1
+                    if i < len(self.artist_sequences[index]) / 2:
+                        artist_src[uri_id] = 1
+
+            for i, uri in enumerate(self.album_sequences[index]):
+                if uri in self.reducedAlbumuri_2_id:
+                    uri_id = self.reducedAlbumuri_2_id[uri]
+                    album_trg[uri_id] = 1
+                    if i < len(self.album_sequences[index]) / 2:
+                        album_src[uri_id] = 1
+
+        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        playlists = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                if index >= self.num_rows_train:
+                    break
+                elif len(row) > 5:
+                    playlists.append(row[2:])
+
+        artist_sequences = []
+        with open(la.path_artist_sequences_path(), encoding='utf8') as read_obj2:
+            csv_reader = csv.reader(read_obj2)
+            for index, row in enumerate(csv_reader):
+                if index >= self.num_rows_train:
+                    break
+                elif len(row) > 5:
+                    artist_sequences.append(row[2:])
+
+        album_sequences = []
+        with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
+            csv_reader = csv.reader(read_obj3)
+            for index, row in enumerate(csv_reader):
+                if index >= self.num_rows_train:
+                    break
+                elif len(row) > 5:
+                    album_sequences.append(row[2:])
 
         return playlists, artist_sequences, album_sequences
 
