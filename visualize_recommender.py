@@ -39,7 +39,9 @@ if __name__ == "__main__":
                         reduced_trackId2trackId)
     print("finished")
 
+    print("create dataset")
     evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
+    print("finished")
 
-    pid, src, trg = evaluation_dataset[4877]
+    src, trg, pid = evaluation_dataset[4877]
     print(pid)
