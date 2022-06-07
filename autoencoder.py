@@ -128,7 +128,6 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
         for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
-            # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
             del src
