@@ -124,22 +124,22 @@ class AutoencoderHideAndSeekDataset(Dataset):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = track_value
-                if i < len(self.playlists[index]) / 2:
-                    tracks_src[uri_id] = track_value
+                #if i < len(self.playlists[index]) / 2:
+                tracks_src[uri_id] = track_value
 
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.reducedArtisturi_2_id:
                 uri_id = self.reducedArtisturi_2_id[uri]
                 artist_trg[uri_id] = artist_value
-                if i < len(self.artist_sequences[index]) / 2:
-                    artist_src[uri_id] = track_value
+                #if i < len(self.artist_sequences[index]) / 2:
+                artist_src[uri_id] = track_value
 
         for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.reducedAlbumuri_2_id:
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = album_value
-                if i < len(self.album_sequences[index]) / 2:
-                    album_src[uri_id] = track_value
+                #if i < len(self.album_sequences[index]) / 2:
+                album_src[uri_id] = track_value
 
         return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
 
