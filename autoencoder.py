@@ -216,7 +216,7 @@ if __name__ == '__main__':
     results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), device)
     # write results in a file with setted attributes
-    f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    """f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write("autoencoder: \n ")
     f.write(results_str)
-    f.close()
+    f.close()"""
