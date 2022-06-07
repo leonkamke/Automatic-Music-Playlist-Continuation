@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
-                        reduced_trackId2trackId)
+                        trackId2reducedAlbumId, reduced_trackId2trackId)
     model.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
     print("created model")
 
