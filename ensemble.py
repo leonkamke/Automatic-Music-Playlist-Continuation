@@ -36,6 +36,7 @@ class Ensemble:
             track_id = int(track_id)
             track_uri = self.track2vec.wv.index_to_key[track_id]
             popularity = self.track2vec.wv.vocab[track_uri].count
+            print("popularity = ", popularity)
             rankings[track_id] = popularity
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = Ensemble(model_list, word2vec_tracks)
+    ensemble_model = Ensemble(model_list, autoencoder, word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
