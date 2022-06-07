@@ -23,20 +23,20 @@ class Ensemble:
 
         rankings = torch.zeros(self.vocab_size, dtype=torch.float)
         # for each model make border-count
-        """
+
         for model in self.model_list:
             prediction = model.predict(input, num_predictions)
             for i, track_id in enumerate(prediction):
                 track_id = int(track_id)
                 rankings[track_id] += (num_predictions - i)
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
 
-        prediction = autoencoder.predict(input, num_predictions)
-        for track_id in prediction:
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+
+        for track_id in top_k:
             track_id = int(track_id)
             track_uri = self.track2vec.wv.index_to_key[track_id]
             popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
-            print("popularity = ", popularity, ", ", type(popularity))
             rankings[track_id] = popularity
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
@@ -63,10 +63,10 @@ if __name__ == "__main__":
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     print("loaded dictionaries from file")
 
-    """print("create word2vec model for ensemble")
+    print("create word2vec model for ensemble")
     model_word2vec = track_embeddings.Word2VecModel(word2vec_tracks)
     model_list.append(model_word2vec)
-    print("finished")"""
+    print("finished")
     # 15, 12
     print("create autoencoder for ensemble")
     NUM_TRACKS = len(reducedTrackUri2reducedId)
