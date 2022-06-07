@@ -245,17 +245,17 @@ def build_trackid2albumid():
 # track_all_id2artist_id
 # track_all_id2album_id
 if __name__ == "__main__":
-    """build_trackid2albumid()
+    build_trackid2albumid()
     build_trackid2artistid()
     build_track_uri2id()
     build_reducedTrackUri2reducedTrackID()
     build_reducedArtistUri2reducedArtistID()
     build_reducedAlbumUri2reducedAlbumID()
     build_id2track_uri()
-    build_reduced_trackid2trackid()"""
+    build_reduced_trackid2trackid()
     build_track_id2reduced_track_id()
-    """build_track_id2reduced_artist_id()
+    build_track_id2reduced_artist_id()
     build_track_id2reduced_album_id()
     build_artist_uri2id()
-    build_album_uri2id()"""
+    build_album_uri2id()
 
