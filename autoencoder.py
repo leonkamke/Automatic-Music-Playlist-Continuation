@@ -131,8 +131,10 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             # src.shape = trg.shape = (batch_size, len(word2vec_tracks.wv))
             optimizer.zero_grad()
             output = model(src)
+            del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
+            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
@@ -199,10 +201,10 @@ if __name__ == '__main__':
     save_file_name = "/autoencoder.pth"
 
     model.to(device)
-    #os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
-    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")
