@@ -32,6 +32,7 @@ class Autoencoder(nn.Module):
         super(Autoencoder, self).__init__()
         self.trackId2reducedTrackId = trackId2reducedTrackId
         self.trackId2reducedArtistId = trackId2reducedArtistId
+        self.trackId2reducedAlbumId = trackId2reducedAlbumId
         self.reducedTrackId2trackId = reducedTrackId2trackId
 
         self.hid_dim = hid_dim
@@ -110,14 +111,14 @@ class Autoencoder(nn.Module):
             if track_id in self.trackId2reducedTrackId:
                 new_track_id = self.trackId2reducedTrackId[track_id]
                 track_vector[new_track_id] = 1
-                if track_id in self.trackId2reducedArtistId:
-                    new_artist_id = self.trackId2reducedArtistId[track_id]
-                    artist_vector[new_artist_id] = 1
-                if track_id in self.trackId2reducedAlbumId:
-                    new_album_id = self.trackId2reducedAlbumId[track_id]
-                    album_vector[new_album_id] = 1
+            if track_id in self.trackId2reducedArtistId:
+                new_artist_id = self.trackId2reducedArtistId[track_id]
+                artist_vector[new_artist_id] = 1
+            if track_id in self.trackId2reducedAlbumId:
+                new_album_id = self.trackId2reducedAlbumId[track_id]
+                album_vector[new_album_id] = 1
         # return torch.cat((track_vector, artist_vector, album_vector))
-        return torch.cat((track_vector, artist_vector))
+        return torch.cat((track_vector, artist_vector, album_vector))
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
