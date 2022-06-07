@@ -39,7 +39,7 @@ class Autoencoder(nn.Module):
         self.num_tracks = num_tracks
         self.num_artists = num_artists
         self.num_albums = num_albums
-        self.input_size = self.num_tracks + self.num_artists + self.num_albums
+        self.input_size = self.num_tracks + self.num_artists  # + self.num_albums
 
         self.dropout = nn.Dropout(0.15)
         # input_size -> hid_dim
@@ -114,11 +114,11 @@ class Autoencoder(nn.Module):
             if track_id in self.trackId2reducedArtistId:
                 new_artist_id = self.trackId2reducedArtistId[track_id]
                 artist_vector[new_artist_id] = 1
-            if track_id in self.trackId2reducedAlbumId:
+            """if track_id in self.trackId2reducedAlbumId:
                 new_album_id = self.trackId2reducedAlbumId[track_id]
-                album_vector[new_album_id] = 1
+                album_vector[new_album_id] = 1"""
+        return torch.cat((track_vector, artist_vector))
         # return torch.cat((track_vector, artist_vector, album_vector))
-        return torch.cat((track_vector, artist_vector, album_vector))
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
@@ -137,7 +137,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 

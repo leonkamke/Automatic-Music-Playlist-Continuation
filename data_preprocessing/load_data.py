@@ -18,7 +18,7 @@ class AutoencoderDataset(Dataset):
         self.num_albums = len(self.reducedAlbumuri_2_id)
 
         self.num_rows_train = num_rows_train
-        self.playlists, self.artist_sequences, self.album_sequences = self.read_train_data()
+        self.playlists, self.artist_sequences = self.read_train_data()
         self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
@@ -27,8 +27,8 @@ class AutoencoderDataset(Dataset):
         tracks_trg = torch.zeros(self.num_tracks)
         artist_src = torch.zeros(self.num_artists)
         artist_trg = torch.zeros(self.num_artists)
-        album_src = torch.zeros(self.num_albums)
-        album_trg = torch.zeros(self.num_albums)
+        """album_src = torch.zeros(self.num_albums)
+        album_trg = torch.zeros(self.num_albums)"""
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
@@ -43,14 +43,14 @@ class AutoencoderDataset(Dataset):
                 if i < len(self.artist_sequences[index]) / 2:
                     artist_src[uri_id] = 1
 
-        for i, uri in enumerate(self.album_sequences[index]):
+        """for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.reducedAlbumuri_2_id:
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = 1
                 if i < len(self.artist_sequences[index]) / 2:
-                    album_src[uri_id] = 1
+                    album_src[uri_id] = 1"""
 
-        return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
+        return torch.cat((tracks_src, artist_src)), torch.cat((tracks_trg, artist_trg))
 
     def __len__(self):
         return self.n_samples
@@ -76,16 +76,16 @@ class AutoencoderDataset(Dataset):
                 elif len(row) > 5:
                     artist_sequences.append(row[2:])
 
-        album_sequences = []
+        """album_sequences = []
         with open(la.path_album_sequences_path(), encoding='utf8') as read_obj3:
             csv_reader = csv.reader(read_obj3)
             for index, row in enumerate(csv_reader):
                 if index >= self.num_rows_train:
                     break
                 elif len(row) > 5:
-                    album_sequences.append(row[2:])
+                    album_sequences.append(row[2:])"""
 
-        return playlists, artist_sequences, album_sequences
+        return playlists, artist_sequences  # , album_sequences
 
 
 class AutoencoderHideAndSeekDataset(Dataset):
@@ -124,21 +124,21 @@ class AutoencoderHideAndSeekDataset(Dataset):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = track_value
-                #if i < len(self.playlists[index]) / 2:
+                # if i < len(self.playlists[index]) / 2:
                 tracks_src[uri_id] = track_value
 
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.reducedArtisturi_2_id:
                 uri_id = self.reducedArtisturi_2_id[uri]
                 artist_trg[uri_id] = artist_value
-                #if i < len(self.artist_sequences[index]) / 2:
+                # if i < len(self.artist_sequences[index]) / 2:
                 artist_src[uri_id] = track_value
 
         for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.reducedAlbumuri_2_id:
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = album_value
-                #if i < len(self.album_sequences[index]) / 2:
+                # if i < len(self.album_sequences[index]) / 2:
                 album_src[uri_id] = track_value
 
         return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
