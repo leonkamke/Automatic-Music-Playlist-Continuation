@@ -103,7 +103,6 @@ class AutoencoderHideAndSeekDataset(Dataset):
         self.n_samples = len(self.playlists)
 
     def __getitem__(self, index):
-        rand = random.random()
         tracks_src = torch.zeros(self.num_tracks)
         tracks_trg = torch.zeros(self.num_tracks)
         artist_src = torch.zeros(self.num_artists)
@@ -111,39 +110,36 @@ class AutoencoderHideAndSeekDataset(Dataset):
         album_src = torch.zeros(self.num_albums)
         album_trg = torch.zeros(self.num_albums)
 
-        if rand < 0.33:
-            track_value = 1
-            artist_value = 1
-            album_value = 1
-        elif 0.33 < rand < 0.66:
-            track_value = 0
-            artist_value = 1
-            album_value = 1
-        else:
+        rand = random.random()
+        if rand <= 0.5:
             track_value = 1
             artist_value = 0
             album_value = 0
+        else:
+            track_value = 0
+            artist_value = 1
+            album_value = 1
 
         for i, uri in enumerate(self.playlists[index]):
             if uri in self.reducedTrackuri_2_id:
                 uri_id = self.reducedTrackuri_2_id[uri]
                 tracks_trg[uri_id] = track_value
-                # if i < len(self.playlists[index]) / 2:
-                tracks_src[uri_id] = 1
+                if i < len(self.playlists[index]) / 2:
+                    tracks_src[uri_id] = track_value
 
         for i, uri in enumerate(self.artist_sequences[index]):
             if uri in self.reducedArtisturi_2_id:
                 uri_id = self.reducedArtisturi_2_id[uri]
                 artist_trg[uri_id] = artist_value
-                # if i < len(self.artist_sequences[index]) / 2:
-                artist_src[uri_id] = 1
+                if i < len(self.artist_sequences[index]) / 2:
+                    artist_src[uri_id] = artist_value
 
         for i, uri in enumerate(self.album_sequences[index]):
             if uri in self.reducedAlbumuri_2_id:
                 uri_id = self.reducedAlbumuri_2_id[uri]
                 album_trg[uri_id] = album_value
-                # if i < len(self.album_sequences[index]) / 2:
-                album_src[uri_id] = 1
+                if i < len(self.album_sequences[index]) / 2:
+                    album_src[uri_id] = album_value
 
         return torch.cat((tracks_src, artist_src, album_src)), torch.cat((tracks_trg, artist_trg, album_trg))
 
