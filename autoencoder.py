@@ -191,7 +191,7 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     print("Create train data...")
-    dataset = ld.AutoencoderHideAndSeekDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
+    dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), device)
     # write results in a file with setted attributes
-    """f = open(la.output_path_model() + foldername + "/results.txt", "w")
+    f = open(la.output_path_model() + foldername + "/results.txt", "w")
     f.write("autoencoder: \n ")
     f.write(results_str)
-    f.close()"""
+    f.close()
