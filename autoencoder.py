@@ -55,8 +55,7 @@ class Autoencoder(nn.Module):
         )
 
     def forward(self, x):
-        encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
+        decoded = self.decoder(self.encoder(x))
         return decoded
 
     def predict(self, input, num_predictions):
