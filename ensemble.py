@@ -35,8 +35,8 @@ class Ensemble:
         for track_id in prediction:
             track_id = int(track_id)
             track_uri = self.track2vec.wv.index_to_key[track_id]
-            popularity = self.track2vec.wv.vocab[track_uri].count
-            print("popularity = ", popularity)
+            popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
+            print("popularity = ", popularity, ", ", type(popularity))
             rankings[track_id] = popularity
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
