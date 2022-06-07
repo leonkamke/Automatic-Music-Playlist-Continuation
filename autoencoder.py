@@ -189,7 +189,7 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     print("Create train data...")
-    dataset = ld.AutoencoderHideAndSeekDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
+    dataset = ld.AutoencoderDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
                                     num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
