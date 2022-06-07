@@ -10,22 +10,34 @@ import seq2seq_v3_track_album_artist
 
 
 class Ensemble:
-    def __init__(self, model_list):
+    def __init__(self, model_list, autoencoder, word2vec):
         self.model_list = model_list
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
+        self.track2vec = word2vec
 
     def predict(self, input, num_predictions):
         """# x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)"""
+
         rankings = torch.zeros(self.vocab_size, dtype=torch.float)
         # for each model make border-count
+        """
         for model in self.model_list:
             prediction = model.predict(input, num_predictions)
             for i, track_id in enumerate(prediction):
                 track_id = int(track_id)
                 rankings[track_id] += (num_predictions - i)
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
+
+        prediction = autoencoder.predict(input, num_predictions)
+        for track_id in prediction:
+            track_id = int(track_id)
+            track_uri = self.track2vec.wv.index_to_key[track_id]
+            popularity = self.track2vec.wv.vocab[track_uri].count
+            rankings[track_id] = popularity
+
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
         return top_k
 
@@ -64,8 +76,8 @@ if __name__ == "__main__":
     save_file_name = "/autoencoder.pth"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
-    autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
-                        reduced_trackId2trackId)
+    autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
+                              trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
     autoencoder.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
     model_list.append(autoencoder)
     print("created model")
@@ -74,7 +86,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = Ensemble(model_list)
+    ensemble_model = Ensemble(model_list, word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
