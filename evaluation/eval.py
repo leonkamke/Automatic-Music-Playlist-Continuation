@@ -109,7 +109,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
     len_data = 0
 
     for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
-        if len(title >= 1):
+        if len(title) >= 1:
             len_data += 1
             print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
             print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
