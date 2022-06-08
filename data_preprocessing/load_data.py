@@ -26,7 +26,7 @@ class Title2RecDataset(Dataset):
         trg_vector = torch.zeros(self.num_tracks)
         for id in self.trg[index]:
             trg_vector[id] = 1
-        return torch.IntTensor(self.src[index]), trg_vector
+        return torch.LongTensor(self.src[index]), trg_vector
 
     def __len__(self):
         return self.n_samples
