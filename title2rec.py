@@ -139,7 +139,7 @@ if __name__ == '__main__':
     max_norm = 5
 
     print("create Seq2Seq model...")
-    model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS)
+    model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
     print("finished")
 
     print("init weights...")
