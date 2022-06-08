@@ -342,6 +342,6 @@ if __name__ == "__main__":
 
     # track id 289770 -> reduced_track id 284291
     word2vec = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    weights = torch.FloatTensor(word2vec.wv.vectors,)
+    weights = torch.FloatTensor(word2vec.wv.vectors)
     torch.save(weights, '/netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track.pt')
 
