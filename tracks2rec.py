@@ -64,7 +64,7 @@ class Tracks2Rec(nn.Module):
 
     def predict(self, input, num_predictions):
         # input.shape == seq_len
-        x, _ = self.forward(input)
+        x = self.forward(input)
         # x.shape == (seq_len, NUM_TRACKS)
         x = x[-1]
         # x.shape == (NUM_TRACKS)
