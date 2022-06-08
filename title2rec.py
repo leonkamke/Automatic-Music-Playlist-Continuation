@@ -36,12 +36,12 @@ class Title2Rec(nn.Module):
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
-        self.embedding = nn.Embedding(self.input_size, 100)
+        self.embedding = nn.Embedding(self.input_size, 50)
         # input shape of LSTM has to be (batch_size, seq_len, embed_dim == 100) when batch_first=True
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True)
+        self.rnn = nn.LSTM(50, hid_dim, n_layers, batch_first=True)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, num_tracks)
