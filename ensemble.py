@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     print("create seq2seq model for ensemble")
     weights_path = la.path_embedded_weights()
-    seq2seq_path = la.output_path_model() + "tracks2rec/seq2seq_v4_reduced_nll.pth"
+    seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
     weights = torch.load(weights_path, map_location=device)
     # weights.shape == (2262292, 300)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
