@@ -51,7 +51,6 @@ class Seq2Seq(nn.Module):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
-        print("x.shape = ", x.shape)
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
@@ -124,7 +123,6 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            print("src.shape = ", src.shape)
             output, _ = model(src)
             output = output.permute(0, 2, 1)
             # output.shape = (batch_size, num_steps, num_tracks)
