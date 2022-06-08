@@ -68,7 +68,13 @@ class Title2Rec(nn.Module):
         # x.shape == (num_tracks)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for reduced_track_id in top_k:
+            track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
+            output.append(track_id)
+        # output has to be a list of track_id's
+        # outputs.shape == (num_predictions)
+        return output
 
     def predict_do_summed_rank(self, input, num_predictions):
         # input.shape == seq_len
