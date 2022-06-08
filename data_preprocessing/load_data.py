@@ -5,6 +5,50 @@ import csv
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 import load_attributes as la
+from data_preprocessing import build_character_vocab as cv
+
+
+class Title2RecDataset(Dataset):
+    def __init__(self, reducedTrackuri_2_id, reducedArtisturi_2_id, reducedAlbumuri_2_id, num_rows_train):
+        # data loading
+        self.reducedTrackuri_2_id = reducedTrackuri_2_id
+        self.reducedArtisturi_2_id = reducedArtisturi_2_id
+        self.reducedAlbumuri_2_id = reducedAlbumuri_2_id
+        self.num_tracks = len(self.reducedTrackuri_2_id)
+        self.num_artists = len(self.reducedArtisturi_2_id)
+        self.num_albums = len(self.reducedAlbumuri_2_id)
+
+        self.num_rows_train = num_rows_train
+        self.src, self.trg = self.read_train_data()
+        self.n_samples = len(self.src)
+
+    def __getitem__(self, index):
+        trg_vector = torch.zeros(self.num_tracks)
+        for id in self.trg[index]:
+            trg_vector[id] = 1
+        return self.src[index], trg_vector
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        src = []
+        trg = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                title_str = row[1]
+                idx_sequence = cv.title2index_seq(title_str)
+                src.append(idx_sequence)
+                trg_i = []
+                for uri in row[2:]:
+                    if uri in self.reducedTrackuri_2_id:
+                        uri_id = self.reducedTrackuri_2_id[uri]
+                        trg_i.append(uri_id)
+                trg.append(trg_i)
+        return src, trg
 
 
 class AutoencoderDataset(Dataset):
