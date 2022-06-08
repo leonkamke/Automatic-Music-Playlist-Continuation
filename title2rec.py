@@ -27,11 +27,12 @@ def count_parameters(model):
 
 
 class Title2Rec(nn.Module):
-    def __init__(self, num_chars, num_tracks, hid_dim, n_layers, dropout=0):
+    def __init__(self, num_chars, num_tracks, hid_dim, n_layers, reducedTrackId2trackId, dropout=0):
         super(Title2Rec, self).__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
         self.input_size = num_chars
+        self.reducedTrackId2trackId = reducedTrackId2trackId
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
