@@ -18,6 +18,7 @@ FOLDER_NAME = 29
 TRACK_TO_VEC_REDUCED_MODEL = 32
 ARTIST_TO_VEC_REDUCED_MODEL = 33
 AlBUM_TO_VEC_REDUCED_MODEL = 35
+EMBED_WEIGHTS_TRACKS = 38
 
 """
 Which line contains which training parameter
@@ -230,5 +231,13 @@ def path_embedded_weights():
     file = open("attributes", "r")
     for i, row in enumerate(file):
         if i == EMBED_WEIGHTS:
+            file.close()
+            return row[:-1]
+
+
+def path_embedded_weights_tracks():
+    file = open("attributes", "r")
+    for i, row in enumerate(file):
+        if i == EMBED_WEIGHTS_TRACKS:
             file.close()
             return row[:-1]
