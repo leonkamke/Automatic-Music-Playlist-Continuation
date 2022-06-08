@@ -26,9 +26,9 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-class Seq2Seq(nn.Module):
+class TitleSeq2Rec(nn.Module):
     def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
-        super(Seq2Seq, self).__init__()
+        super(TitleSeq2Rec, self).__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
         self.vocab_size = vocab_size
@@ -44,7 +44,7 @@ class Seq2Seq(nn.Module):
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
-        self.log_softmax = nn.LogSoftmax(dim=-1)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
@@ -57,11 +57,11 @@ class Seq2Seq(nn.Module):
         x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, vocab_size)
 
-        x = self.log_softmax(x)
+        x = self.sigmoid(x)
 
-        return x, (h_n, c_n)
+        return x
 
-    def predict_do_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
@@ -81,7 +81,7 @@ class Seq2Seq(nn.Module):
         # top_k.shape == (num_predictions)
         return top_k
 
-    def predict(self, input, num_predictions):
+    def predict_(self, input, num_predictions):
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
         outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
@@ -140,8 +140,7 @@ if __name__ == '__main__':
     print("word2vec loaded from file")
 
     weights = torch.load(la.path_embedded_weights(), map_location=device)
-    # weights.shape == (2262292, 300)
-    print(weights.shape)
+    # weights.shape == (2262292, 100)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
     print("finished")
