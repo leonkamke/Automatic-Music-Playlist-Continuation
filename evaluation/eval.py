@@ -9,6 +9,7 @@ from evaluation import load_eval_data as eval_data
 import numpy as np
 from collections import OrderedDict
 import torch
+from data_preprocessing import build_character_vocab as cv
 
 WORD2VEC_TRACKS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model"
 WORD2VEC_ARTISTS_PATH = "/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model"
@@ -109,7 +110,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
     len_data = 0
 
     for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
-        if len(title) >= 1:
+        if len(cv.title2index_seq(title)) >= 1:
             len_data += 1
             print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
             print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
