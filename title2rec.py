@@ -64,7 +64,7 @@ class Title2Rec(nn.Module):
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
-        x = x[0]
+        x = x[-1]
         # x.shape == (num_tracks)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
