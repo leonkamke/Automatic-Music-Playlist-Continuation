@@ -49,6 +49,7 @@ class Title2Rec(nn.Module):
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
+        print(input.shape)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
         x, (h_n, c_n) = self.rnn(x)
@@ -76,16 +77,6 @@ class Title2Rec(nn.Module):
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
         return output
-
-    def predict_do_summed_rank(self, input, num_predictions):
-        # input.shape == seq_len
-        x, _ = self.forward(input)
-        # x.shape == (seq_len, vocab_size)
-        x = torch.mean(x, dim=0)
-        # x.shape == (vocab_size)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
-        # top_k.shape == (num_predictions)
-        return top_k
 
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
