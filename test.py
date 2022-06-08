@@ -342,7 +342,7 @@ if __name__ == "__main__":
 
     # track id 289770 -> reduced_track id 284291
     word2vec = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
-    weights = torch.FloatTensor(word2vec.wv.vectors)
+    weights = torch.DoubleTensor(word2vec.wv.vectors,)
     print("a = ", weights[999])
     uri = word2vec.wv.index_to_key[999]
     print("b = ", word2vec.wv.get_vector(uri))
