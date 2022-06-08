@@ -111,7 +111,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
         print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
         # src (list of indices), trg (list of indices)
-        trg = trg.to(device)
+        trg = torch.cat((src, trg)).to(device)
         num_predictions = len(trg)
         # num_predictions = 500
         prediction = model.predict(title, num_predictions)
