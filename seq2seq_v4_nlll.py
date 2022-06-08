@@ -141,7 +141,6 @@ if __name__ == '__main__':
 
     weights = torch.load(la.path_embedded_weights(), map_location=device)
     # weights.shape == (2262292, 300)
-    print(weights.shape)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
     print("finished")

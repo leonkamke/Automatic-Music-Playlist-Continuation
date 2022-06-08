@@ -8,6 +8,60 @@ import load_attributes as la
 from data_preprocessing import build_character_vocab as cv
 
 
+class Tracks2RecDataset(Dataset):
+    def __init__(self, trackUri2reducedTrackId, trackUri2trackId, num_rows_train, num_steps):
+        # data loading
+        self.trackUri2reducedTrackId = trackUri2reducedTrackId
+        self.trackUri2trackId = trackUri2trackId
+        self.num_tracks = len(self.trackUri2reducedTrackId)
+        self.num_steps = num_steps
+        self.num_rows_train = num_rows_train
+        # src is a sequence of track_id's of the whole vocabulary,
+        # trg is a sequence of track_id's of the reduced vocabulary
+        self.src, self.trg = self.read_train_data()
+        self.n_samples = len(self.src)
+
+    def __getitem__(self, index):
+        trg_vector = torch.zeros(self.num_tracks)
+        for id in self.trg[index]:
+            trg_vector[id] = 1
+        return torch.LongTensor(self.src[index]), trg_vector
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        src_uri = []
+        trg_uri = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                if len(src_uri) >= self.num_rows_train:
+                    break
+                elif len(row) > 2 + self.num_steps:
+                    src_i = row[2:2 + self.num_steps]
+                    trg_i = row[2 + self.num_steps:]
+                    src_uri.append(src_i)
+                    trg_uri.append(trg_i)
+            # create lists of track indices according to the indices of the word2vec model
+            src_idx = []
+            trg_idx = []
+            for i in range(len(src_uri)):
+                indices = []
+                for uri in src_uri[i]:
+                    indices.append(self.trackUri2trackId[uri])
+                src_idx.append(torch.LongTensor(indices))
+                del indices
+                indices = []
+                for uri in trg_uri[i]:
+                    if uri in self.trackUri2reducedTrackId:
+                        indices.append(self.trackUri2reducedTrackId[uri])
+                trg_idx.append(torch.LongTensor(indices))
+        return src_idx, trg_idx
+
+
 class Title2RecDataset(Dataset):
     def __init__(self, reducedTrackuri_2_id, reducedArtisturi_2_id, reducedAlbumuri_2_id, num_rows_train):
         # data loading
