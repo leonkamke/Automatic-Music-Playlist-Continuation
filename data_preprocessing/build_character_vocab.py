@@ -54,4 +54,9 @@ def build_one_hot_encoded_dict():
 
 
 if __name__ == "__main__":
-    build_one_hot_encoded_dict()
+    with open(OUTPUT_PATH + 'char_dict.pkl', 'rb') as f:
+        loaded_dict = pickle.load(f)
+        print(len(loaded_dict))
+        print(loaded_dict["!"])
+        print(type(loaded_dict["!"]))
+        print(type(loaded_dict))
