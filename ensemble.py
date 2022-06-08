@@ -11,11 +11,10 @@ import seq2seq_v3_track_album_artist
 
 
 class Ensemble:
-    def __init__(self, model_list, autoencoder, word2vec):
+    def __init__(self, model_list, autoencoder):
         self.model_list = model_list
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
-        self.track2vec = word2vec
 
     def predict(self, input, num_predictions):
         """# x.shape == (vocab_size)
@@ -101,7 +100,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = Ensemble(model_list, autoencoder, word2vec_tracks)
+    ensemble_model = Ensemble(model_list, autoencoder)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
