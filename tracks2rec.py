@@ -64,8 +64,11 @@ class Tracks2Rec(nn.Module):
 
     def predict(self, input, num_predictions):
         # input.shape == seq_len
+        print(input.shape)
         input = torch.unsqueeze(input, dim=0)
+        print(input.shape)
         x = self.forward(input)
+        print(x.shape)
         # x.shape == (seq_len, NUM_TRACKS)
         x = x[-1]
         # x.shape == (NUM_TRACKS)
