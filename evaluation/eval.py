@@ -30,7 +30,7 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
 
-    for i, (src, trg, pid) in enumerate(evaluation_dataset):
+    for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
         print("PID = " + str(pid) + ", length playlist: " + str(len(src) + len(trg)))
         # src (list of indices), trg (list of indices)
@@ -91,19 +91,11 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
     return output_string
 
 
-PATH_TRACK2VEC_MODEL = '/netscratch/kamke/models/word2vec/1_mil_playlists/word2vec-song-vectors.model'
-PATH_ARTIST2VEC_MODEL = '/netscratch/kamke/models/word2vec/1_mil_playlists_artists/word2vec-song-vectors.model'
-
-
-def evaluate_model_old(model, start_idx, end_idx, device):
+def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device):
     print("start evaluation...")
-    print("load word2vec_models for evaluation")
-    word2vec_tracks = gensim.models.Word2Vec.load(PATH_TRACK2VEC_MODEL)
-    word2vec_artists = gensim.models.Word2Vec.load(PATH_ARTIST2VEC_MODEL)
-    print("finished")
     # create evaluation dataset
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.FirstFiveEvaluationDatasetOld(word2vec_tracks, word2vec_artists, start_idx, end_idx)
+    evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, start_idx, end_idx)
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
@@ -115,15 +107,15 @@ def evaluate_model_old(model, start_idx, end_idx, device):
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
 
-    for i, (src, trg, pid) in enumerate(evaluation_dataset):
+    for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
         print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
-        print("PID = " + str(pid) + ", length playlist: " + str(len(src) + len(trg)))
+        print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
         # src (list of indices), trg (list of indices)
         src = src.to(device)
         trg = trg.to(device)
         num_predictions = len(trg)
         # num_predictions = 500
-        prediction = model.predict(src, num_predictions)
+        prediction = model.predict(title, num_predictions)
 
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
@@ -133,7 +125,7 @@ def evaluate_model_old(model, start_idx, end_idx, device):
         ndcg_tracks_sum += ndcg_tracks
 
         # convert prediction and target to list's of artist id's
-        artist_prediction, artist_ground_truth = tracks_to_artists(evaluation_dataset.artist_dict, prediction, trg)
+        artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
 
         # calculate for the artists R-Precision and artists NDCG
         r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
@@ -170,9 +162,10 @@ def evaluate_model_old(model, start_idx, end_idx, device):
         r_precision_tracks_sum) + "\n" + \
                     "Average R-Precision(artists): " + str(r_precision_artists_sum) + "\n" + \
                     "Average NDCG(tracks):       : " + str(ndcg_tracks_sum) + "\n" + \
-                    "Average NDCG(artists):      : " + str(ndcg_artists_sum)
+                    "Average NDCG(artists):      : " + str(ndcg_artists_sum) + "\n" + \
+                    "---> R-Precision            : " + str(r_precision) + "\n" + \
+                    "---> NDCG                   : " + str(ndcg)
     return output_string
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 """

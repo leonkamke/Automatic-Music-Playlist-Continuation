@@ -152,11 +152,11 @@ class SpotifyEvaluationDataset(Dataset):
         self.artistUri2artistId = artistUri2artistId
         self.start_idx = start_idx
         self.end_idx = end_idx
-        self.src, self.trg, self.pids = self.read_train_data()
+        self.src, self.trg, self.pids, self.titles = self.read_train_data()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index], self.pids[index]
+        return self.src[index], self.trg[index], self.pids[index], self.titles[index]
 
     def __len__(self):
         return self.n_samples
@@ -166,6 +166,7 @@ class SpotifyEvaluationDataset(Dataset):
         src_uri = []
         trg_uri = []
         pids = []
+        titles = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
@@ -180,6 +181,7 @@ class SpotifyEvaluationDataset(Dataset):
                         trg_i = row[i:len(row) - 1]
                     src_uri.append(src_i)
                     trg_uri.append(trg_i)
+                    titles.append(row[1])
                 if index > self.end_idx:
                     break
             # create lists of track indices according to the indices of the word2vec model
@@ -194,7 +196,7 @@ class SpotifyEvaluationDataset(Dataset):
                 for uri in trg_uri[i]:
                     indices.append(self.trackUri2trackId[uri])
                 trg_idx.append(torch.LongTensor(indices))
-        return src_idx, trg_idx, pids
+        return src_idx, trg_idx, pids, titles
 
 
 class FirstFiveEvaluationDataset(Dataset):

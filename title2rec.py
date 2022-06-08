@@ -6,7 +6,7 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import gensim
+from data_preprocessing import build_character_vocab as cv
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -59,7 +59,8 @@ class Title2Rec(nn.Module):
 
         return x
 
-    def predict(self, input, num_predictions):
+    def predict(self, title, num_predictions):
+        input = cv.title2index_seq(title)
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, num_tracks)
@@ -186,7 +187,7 @@ if __name__ == '__main__':
     artistUri2artistId = ld.get_artist_uri2id()
     print("finished")
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
-    results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+    results_str = eval.evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
