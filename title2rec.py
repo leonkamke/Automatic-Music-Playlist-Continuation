@@ -67,13 +67,10 @@ class Title2Rec(nn.Module):
         # x.shape == (seq_len, num_tracks)
         x = x[-1]
         # x.shape == (num_tracks)
-        print(x.shape)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        print(top_k.shape)
         output = []
         for reduced_track_id in top_k:
-            print("track_id ", int(reduced_track_id))
             track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
             output.append(track_id)
         # output has to be a list of track_id's
