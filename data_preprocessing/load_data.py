@@ -41,7 +41,6 @@ class Title2RecDataset(Dataset):
             for index, row in enumerate(csv_reader):
                 if index >= self.num_rows_train:
                     break
-                print(index)
                 title_str = row[1]
                 idx_sequence = cv.title2index_seq(title_str)
                 if len(idx_sequence) >= 1:
