@@ -126,6 +126,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             optimizer.zero_grad()
             output, _ = model(src)
             output = output.permute(0, 2, 1)
+            print(trg.shape)
             print(output.shape)
             del src
             # output.shape = (batch_size, num_steps, num_tracks)
