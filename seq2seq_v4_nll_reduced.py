@@ -192,7 +192,7 @@ if __name__ == '__main__':
     # dataset = (self, trackUri2trackId, reducedTrackUri2reducedTrackId, num_rows_train, num_steps):
     dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(trackUri2trackId, reducedTrackUri2reducedId,
                                                                num_playlists_for_training, num_steps)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=1)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
