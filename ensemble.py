@@ -11,8 +11,9 @@ import seq2seq_v3_track_album_artist
 
 
 class Ensemble:
-    def __init__(self, model_list, autoencoder):
+    def __init__(self, model_list, autoencoder, track2vec):
         self.model_list = model_list
+        self.track2vec = track2vec
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
 
@@ -33,15 +34,16 @@ class Ensemble:
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
-        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
 
+        # sort corresponding to popularity
         for track_id in top_k:
             track_id = int(track_id)
             track_uri = self.track2vec.wv.index_to_key[track_id]
             popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
             rankings[track_id] = popularity
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
         return top_k
 
 
@@ -50,10 +52,10 @@ if __name__ == "__main__":
 
     device = torch.device("cpu")
 
-    """print("load word2vec models")
+    print("load word2vec models")
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print("finished")"""
+    print("finished")
 
     print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = Ensemble(model_list, autoencoder)
+    ensemble_model = Ensemble(model_list, autoencoder, word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
