@@ -172,7 +172,7 @@ if __name__ == '__main__':
     NUM_TRACKS = len(reducedTrackUri2reducedId)
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
-    num_steps = 10
+    num_steps = 20
     max_norm = 5
 
     print("create Seq2Seq model...")
