@@ -106,42 +106,45 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
     r_precision_artists_sum = 0.0
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
+    len_data = 0
 
     for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
-        print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
-        print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
-        # src (list of indices), trg (list of indices)
-        trg = torch.cat((src, trg)).to(device)
-        num_predictions = len(trg)
-        # num_predictions = 500
-        prediction = model.predict(title, num_predictions)
+        if len(title >= 1):
+            len_data += 1
+            print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
+            print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
+            # src (list of indices), trg (list of indices)
+            trg = torch.cat((src, trg)).to(device)
+            num_predictions = len(trg)
+            # num_predictions = 500
+            prediction = model.predict(title, num_predictions)
 
-        # prediction is of shape len(trg)
-        # first compute R-Precision and NDCG for tracks
-        r_precision_tracks = calc_r_precision(prediction, trg)
-        ndcg_tracks = calc_ndcg(prediction, trg)
-        r_precision_tracks_sum += r_precision_tracks
-        ndcg_tracks_sum += ndcg_tracks
+            # prediction is of shape len(trg)
+            # first compute R-Precision and NDCG for tracks
+            r_precision_tracks = calc_r_precision(prediction, trg)
+            ndcg_tracks = calc_ndcg(prediction, trg)
+            r_precision_tracks_sum += r_precision_tracks
+            ndcg_tracks_sum += ndcg_tracks
 
-        # convert prediction and target to list's of artist id's
-        artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
+            # convert prediction and target to list's of artist id's
+            artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
 
-        # calculate for the artists R-Precision and artists NDCG
-        r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
-        ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
-        r_precision_artists_sum += r_precision_artists
-        ndcg_artists_sum += ndcg_artists
+            # calculate for the artists R-Precision and artists NDCG
+            r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
+            ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
+            r_precision_artists_sum += r_precision_artists
+            ndcg_artists_sum += ndcg_artists
 
-        print("R-Precision(tracks) : " + str(r_precision_tracks))
-        print("R-Precision(artists): " + str(r_precision_artists))
-        print("NDCG(tracks):       : " + str(ndcg_tracks))
-        print("NDCG(artists):      : " + str(ndcg_artists))
-        print(" ")
+            print("R-Precision(tracks) : " + str(r_precision_tracks))
+            print("R-Precision(artists): " + str(r_precision_artists))
+            print("NDCG(tracks):       : " + str(ndcg_tracks))
+            print("NDCG(artists):      : " + str(ndcg_artists))
+            print(" ")
 
-    r_precision_tracks_sum = r_precision_tracks_sum / len(evaluation_dataset)
-    ndcg_tracks_sum = ndcg_tracks_sum / len(evaluation_dataset)
-    r_precision_artists_sum = r_precision_artists_sum / len(evaluation_dataset)
-    ndcg_artists_sum = ndcg_artists_sum / len(evaluation_dataset)
+    r_precision_tracks_sum = r_precision_tracks_sum / len_data
+    ndcg_tracks_sum = ndcg_tracks_sum / len_data
+    r_precision_artists_sum = r_precision_artists_sum / len_data
+    ndcg_artists_sum = ndcg_artists_sum / len_data
     r_precision = (r_precision_tracks_sum + r_precision_artists_sum) / 2.0
     ndcg = (ndcg_tracks_sum + ndcg_artists_sum) / 2.0
 
