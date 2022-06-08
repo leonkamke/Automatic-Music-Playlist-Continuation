@@ -32,6 +32,7 @@ class Tracks2Rec(nn.Module):
         self.hid_dim = hid_dim
         self.n_layers = n_layers
         self.num_tracks = num_tracks
+        self.reducedTrackId2trackId = reducedTrackId2trackId
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
@@ -151,10 +152,6 @@ if __name__ == '__main__':
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
     trackUri2trackId = ld.get_trackuri2id()
     print("loaded dictionaries from file")
-
-    print("load word2vec from file")
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print("word2vec loaded from file")
 
     print("load pretrained embedding layer...")
     weights = torch.load(la.path_embedded_weights(), map_location=device)
