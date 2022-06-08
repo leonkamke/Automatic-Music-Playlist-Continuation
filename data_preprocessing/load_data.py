@@ -749,14 +749,14 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
                 indices = []
                 for uri in src_uri[i]:
                     indices.append(self.trackUri2trackId[uri])
-                src_idx.append(torch.IntTensor(indices))
+                src_idx.append(torch.LongTensor(indices))
                 indices = []
                 for uri in trg_uri[i]:
                     if uri in self.reducedTrackUri2reducedTrackId:
                         indices.append(self.reducedTrackUri2reducedTrackId[uri])
                     else:
                         indices.append(-1)
-                trg_idx.append(torch.IntTensor(indices))
+                trg_idx.append(torch.LongTensor(indices))
             return src_idx, trg_idx
 
 

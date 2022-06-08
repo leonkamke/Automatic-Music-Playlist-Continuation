@@ -127,7 +127,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             output, _ = model(src)
             print(output.shape)
             del src
-            # output.shape = (batch_size, seq_len, vocab_size)
+            # output.shape = (batch_size, num_steps, num_tracks)
             loss = criterion(output.permute(0, 2, 1), trg)
             del trg
             loss.backward()
