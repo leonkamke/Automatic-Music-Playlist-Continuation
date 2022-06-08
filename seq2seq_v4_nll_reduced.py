@@ -127,10 +127,8 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             print("src.shape = ", src.shape)
             output, _ = model(src)
             output = output.permute(0, 2, 1)
-            del src
             # output.shape = (batch_size, num_steps, num_tracks)
             loss = criterion(output, trg)
-            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
