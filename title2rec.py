@@ -99,7 +99,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             # trg.shape = src.shape = (num_tracks)
             optimizer.zero_grad()
             print("src.shape = ", src.shape)
-            output = model(src)
+            output = model(src)[:, -1, :]
             print("output.shape = ", output.shape)
             print("trg.shape = ", trg.shape)
             del src
