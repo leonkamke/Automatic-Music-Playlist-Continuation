@@ -39,6 +39,8 @@ class Title2RecDataset(Dataset):
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
+                if index >= self.num_rows_train:
+                    break
                 print(index)
                 title_str = row[1]
                 idx_sequence = cv.title2index_seq(title_str)
