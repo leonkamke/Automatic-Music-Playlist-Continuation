@@ -50,10 +50,10 @@ class Title2Rec(nn.Module):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
-        x, (h_n, c_n) = self.rnn(x)[:, -1, :]
+        x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
-        x = self.fc_out(x)
+        x = self.fc_out(x)[:, -1, :]
         # x.shape == (batch_size, seq_len, vocab_size)
 
         x = self.sigmoid(x)
