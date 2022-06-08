@@ -15,9 +15,12 @@ def write_all_titles_in_csv():
     with open(PATH_TRACK_SEQUENCES, encoding='utf8') as read_obj:
         csv_reader = csv.reader(read_obj)
         # Iterate over each row in the csv file and create lists of track uri's
+        counter = 0
         for row in csv_reader:
             title_str = row[1]
             playlists_writer.writerow(title_str)
+            counter += 1
+    print("read ", counter, " titles")
 
 
 if __name__ == "__main__":
