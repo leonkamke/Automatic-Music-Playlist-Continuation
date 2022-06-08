@@ -124,11 +124,11 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            output, _ = model(src)
+            output, _ = model(src).permute(0, 2, 1)
             print(output.shape)
             del src
             # output.shape = (batch_size, num_steps, num_tracks)
-            loss = criterion(output.permute(0, 2, 1), trg)
+            loss = criterion(output, trg)
             del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
