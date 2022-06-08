@@ -101,6 +101,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             print("src.shape = ", src.shape)
             output = model(src)
             print("output.shape = ", output.shape)
+            print("trg.shape = ", trg.shape)
             del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
