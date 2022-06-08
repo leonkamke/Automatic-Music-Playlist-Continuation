@@ -49,7 +49,6 @@ class Title2Rec(nn.Module):
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
-        print(input.shape)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
         x, (h_n, c_n) = self.rnn(x)
