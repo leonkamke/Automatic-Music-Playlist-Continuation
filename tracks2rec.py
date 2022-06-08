@@ -123,9 +123,11 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             trg = trg.to(device)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
-            output, _ = model(src)
+            output = model(src)[:, -1, :]
+            del src
             # output.shape = (batch_size, seq_len, vocab_size)
-            loss = criterion(output.permute(0, 2, 1), trg)
+            loss = criterion(output, trg)
+            del trg
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
@@ -182,7 +184,7 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the vocabulary is: ", VOCAB_SIZE)
+    print("The size of the vocabulary is: ", model.num_tracks)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
