@@ -341,8 +341,10 @@ if __name__ == "__main__":
     print(trg1, trg2)"""
 
     # track id 289770 -> reduced_track id 284291
-    print(len(trackId2reducedTrackId))
-    print(289770 in trackId2reducedTrackId)
-    print(trackId2reducedTrackId[289770])
+    word2vec = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
+    weights = torch.FloatTensor(word2vec.wv.vectors)
+    print("a = ", weights[999])
+    uri = word2vec.wv.index_to_key[999]
+    print("b = ", word2vec.wv.get_vector(uri))
 
 
