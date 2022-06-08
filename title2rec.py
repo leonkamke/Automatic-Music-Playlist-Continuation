@@ -64,10 +64,9 @@ class Title2Rec(nn.Module):
         x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
         print(x.shape)
-        # x.shape == (num_tracks)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        print(top_k)
+        print(top_k.shape)
         output = []
         for reduced_track_id in top_k:
             print("track_id ", int(reduced_track_id))
