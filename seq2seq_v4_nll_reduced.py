@@ -179,6 +179,7 @@ if __name__ == '__main__':
 
     print("create Seq2Seq model...")
     model = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, HID_DIM, N_LAYERS)
+    model.to(device)
     print("finished")
 
     print("init weights...")
@@ -190,7 +191,7 @@ if __name__ == '__main__':
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
-    criterion = nn.NLLLoss()
+    criterion = nn.NLLLoss(ignore_index=-1)
 
     print("Create train data...")
     # dataset = (self, trackUri2trackId, reducedTrackUri2reducedTrackId, num_rows_train, num_steps):
@@ -202,7 +203,6 @@ if __name__ == '__main__':
     foldername = la.get_folder_name()
     save_file_name = "/seq2seq_v4_reduced_nll.pth"
 
-    model.to(device)
     os.mkdir(la.output_path_model() + foldername)
     shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
