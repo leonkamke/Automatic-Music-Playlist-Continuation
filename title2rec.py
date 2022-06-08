@@ -53,8 +53,8 @@ class Title2Rec(nn.Module):
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
-        x = self.fc_out(x)[:, -1, :]
-        # x.shape == (batch_size, seq_len, vocab_size)
+        x = self.fc_out(x)
+        # x.shape == (batch_size, seq_len, num_tracks)
 
         x = self.sigmoid(x)
 
@@ -91,7 +91,7 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
             trg = trg.to(device)
             # trg.shape = src.shape = (num_tracks)
             optimizer.zero_grad()
-            output = model(src)
+            output = model(src)[:, -1, :]
             del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
