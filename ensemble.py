@@ -82,7 +82,7 @@ if __name__ == "__main__":
     #                  reducedTrackId2trackId)
     autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                               trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
-    autoencoder.load_state_dict(torch.load(la.output_path_model() + "autoencoder_1" + save_file_name))
+    autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
     model_list.append(autoencoder)
     print("finished")
 
