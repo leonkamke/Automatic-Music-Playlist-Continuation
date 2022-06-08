@@ -28,4 +28,4 @@ for mpd_slice in listdir(args.mpd_path):
             row.extend([playlist['pid'], playlist['name']])
             for track in playlist['tracks']:
                 row.append(track['track_uri'])
-            playlists_writer.writerow(row)
+
