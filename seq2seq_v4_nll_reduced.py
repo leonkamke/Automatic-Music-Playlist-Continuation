@@ -184,7 +184,7 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the vocabulary is: ", VOCAB_SIZE)
+    print("The size of the vocabulary is: ", NUM_TRACKS)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
