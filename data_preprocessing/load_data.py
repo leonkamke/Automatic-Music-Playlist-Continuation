@@ -26,7 +26,7 @@ class Title2RecDataset(Dataset):
         trg_vector = torch.zeros(self.num_tracks)
         for id in self.trg[index]:
             trg_vector[id] = 1
-        return self.src[index], trg_vector
+        return torch.IntTensor(self.src[index]), trg_vector
 
     def __len__(self):
         return self.n_samples
@@ -51,7 +51,7 @@ class Title2RecDataset(Dataset):
                         uri_id = self.reducedTrackuri_2_id[uri]
                         trg_i.append(uri_id)
                 trg.append(trg_i)
-        return torch.IntTensor(src), trg
+        return src, trg
 
 
 class AutoencoderDataset(Dataset):
