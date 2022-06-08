@@ -126,12 +126,13 @@ if __name__ == '__main__':
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
     NUM_TRACKS = len(reducedTrackUri2reducedId)
+    NUM_CHARS = 43
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
     max_norm = 5
 
     print("create Seq2Seq model...")
-    model = Title2Rec(NUM_TRACKS, HID_DIM, N_LAYERS)
+    model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS)
     print("finished")
 
     print("init weights...")
