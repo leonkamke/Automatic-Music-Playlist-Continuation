@@ -62,10 +62,10 @@ class Title2Rec(nn.Module):
 
     def predict(self, input, num_predictions):
         # input.shape == seq_len
-        x, _ = self.forward(input)
+        x = self.forward(input)
         # x.shape == (seq_len, vocab_size)
-        x = x[-1]
-        # x.shape == (vocab_size)
+        x = x[0]
+        # x.shape == (num_tracks)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
         return top_k
