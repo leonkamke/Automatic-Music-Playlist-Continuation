@@ -44,13 +44,14 @@ class Title2RecDataset(Dataset):
                 print(index)
                 title_str = row[1]
                 idx_sequence = cv.title2index_seq(title_str)
-                src.append(idx_sequence)
-                trg_i = []
-                for uri in row[2:]:
-                    if uri in self.reducedTrackuri_2_id:
-                        uri_id = self.reducedTrackuri_2_id[uri]
-                        trg_i.append(uri_id)
-                trg.append(trg_i)
+                if len(idx_sequence) >= 1:
+                    src.append(idx_sequence)
+                    trg_i = []
+                    for uri in row[2:]:
+                        if uri in self.reducedTrackuri_2_id:
+                            uri_id = self.reducedTrackuri_2_id[uri]
+                            trg_i.append(uri_id)
+                    trg.append(trg_i)
         return src, trg
 
 
