@@ -53,6 +53,7 @@ class Ensemble:
         autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                                   trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
         autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
+        autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
         print("finished")
@@ -66,10 +67,11 @@ class Ensemble:
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
         seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
         seq2seq.load_state_dict(torch.load(seq2seq_path))
+        seq2seq.to(device)
         seq2seq.eval()
-        model_list.append(seq2seq)
         print("finished")
 
+        model_list.append(seq2seq)
         self.model_list = model_list
 
     def predict(self, title, src, num_predictions):
