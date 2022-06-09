@@ -20,7 +20,7 @@ class Ensemble:
         # -----------------------------------------------------------------------------------------------
         model_list = []
 
-        device = torch.device("cuda")
+        device = torch.device("cpu")
 
         """print("load word2vec models")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
@@ -85,11 +85,8 @@ class Ensemble:
         for model in self.model_list:
             if isinstance(model, Title2Rec):
                 prediction = model.predict(title, num_predictions)
-                print("a")
             else:
-                print(type(src))
                 prediction = model.predict(src, num_predictions)
-                print("b")
             for i, track_id in enumerate(prediction):
                 track_id = int(track_id)
                 i = int(i)
@@ -157,7 +154,7 @@ class EnsembleRecall:
 
 
 if __name__ == "__main__":
-    device = torch.device("cuda")
+    device = torch.device("cpu")
 
     print("load word2vec models")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
@@ -230,4 +227,4 @@ if __name__ == "__main__":
     artistUri2artistId = ld.get_artist_uri2id()
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
     results_str = eval.evaluate_ensemble_model(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
-                                      la.get_start_idx(), la.get_end_idx(), device)
+                                      981000, 981500, device)
