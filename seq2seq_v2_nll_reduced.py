@@ -174,6 +174,8 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
         for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
             trg = trg.to(device)
+            print(src)
+            print(trg)
             # trg.shape = src.shape = (batch_size, seq_len)
             optimizer.zero_grad()
             output = model(src, src.shape[1])
