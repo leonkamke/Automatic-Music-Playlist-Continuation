@@ -109,14 +109,10 @@ class Ensemble:
 
 
 class EnsembleRecall:
-    def __init__(self, seq2seq, autoencoder, track2vec, num_tracks, trackId2reducedTrackId):
-        self.autoencoder = autoencoder
+    def __init__(self, track2vec):
         self.track2vec = track2vec
-        self.seq2seq = seq2seq
-        self.trackId2reducedTrackId = trackId2reducedTrackId
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
-        self.num_tracks = num_tracks
 
         self.track2vec = track2vec
         # number of unique tracks in the MPD dataset = 2262292
@@ -136,7 +132,7 @@ class EnsembleRecall:
         reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
         reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
         reduced_trackId2trackId = ld.get_reduced_trackid2trackid()
-        trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
+        self.trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
         trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
         trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
         print("loaded dictionaries from file")
@@ -160,7 +156,7 @@ class EnsembleRecall:
         autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
         autoencoder.to(device)
         autoencoder.eval()
-        model_list.append(autoencoder)
+        self.autoencoder = autoencoder
         print("finished")
 
         print("create seq2seq model for ensemble")
@@ -174,6 +170,7 @@ class EnsembleRecall:
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
+        self.seq2seq = seq2seq
         print("finished")
 
         model_list.append(seq2seq)
@@ -278,8 +275,8 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
     """
     # create ensemble model
-    # ensemble_model = EnsembleRecall(seq2seq, autoencoder, word2vec_tracks, NUM_TRACKS, trackId2reducedTrackId)
-    ensemble_model = Ensemble(word2vec_tracks)
+    ensemble_model = EnsembleRecall(word2vec_tracks)
+    # ensemble_model = Ensemble(word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
