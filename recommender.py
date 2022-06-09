@@ -43,7 +43,7 @@ if __name__ == "__main__":
     NUM_ALBUMS = len(reducedAlbumUri2reducedId)
     HID_DIM = 256
 
-    print("create Autoencoder model...")
+    """print("create Autoencoder model...")
     save_file_name = "/autoencoder.pth"
     foldername = "/autoencoder_1"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
@@ -52,19 +52,19 @@ if __name__ == "__main__":
                         trackId2reducedAlbumId, reduced_trackId2trackId)
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     model.eval()
-    print("created model")
+    print("created model")"""
 
-    """print("create seq2seq model for ensemble")
+    print("create seq2seq model for ensemble")
     weights_path = la.path_embedded_weights()
     seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
     weights = torch.load(weights_path, map_location=device)
     # weights.shape == (2262292, 300)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-    seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
-    seq2seq.load_state_dict(torch.load(seq2seq_path))
-    seq2seq.eval()
-    print("finished")"""
+    model = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+    model.load_state_dict(torch.load(seq2seq_path))
+    model.eval()
+    print("finished")
 
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
