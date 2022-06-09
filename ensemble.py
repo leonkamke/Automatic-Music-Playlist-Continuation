@@ -95,7 +95,7 @@ class Ensemble:
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
-        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
 
         # sort corresponding to popularity
         for track_id in top_k:
@@ -104,7 +104,7 @@ class Ensemble:
             popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
             rankings[track_id] = popularity
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
         return top_k
 
