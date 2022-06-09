@@ -85,7 +85,7 @@ class EnsembleRecall:
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
 
-        return top_k
+        return self.autoencoder.predict(input, num_predictions)
 
 
 if __name__ == "__main__":
