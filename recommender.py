@@ -7,6 +7,7 @@ from autoencoder import Autoencoder
 from evaluation import load_eval_data as eval_data
 from seq2seq_v4_nll_reduced import Seq2Seq
 import torch.nn as nn
+from ensemble import Ensemble
 
 
 def trackIds2trackUris(track_ids, track2vec):
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     model.eval()
     print("created model")"""
 
-    print("create seq2seq model for ensemble")
+    """print("create seq2seq model for ensemble")
     weights_path = la.path_embedded_weights()
     seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
     weights = torch.load(weights_path, map_location=device)
@@ -68,7 +69,7 @@ if __name__ == "__main__":
 
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
-    print("finished")
+    print("finished")"""
 
     """
     "name": "Bachata Playlist", 
@@ -117,6 +118,7 @@ if __name__ == "__main__":
             "num_albums": 63, 
             "num_followers": 1, 
     """
+    model = Ensemble(word2vec_tracks)
 
     playlist_id = 542
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
