@@ -51,6 +51,7 @@ if __name__ == "__main__":
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
                         trackId2reducedAlbumId, reduced_trackId2trackId)
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    model.eval()
     print("created model")
 
     """print("create seq2seq model for ensemble")
@@ -107,9 +108,17 @@ if __name__ == "__main__":
             "num_tracks": 33, 
             "num_albums": 28, 
             "num_followers": 1, 
+            
+    "name": "vibin'", 
+            "collaborative": "false", 
+            "pid": 542, 
+            "modified_at": 1505520000, 
+            "num_tracks": 68, 
+            "num_albums": 63, 
+            "num_followers": 1, 
     """
 
-    playlist_id = 541
+    playlist_id = 542
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
