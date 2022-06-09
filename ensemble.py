@@ -49,12 +49,11 @@ class Ensemble:
 
 
 class EnsembleRecall:
-    def __init__(self, seq2seq, autoencoder, track2vec, num_tracks, trackId2reducedTrackId, reducedTrackId2trackId):
+    def __init__(self, seq2seq, autoencoder, track2vec, num_tracks, trackId2reducedTrackId):
         self.autoencoder = autoencoder
         self.track2vec = track2vec
         self.seq2seq = seq2seq
         self.trackId2reducedTrackId = trackId2reducedTrackId
-        self.reducedTrackId2trackId = reducedTrackId2trackId
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
         self.num_tracks = num_tracks
@@ -145,7 +144,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = EnsembleRecall(model_list, autoencoder, word2vec_tracks, NUM_TRACKS)
+    ensemble_model = EnsembleRecall(model, autoencoder, word2vec_tracks, NUM_TRACKS, trackId2reducedTrackId)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
