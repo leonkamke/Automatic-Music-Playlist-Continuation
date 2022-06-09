@@ -121,7 +121,7 @@ class Seq2Seq(nn.Module):
         # src.shape == (batch_size, src_len)
         batch_size = src.shape[0]
         # tensor to store decoder outputs
-        outputs = torch.zeros(batch_size, num_predictions, self.num_tracks)
+        outputs = torch.zeros(batch_size, num_predictions, self.num_tracks).to(device)
 
         x, (h_n, c_n) = self.encoder(src)
         # x.shape == (batch_size) and contains indices of reduced track id's !!
