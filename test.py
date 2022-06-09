@@ -361,7 +361,7 @@ if __name__ == "__main__":
         # Iterate over each row in the csv file and create lists of track uri's
         for index, row in enumerate(csv_reader):
             if 981000 <= index < 999999:
-                if row[1] != ""  and len(row[2:]) >= 200:
+                if row[1] != ""  and len(row[2:]) >= 100:
                 # len_p = len(row[2:])
                     c += 1
 
