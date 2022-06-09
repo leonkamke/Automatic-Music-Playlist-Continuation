@@ -72,7 +72,7 @@ class EnsembleRecall:
             reducedTrackId = self.trackId2reducedTrackId[trackId]
             rankings[trackId] = float(pred_seq2seq[reducedTrackId])
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)
 
         """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
 
