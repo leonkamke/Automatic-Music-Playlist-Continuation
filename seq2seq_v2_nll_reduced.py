@@ -43,6 +43,7 @@ class Encoder(nn.Module):
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, num_tracks)
+        self.log_softmax = nn.LogSoftmax(dim=-1)
 
     def forward(self, input):
         # input.shape == (batch_size, seq_len)
@@ -53,6 +54,7 @@ class Encoder(nn.Module):
 
         x = self.fc_out(x)
         # x.shape == (batch_size, seq_len, num_tracks)
+        x = self.log_softmax(x)
 
         # for each batch and sequence only return last vector
         x = x[:, -1, :]
@@ -83,6 +85,7 @@ class Decoder(nn.Module):
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, num_tracks)
+        self.log_softmax = nn.LogSoftmax(dim=-1)
 
     def forward(self, input, h_n, c_n):
         # input.shape == (batch_size)
@@ -104,7 +107,7 @@ class Decoder(nn.Module):
 
         x = self.fc_out(x.squeeze(1))
         # x.shape == (batch_size, num_tracks)
-
+        x = self.log_softmax(x)
         return x, (h_n, c_n)
 
 
