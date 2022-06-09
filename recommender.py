@@ -98,9 +98,17 @@ if __name__ == "__main__":
             "modified_at": 1456790400, 
             "num_tracks": 72, 
             "num_albums": 69,
+            
+    "name": "SpRiNg BrEaK", 
+            "collaborative": "false", 
+            "pid": 541, 
+            "modified_at": 1505088000, 
+            "num_tracks": 33, 
+            "num_albums": 28, 
+            "num_followers": 1, 
     """
 
-    playlist_id = 840
+    playlist_id = 541
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
