@@ -159,7 +159,7 @@ if __name__ == "__main__":
     N_LAYERS = 1
     title2rec = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
     title2rec.eval()
-    model_list.append(title2rec)
+    # model_list.append(title2rec)
     print("finished")
 
     print("model_list.len = ", len(model_list))
