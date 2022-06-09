@@ -232,7 +232,7 @@ if __name__ == '__main__':
     # Decoder params: (vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
     decoder = Decoder(NUM_TRACKS, embedding_pre_trained, HID_DIM, N_LAYERS, reduced_trackId2trackId).to(device)
     # Seq2Seq params: (encoder, decoder, vocab_size, device)
-    model = Seq2Seq(encoder, decoder, NUM_TRACKS, reduced_trackId2trackId, device)
+    model = Seq2Seq(encoder, decoder, NUM_TRACKS, reduced_trackId2trackId, device).to(device)
     model.to(device)
     print("finished")
 
