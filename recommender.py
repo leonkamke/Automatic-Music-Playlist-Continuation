@@ -149,13 +149,13 @@ if __name__ == "__main__":
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
-    playlist_id = 330
+    playlist_id = 343
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
     print("Length of the playlist: ", len(playlist_ids))
     num_predictions = 50
-    recommendation_ids = model.predict(playlist_name, playlist_ids[-2:-1], num_predictions)
+    recommendation_ids = model.predict(playlist_name, playlist_ids[1], num_predictions)
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
