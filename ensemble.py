@@ -20,7 +20,7 @@ class Ensemble:
         # -----------------------------------------------------------------------------------------------
         model_list = []
 
-        device = torch.device("cpu")
+        device = torch.device("cuda")
 
         """print("load word2vec models")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
