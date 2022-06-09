@@ -100,7 +100,7 @@ if __name__ == "__main__":
             "num_albums": 69,
     """
 
-    playlist_id = 334
+    playlist_id = 842
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
