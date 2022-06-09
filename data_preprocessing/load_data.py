@@ -761,11 +761,11 @@ class NextTrackDatasetShiftedTargetReducedFixedStep(Dataset):
 
 
 class EncoderDecoderReducedFixedStep(Dataset):
-    def __init__(self, word2vec, word2vec_reduced, num_rows_train, num_steps):
+    def __init__(self, trackUri2trackId, reducedTrackUri2reducedId, num_rows_train, num_steps):
         # data loading
         self.num_steps = num_steps
-        self.word2vec = word2vec
-        self.word2vec_reduced = word2vec_reduced
+        self.trackUri2trackId = trackUri2trackId
+        self.reducedTrackUri2reducedId = reducedTrackUri2reducedId
         self.num_rows_train = num_rows_train
         self.src, self.trg = self.read_train_data()
         self.n_samples = len(self.src)
@@ -797,12 +797,12 @@ class EncoderDecoderReducedFixedStep(Dataset):
             for i in range(len(src_uri)):
                 indices = []
                 for uri in src_uri[i]:
-                    indices.append(self.word2vec.wv.get_index(uri))
+                    indices.append(self.trackUri2trackId[uri])
                 src_idx.append(torch.LongTensor(indices))
                 indices = []
                 for uri in trg_uri[i]:
-                    if uri in self.word2vec_reduced.wv.key_to_index:
-                        indices.append(self.word2vec_reduced.wv.key_to_index[uri])
+                    if uri in self.reducedTrackUri2reducedId:
+                        indices.append(self.reducedTrackUri2reducedId[uri])
                     else:
                         indices.append(-1)
                 trg_idx.append(torch.LongTensor(indices))
