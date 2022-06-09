@@ -90,9 +90,10 @@ class Decoder(nn.Module):
     def forward(self, input, h_n, c_n):
         # input.shape == (batch_size)
         # convert input from reduced id's to normal id's
-        for i, reducedTrackId in enumerate(input):
-            trackId = self.reducedTrackId2trackId[int(reducedTrackId)]
-            input[i] = trackId
+        with torch.no_grad():
+            for i, reducedTrackId in enumerate(input):
+                trackId = self.reducedTrackId2trackId[int(reducedTrackId)]
+                input[i] = trackId
 
         x = self.embedding(input)
         # UNSQUEECE input such that the lstm understands that this is not a sequence of length(batch_size)!!!
