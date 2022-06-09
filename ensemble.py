@@ -70,8 +70,8 @@ class EnsembleRecall:
         for trackId in pred_autoencoder:
             trackId = int(trackId)
             reducedTrackId = self.trackId2reducedTrackId[trackId]
-            print(pred_seq2seq[reducedTrackId])
-            rankings[trackId] = pred_seq2seq[reducedTrackId]
+            print(float(pred_seq2seq[reducedTrackId]))
+            rankings[trackId] = float(pred_seq2seq[reducedTrackId])
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
@@ -92,7 +92,6 @@ class EnsembleRecall:
         # output has to be a list of track_id's
         # outputs.shape == (num_predictions)
         return output
-
 
 
 if __name__ == "__main__":
