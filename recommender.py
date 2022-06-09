@@ -128,7 +128,7 @@ if __name__ == "__main__":
     print("Playlist name: ", playlist_name)
     print("Length of the playlist: ", len(playlist_ids))
     num_predictions = 50
-    recommendation_ids = model.predict(playlist_ids[0:-1], num_predictions)
+    recommendation_ids = model.predict(playlist_name, playlist_ids[0:-1], num_predictions)
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
