@@ -52,12 +52,12 @@ class Encoder(nn.Module):
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
 
-        x = self.fc_out(x)
+        x = self.fc_out(x)[:, 1, :]
         # x.shape == (batch_size, seq_len, num_tracks)
         x = self.log_softmax(x)
 
         # for each batch and sequence only return last vector
-        x = x[:, -1, :]
+        # x = x[:, -1, :]
         # x.shape == (batch_size, num_tracks)
 
         x = torch.argmax(x, dim=1)
