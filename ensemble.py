@@ -59,20 +59,20 @@ class EnsembleRecall:
         self.num_tracks = num_tracks
 
     def predict(self, input, num_predictions):
-        pred_autoencoder = self.autoencoder.predict(input, num_predictions)
+        pred_autoencoder = self.autoencoder.predict(input, 5000)
         # pred_autoencoder = sequence of track id's
         # red_pred_auto = sequence of reduced track id's
         pred_seq2seq, _ = self.seq2seq.forward(input)
         # pred_seq2seq.shape = (seq_len, num_tracks)
         pred_seq2seq = pred_seq2seq[-1]
 
-        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
         for trackId in pred_autoencoder:
             trackId = int(trackId)
             reducedTrackId = self.trackId2reducedTrackId[trackId]
             rankings[trackId] = float(pred_seq2seq[reducedTrackId])
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)"""
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)
 
         """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
 
@@ -85,7 +85,7 @@ class EnsembleRecall:
 
                 _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
 
-        """output = []
+        output = []
         for trackId in top_k:
             output.append(int(trackId))
         # output has to be a list of track_id's
