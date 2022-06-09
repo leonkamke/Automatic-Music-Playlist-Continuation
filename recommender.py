@@ -5,6 +5,8 @@ from data_preprocessing import load_data as ld
 from evaluation import eval
 from autoencoder import Autoencoder
 from evaluation import load_eval_data as eval_data
+from seq2seq_v4_nll_reduced import Seq2Seq
+import torch.nn as nn
 
 
 def trackIds2trackUris(track_ids, track2vec):
@@ -41,14 +43,26 @@ if __name__ == "__main__":
     NUM_ALBUMS = len(reducedAlbumUri2reducedId)
     HID_DIM = 256
 
-    print("create Autoencoder model...")
+    """print("create Autoencoder model...")
     save_file_name = "/autoencoder.pth"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
                         trackId2reducedAlbumId, reduced_trackId2trackId)
     model.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
-    print("created model")
+    print("created model")"""
+
+    print("create seq2seq model for ensemble")
+    weights_path = la.path_embedded_weights()
+    seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
+    weights = torch.load(weights_path, map_location=device)
+    # weights.shape == (2262292, 300)
+    # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
+    embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+    seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+    seq2seq.load_state_dict(torch.load(seq2seq_path))
+    seq2seq.eval()
+    print("finished")
 
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
@@ -92,7 +106,7 @@ if __name__ == "__main__":
     print("Playlist name: ", playlist_name)
     print("Length of the playlist: ", len(playlist_ids))
     num_predictions = 20
-    recommendation_ids = model.predict(playlist_ids[0:-1], num_predictions)
+    recommendation_ids = seq2seq.predict(playlist_ids[0:-1], num_predictions)
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
