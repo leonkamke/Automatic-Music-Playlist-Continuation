@@ -208,7 +208,7 @@ if __name__ == "__main__":
     print(word2vec_tracks_reduced.wv.index_to_key[id])
     print(word2vec_tracks.wv.index_to_key[id_dict[id]])"""
 
-    print("load dictionaries from file")
+    """print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
     reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
     reducedAlbumUri2reducedId = ld.get_reducedAlbumUri2reducedAlbumID()
@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
     print("trackId2artistId.len ", len(set(trackId2artistId.values())))
     print("trackUri2trackId.len ", len(set(trackUri2trackId.values())))
-    print("artistUri2artistId.len ", len(set(artistUri2artistId.values())))
+    print("artistUri2artistId.len ", len(set(artistUri2artistId.values())))"""
 
     # test the mapping of the dictionaries -------------------------------------------------------------------------
     """
@@ -341,7 +341,29 @@ if __name__ == "__main__":
     print(trg1, trg2)"""
 
     # track id 289770 -> reduced_track id 284291
-    word2vec = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    """word2vec = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     weights = torch.FloatTensor(word2vec.wv.vectors)
-    torch.save(weights, '/netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track.pt')
+    torch.save(weights, '/netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track.pt')"""
+
+    class1 = []
+    class2 = []
+    class3 = []
+    class4 = []
+    class5 = []
+    class6 = []
+    class7 = []
+    class8 = []
+    class9 = []
+    class10 = []
+    c = 0
+    with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+        csv_reader = csv.reader(read_obj)
+        # Iterate over each row in the csv file and create lists of track uri's
+        for index, row in enumerate(csv_reader):
+            if 981000 <= index < 999999:
+                if row[1] != ""  and len(row[2:]) >= 200:
+                # len_p = len(row[2:])
+                    c += 1
+
+        print(c)
 
