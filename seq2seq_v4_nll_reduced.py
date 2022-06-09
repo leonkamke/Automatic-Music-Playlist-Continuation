@@ -67,7 +67,7 @@ class Seq2Seq(nn.Module):
         # x.shape == (seq_len, num_tracks)
         x = x[-1]
         # x.shape == (num_tracks)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
+        _, top_k = torch.topk(x, dim=0, k=num_predictions, largest=False)
         # top_k.shape == (num_predictions)
         output = []
         for reduced_track_id in top_k:
