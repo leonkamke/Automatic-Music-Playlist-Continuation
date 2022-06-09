@@ -130,12 +130,19 @@ if __name__ == "__main__":
             "modified_at": 1502323200, 
             "num_tracks": 121, 
             "num_albums": 108, 
+            
+    "name": "no", 
+            "collaborative": "false", 
+            "pid": 772, 
+            "modified_at": 1412640000, 
+            "num_tracks": 20, 
+            "num_albums": 17, 
     """
     model = Ensemble(word2vec_tracks)
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
-    playlist_id = 687
+    playlist_id = 772
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
