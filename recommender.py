@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     print("create Autoencoder model...")
     save_file_name = "/autoencoder.pth"
-    foldername = "/autoencoder1"
+    foldername = "/autoencoder_1"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
