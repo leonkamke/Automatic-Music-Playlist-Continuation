@@ -59,7 +59,7 @@ class EnsembleRecall:
         self.num_tracks = num_tracks
 
     def predict(self, input, num_predictions):
-        pred_autoencoder = self.autoencoder.predict(input, 5000)
+        pred_autoencoder = self.autoencoder.predict(input, num_predictions)
         # pred_autoencoder = sequence of track id's
         # red_pred_auto = sequence of reduced track id's
         pred_seq2seq, _ = self.seq2seq.forward(input)
@@ -70,7 +70,6 @@ class EnsembleRecall:
         for trackId in pred_autoencoder:
             trackId = int(trackId)
             reducedTrackId = self.trackId2reducedTrackId[trackId]
-            print(float(pred_seq2seq[reducedTrackId]))
             rankings[trackId] = float(pred_seq2seq[reducedTrackId])
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
@@ -131,6 +130,7 @@ if __name__ == "__main__":
     #                  reducedTrackId2trackId)
     autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                               trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
+    autoencoder.eval()
     autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
     model_list.append(autoencoder)
     print("finished")
@@ -144,6 +144,7 @@ if __name__ == "__main__":
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
     model = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
     model.load_state_dict(torch.load(seq2seq_path))
+    model.eval()
     model_list.append(model)
     print("finished")
 
