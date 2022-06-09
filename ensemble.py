@@ -176,7 +176,7 @@ class EnsembleRecall:
         model_list.append(seq2seq)
         self.model_list = model_list
 
-    def predict(self, input, num_predictions):
+    def predict(self, title, input, num_predictions):
         pred_autoencoder = self.autoencoder.predict(input, 1000)
         # pred_autoencoder = sequence of track id's
         pred_seq2seq, _ = self.seq2seq.forward(input)
