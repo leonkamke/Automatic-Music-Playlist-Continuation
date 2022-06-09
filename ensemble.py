@@ -104,6 +104,7 @@ if __name__ == "__main__":
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("finished")"""
+    word2vec_tracks = None
 
     print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
