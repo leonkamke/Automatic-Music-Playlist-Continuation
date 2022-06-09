@@ -4,6 +4,8 @@ from torch.utils.data import Dataset
 import load_attributes as la
 
 
+
+
 class FirstFiveEvaluationDatasetOld(Dataset):
     def __init__(self, word2vec_tracks, word2vec_artists, start_idx, end_idx):
         # data loading
