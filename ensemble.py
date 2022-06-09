@@ -7,17 +7,18 @@ from evaluation import eval
 from data_preprocessing import load_data as ld
 import torch.nn as nn
 from seq2seq_v4_nll_reduced import Seq2Seq
+from title2rec import Title2Rec
 import seq2seq_v3_track_album_artist
 
 
 class Ensemble:
-    def __init__(self, model_list, autoencoder, track2vec):
+    def __init__(self, model_list, track2vec):
         self.model_list = model_list
         self.track2vec = track2vec
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
 
-    def predict(self, input, num_predictions):
+    def predict(self, title, src, num_predictions):
         """# x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)"""
@@ -26,7 +27,12 @@ class Ensemble:
         # for each model make border-count
 
         for model in self.model_list:
-            prediction = model.predict(input, num_predictions)
+            if isinstance(model, Title2Rec):
+                prediction = model.predict(title, num_predictions)
+                print("a")
+            else:
+                prediction = model.predict(src, num_predictions)
+                print("b")
             for i, track_id in enumerate(prediction):
                 track_id = int(track_id)
                 i = int(i)
@@ -98,11 +104,9 @@ if __name__ == "__main__":
 
     device = torch.device("cpu")
 
-    """print("load word2vec models")
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
+    print("load word2vec models")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print("finished")"""
-    word2vec_tracks = None
+    print("finished")
 
     print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
@@ -130,8 +134,8 @@ if __name__ == "__main__":
     #                  reducedTrackId2trackId)
     autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                               trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
-    autoencoder.eval()
     autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
+    autoencoder.eval()
     model_list.append(autoencoder)
     print("finished")
 
@@ -142,21 +146,32 @@ if __name__ == "__main__":
     # weights.shape == (2262292, 300)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-    model = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
-    model.load_state_dict(torch.load(seq2seq_path))
-    model.eval()
-    model_list.append(model)
+    seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+    seq2seq.load_state_dict(torch.load(seq2seq_path))
+    seq2seq.eval()
+    model_list.append(seq2seq)
+    print("finished")
+
+    print("create title2rec model for ensemble")
+    NUM_TRACKS = len(reducedTrackUri2reducedId)
+    NUM_CHARS = 43
+    HID_DIM = 256
+    N_LAYERS = 1
+    title2rec = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
+    title2rec.eval()
+    model_list.append(title2rec)
     print("finished")
 
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = EnsembleRecall(model, autoencoder, word2vec_tracks, NUM_TRACKS, trackId2reducedTrackId)
+    # ensemble_model = EnsembleRecall(seq2seq, autoencoder, word2vec_tracks, NUM_TRACKS, trackId2reducedTrackId)
+    ensemble_model = Ensemble(model_list, word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
     trackUri2trackId = ld.get_trackuri2id()
     artistUri2artistId = ld.get_artist_uri2id()
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
-    results_str = eval.evaluate_model(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+    results_str = eval.evaluate_ensemble_model(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), device)
