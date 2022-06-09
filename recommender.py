@@ -43,16 +43,17 @@ if __name__ == "__main__":
     NUM_ALBUMS = len(reducedAlbumUri2reducedId)
     HID_DIM = 256
 
-    """print("create Autoencoder model...")
+    print("create Autoencoder model...")
     save_file_name = "/autoencoder.pth"
+    foldername = "autoencoder1"
     # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
     #                  reducedTrackId2trackId)
     model = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId, trackId2reducedArtistId,
                         trackId2reducedAlbumId, reduced_trackId2trackId)
-    model.load_state_dict(torch.load(la.output_path_model() + la.get_folder_name() + save_file_name))
-    print("created model")"""
+    model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+    print("created model")
 
-    print("create seq2seq model for ensemble")
+    """print("create seq2seq model for ensemble")
     weights_path = la.path_embedded_weights()
     seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
     weights = torch.load(weights_path, map_location=device)
@@ -62,7 +63,7 @@ if __name__ == "__main__":
     seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
     seq2seq.load_state_dict(torch.load(seq2seq_path))
     seq2seq.eval()
-    print("finished")
+    print("finished")"""
 
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
     print("Length of the playlist: ", len(playlist_ids))
-    num_predictions = 20
+    num_predictions = 50
     recommendation_ids = seq2seq.predict(torch.LongTensor(playlist_ids[0:-1]), num_predictions)
 
     # print recommendations
