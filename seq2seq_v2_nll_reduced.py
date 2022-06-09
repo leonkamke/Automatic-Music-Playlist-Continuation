@@ -142,6 +142,7 @@ class Seq2Seq(nn.Module):
         return outputs
 
     def predict(self, input, num_predictions):
+        input = torch.LongTensor(input)
         input = torch.unsqueeze(input, dim=0)
         x = self.forward(input, num_predictions)
         # x.shape == (1, num_predictions, num_tracks)
