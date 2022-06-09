@@ -155,14 +155,13 @@ class EnsembleRecall:
 
 
 if __name__ == "__main__":
-    """model_list = []
-
     device = torch.device("cpu")
 
     print("load word2vec models")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     print("finished")
 
+    """
     print("load dictionaries from file")
     reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
     reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
@@ -218,10 +217,10 @@ if __name__ == "__main__":
     print("finished")
 
     print("model_list.len = ", len(model_list))
-
+    """
     # create ensemble model
     # ensemble_model = EnsembleRecall(seq2seq, autoencoder, word2vec_tracks, NUM_TRACKS, trackId2reducedTrackId)
-    ensemble_model = Ensemble(model_list, word2vec_tracks)
+    ensemble_model = Ensemble(word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
@@ -229,4 +228,4 @@ if __name__ == "__main__":
     artistUri2artistId = ld.get_artist_uri2id()
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
     results_str = eval.evaluate_ensemble_model(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
-                                      la.get_start_idx(), la.get_end_idx(), device)"""
+                                      la.get_start_idx(), la.get_end_idx(), device)
