@@ -48,6 +48,48 @@ class Ensemble:
         return top_k
 
 
+class EnsembleRecall:
+    def __init__(self, seq2seq, autoencoder, track2vec, num_tracks, trackId2reducedTrackId, reducedTrackId2trackId):
+        self.autoencoder = autoencoder
+        self.track2vec = track2vec
+        self.seq2seq = seq2seq
+        self.trackId2reducedTrackId = trackId2reducedTrackId
+        self.reducedTrackId2trackId = reducedTrackId2trackId
+        # number of unique tracks in the MPD dataset = 2262292
+        self.vocab_size = 2262292
+        self.num_tracks = num_tracks
+
+    def predict(self, input, num_predictions):
+        pred_autoencoder = self.autoencoder.predict(input, 5000)
+        # pred_autoencoder = sequence of track id's
+        # red_pred_auto = sequence of reduced track id's
+        pred_seq2seq, _ = self.seq2seq.forward(input)
+        # pred_seq2seq.shape = (seq_len, num_tracks)
+        pred_seq2seq = pred_seq2seq[-1]
+
+        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+        for trackId in pred_autoencoder:
+            trackId = int(trackId)
+            reducedTrackId = self.trackId2reducedTrackId[trackId]
+            rankings[trackId] = pred_seq2seq[reducedTrackId]
+
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
+
+        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+
+        # sort corresponding to popularity
+        for track_id in top_k:
+            track_id = int(track_id)
+            track_uri = self.track2vec.wv.index_to_key[track_id]
+            popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
+            rankings[track_id] = popularity
+
+        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
+
+        return top_k
+
+
+
 if __name__ == "__main__":
     model_list = []
 
@@ -103,7 +145,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
 
     # create ensemble model
-    ensemble_model = Ensemble(model_list, autoencoder, word2vec_tracks)
+    ensemble_model = EnsembleRecall(model_list, autoencoder, word2vec_tracks, NUM_TRACKS)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
