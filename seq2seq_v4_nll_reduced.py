@@ -41,7 +41,7 @@ class Seq2Seq(nn.Module):
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(300, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True, dropout=dropout)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print("loaded dictionaries from file")
 
     print("load pretrained embedding layer...")
-    weights = torch.load(la.path_embedded_weights(), map_location=device)
+    weights = torch.load(la.path_embedded_weights_tracks(), map_location=device)
     # weights.shape == (2262292, 300)
     # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
     embedding_pre_trained = nn.Embedding.from_pretrained(weights)
