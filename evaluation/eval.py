@@ -203,6 +203,9 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             prediction = model.predict(title, src, num_predictions)
             prediction_all = prediction
             prediction = prediction[:len(trg)]
+            print("len(prediction_all) == ", len(prediction_all))
+            print("len(prediction) == ", len(prediction))
+            print("len(trg) ==", len(trg))
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
