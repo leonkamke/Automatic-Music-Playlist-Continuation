@@ -100,7 +100,7 @@ class Ensemble:
         model_list.append(seq2seq)
         print("finished")
 
-        model_list.append(seq2seq)
+        print("len(model_list) = ", len(model_list))
         self.model_list = model_list
 
     def predict(self, title, src, num_predictions):
@@ -202,7 +202,6 @@ class EnsembleRecall:
         self.seq2seq = seq2seq
         print("finished")
 
-        model_list.append(seq2seq)
         self.model_list = model_list
 
     def predict(self, title, input, num_predictions):
@@ -304,7 +303,7 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
     """
     # create ensemble model
-    ensemble_model = EnsembleRecall(word2vec_tracks)
+    ensemble_model = Ensemble(word2vec_tracks)
     # ensemble_model = Ensemble(word2vec_tracks)
 
     # evaluate ensemble model:
