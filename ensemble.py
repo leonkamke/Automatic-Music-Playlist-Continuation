@@ -41,12 +41,13 @@ class Ensemble:
         model_list.append(model_word2vec)
         print("finished")"""
 
-        # 15, 12
-        print("create autoencoder for ensemble")
         NUM_TRACKS = len(reducedTrackUri2reducedId)
         NUM_ARTISTS = len(reducedArtistUri2reducedId)
         NUM_ALBUMS = len(reducedAlbumUri2reducedId)
         HID_DIM = 256
+
+        # 15, 12
+        """print("create autoencoder for ensemble")
         save_file_name = "/autoencoder.pth"
         # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
         #                  reducedTrackId2trackId)
@@ -56,7 +57,7 @@ class Ensemble:
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")
+        print("finished")"""
 
         print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
