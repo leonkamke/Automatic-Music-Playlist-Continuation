@@ -1,1 +1,1 @@
-import config
+from playlist_continuation import config
