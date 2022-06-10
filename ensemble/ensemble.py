@@ -1,6 +1,6 @@
 import gensim
 import torch
-from config import load_attributes as la
+import config.load_attributes as la
 from recommender.autoencoder import Autoencoder
 from evaluation import eval
 from data_preprocessing import load_data as ld
