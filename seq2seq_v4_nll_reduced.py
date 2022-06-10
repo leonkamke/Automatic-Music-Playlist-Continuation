@@ -62,7 +62,7 @@ class Seq2Seq(nn.Module):
         return x, (h_n, c_n)
 
     def predict(self, input, num_predictions):
-        input = torch.LongTensor(input)
+        # input = torch.LongTensor(input)
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, num_tracks)
