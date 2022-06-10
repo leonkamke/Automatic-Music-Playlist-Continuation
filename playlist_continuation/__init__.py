@@ -1,1 +1,3 @@
 from playlist_continuation import config
+import playlist_continuation
+
