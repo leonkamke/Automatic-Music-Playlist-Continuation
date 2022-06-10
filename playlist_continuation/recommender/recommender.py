@@ -140,18 +140,20 @@ if __name__ == "__main__":
             "modified_at": 1508803200, 
             "num_tracks": 85, 
             "num_albums": 82, 
+            
+    Day'n nite: pid 450 song 69
     """
     model = Ensemble(word2vec_tracks)
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
-    playlist_id = 343
+    playlist_id = 450
     playlist_uris, playlist_ids, pid, playlist_name = evaluation_dataset[playlist_id]
     print("Playlist ID: ", pid)
     print("Playlist name: ", playlist_name)
     print("Length of the playlist: ", len(playlist_ids))
     num_predictions = 50
-    recommendation_ids = model.predict(playlist_name, [playlist_ids[1]], num_predictions)
+    recommendation_ids = model.predict(playlist_name, [playlist_ids[69]], num_predictions)
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
