@@ -224,7 +224,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             print("R-Precision(artists): " + str(r_precision_artists))
             print("NDCG(tracks):       : " + str(ndcg_tracks))
             print("NDCG(artists):      : " + str(ndcg_artists))
-            print("clicks:             : ", + str(clicks))
+            print("clicks:             : " + str(clicks))
             print(" ")
 
     r_precision_tracks_sum = r_precision_tracks_sum / len_data
