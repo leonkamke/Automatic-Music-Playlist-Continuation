@@ -20,10 +20,6 @@ class Ensemble:
 
         device = torch.device("cpu")
 
-        """print("load word2vec models")
-        word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-        print("finished")"""
-
         print("load dictionaries from file")
         reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
         reducedArtistUri2reducedId = ld.get_reducedArtistUri2reducedArtistID()
@@ -33,11 +29,6 @@ class Ensemble:
         trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
         trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
         print("loaded dictionaries from file")
-
-        """print("create word2vec model for ensemble")
-        model_word2vec = track_embeddings.Word2VecModel(word2vec_tracks)
-        model_list.append(model_word2vec)
-        print("finished")"""
 
         # 15, 12
         print("create autoencoder for ensemble")
@@ -67,9 +58,23 @@ class Ensemble:
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
+        model_list.append(seq2seq)
         print("finished")
 
-        model_list.append(seq2seq)
+        print("create seq2seq_3 model for ensemble")
+        weights_path = la.path_embedded_weights()
+        seq2seq_path = la.output_path_model() + "/tracks2rec_5/seq2seq_v4_reduced_nll.pth"
+        weights = torch.load(weights_path, map_location=device)
+        # weights.shape == (2262292, 300)
+        # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
+        embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+        seq2seq_2 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_2.load_state_dict(torch.load(seq2seq_path))
+        seq2seq_2.to(device)
+        seq2seq_2.eval()
+        model_list.append(seq2seq_2)
+        print("finished")
+
         self.model_list = model_list
 
     def predict(self, title, src, num_predictions):
