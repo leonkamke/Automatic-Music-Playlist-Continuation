@@ -38,7 +38,7 @@ def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId
         src = src.to(device)
         trg = trg.to(device)
         num_predictions = len(trg)
-        # num_predictions = 500
+        num_predictions = 500
         prediction = model.predict(src, num_predictions)
 
         # prediction is of shape len(trg)
@@ -127,6 +127,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
 
+
             # convert prediction and target to list's of artist id's
             artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
 
@@ -184,6 +185,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
     print("start computing R-Precision and NDCG:")
     r_precision_tracks_sum = 0.0
     r_precision_artists_sum = 0.0
+    clicks_sum = 0
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
     len_data = 0
@@ -196,16 +198,22 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             # src (list of indices), trg (list of indices)
             src = src.to(device)
             trg = trg.to(device)
-            num_predictions = len(trg)
-            # num_predictions = 500
+            # num_predictions = len(trg)
+            num_predictions = 500
             prediction = model.predict(title, src, num_predictions)
-
+            prediction_all = prediction
+            prediction = prediction[:len(trg)]
+            print("len(prediction_all) == ", len(prediction_all))
+            print("len(prediction) == ", len(prediction))
+            print("len(trg) ==", len(trg))
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
             ndcg_tracks = calc_ndcg(prediction, trg)
+            clicks = playlist_extender_clicks(prediction_all, trg)
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
+            clicks_sum += clicks
 
             # convert prediction and target to list's of artist id's
             artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
@@ -220,6 +228,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             print("R-Precision(artists): " + str(r_precision_artists))
             print("NDCG(tracks):       : " + str(ndcg_tracks))
             print("NDCG(artists):      : " + str(ndcg_artists))
+            print("clicks:             : " + str(clicks))
             print(" ")
 
     r_precision_tracks_sum = r_precision_tracks_sum / len_data
@@ -228,6 +237,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
     ndcg_artists_sum = ndcg_artists_sum / len_data
     r_precision = (r_precision_tracks_sum + r_precision_artists_sum) / 2.0
     ndcg = (ndcg_tracks_sum + ndcg_artists_sum) / 2.0
+    clicks_sum = clicks_sum / len_data
 
     # print the results
     print("Results for evaluation dataset ----------------------------")
@@ -237,6 +247,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
     print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
     print("---> R-Precision            : " + str(r_precision))
     print("---> NDCG                   : " + str(ndcg))
+    print("---> Clicks                 : " + str(clicks_sum))
 
     output_string = "Results for evaluation dataset ----------------------------\n" + \
                     "start_idx: " + str(start_idx) + "\n" \
@@ -250,12 +261,29 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
                     "---> NDCG                   : " + str(ndcg)
     return output_string
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 """
 functions for calculating R-Precision and NDCG
 All metrics will be evaluated at both the track level (exact track match)
 and the artist level (any track by the same artist is a match)
 """
+
+
+def playlist_extender_clicks(predictions, targets, max_n_predictions=500):
+    # Assumes predictions are sorted by relevance
+    # First, cap the number of predictions
+    predictions = predictions[:max_n_predictions].tolist()
+    targets = targets.tolist()
+    # Calculate metric
+    i = set(predictions).intersection(set(targets))
+    for index, t in enumerate(predictions):
+        t = int(t)
+        for track in i:
+            track = int(track)
+            if t == track:
+                return float(int(index / 10))
+    return float(max_n_predictions / 10.0 + 1)
 
 
 def calc_r_precision(prediction, ground_truth):
