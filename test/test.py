@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import csv
-from config import load_attributes as la
+from playlist_continuation.config import load_attributes as la
 
 
 class Seq2Seq(nn.Module):
