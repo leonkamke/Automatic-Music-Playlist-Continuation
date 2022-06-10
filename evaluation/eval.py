@@ -274,7 +274,8 @@ def playlist_extender_clicks(predictions, targets, max_n_predictions=500):
     # Assumes predictions are sorted by relevance
     # First, cap the number of predictions
     predictions = predictions[:max_n_predictions]
-
+    print(set(predictions))
+    print(set(targets))
     # Calculate metric
     i = set(predictions).intersection(set(targets))
     for index, t in enumerate(predictions):
