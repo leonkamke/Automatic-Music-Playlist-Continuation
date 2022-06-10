@@ -201,12 +201,13 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             # num_predictions = len(trg)
             num_predictions = 500
             prediction = model.predict(title, src, num_predictions)
-
+            prediction_all = prediction
+            prediction = prediction[:len(trg)]
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
             ndcg_tracks = calc_ndcg(prediction, trg)
-            clicks = playlist_extender_clicks(prediction, trg)
+            clicks = playlist_extender_clicks(prediction_all, trg)
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
             clicks_sum += clicks
@@ -274,7 +275,9 @@ def playlist_extender_clicks(predictions, targets, max_n_predictions=500):
     # Calculate metric
     i = set(predictions).intersection(set(targets))
     for index, t in enumerate(predictions):
+        t = int(t)
         for track in i:
+            track = int(track)
             if t == track:
                 return float(int(index / 10))
     return float(max_n_predictions / 10.0 + 1)
