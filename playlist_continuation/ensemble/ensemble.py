@@ -1,6 +1,6 @@
 import gensim
 import torch
-import playlist_continuation.config.load_attributes as la
+from playlist_continuation.config import load_attributes as la
 from playlist_continuation.recommender.autoencoder import Autoencoder
 from playlist_continuation.evaluation import eval
 from playlist_continuation.data_preprocessing import load_data as ld
