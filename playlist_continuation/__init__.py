@@ -1,3 +1,3 @@
-from playlist_continuation import config
-import playlist_continuation
-
+from playlist_continuation.config import *
+import config.load_attributes
+import config
