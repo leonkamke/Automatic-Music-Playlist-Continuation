@@ -12,7 +12,7 @@ import load_attributes as la
 # --------------- some helper functions --------------------------------------------------------------------------------
 # returns a numpy array with the track_uris from each track in playlist pid; for slice 198000-198999
 def get_track_uris_from_playlist(playlist_id):
-    data_path = './data/spotify_million_playlist_dataset/data'
+    data_path = '../data/spotify_million_playlist_dataset/data'
     parser = argparse.ArgumentParser(description="get playlist")
     parser.add_argument(data_path, default=None)
     # print(listdir(data_path))
@@ -62,7 +62,7 @@ class Word2VecModel:
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     word2vec_tracks = None
-    if os.path.isfile("./models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model"):
+    if os.path.isfile("../models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model"):
         print("load model from file")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
         print("model loaded from file")
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         print("read data from database")
         # make matrix with each row is a playlist(list of track_uri)
         playlists = []
-        with open('data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
+        with open('../data/spotify_million_playlist_dataset_csv/data/track_sequences.csv', encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file
             for idx, row in enumerate(csv_reader):

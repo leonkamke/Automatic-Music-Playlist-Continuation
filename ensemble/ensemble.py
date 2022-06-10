@@ -1,14 +1,12 @@
 import gensim
 import torch
 import load_attributes as la
-from autoencoder import Autoencoder
-import track_embeddings
+from recommender.autoencoder import Autoencoder
 from evaluation import eval
 from data_preprocessing import load_data as ld
 import torch.nn as nn
-from seq2seq_v4_nll_reduced import Seq2Seq
-from title2rec import Title2Rec
-import seq2seq_v3_track_album_artist
+from recommender.seq2seq_v4_nll_reduced import Seq2Seq
+from recommender.title2rec import Title2Rec
 
 
 class Ensemble:
@@ -275,8 +273,8 @@ if __name__ == "__main__":
     print("model_list.len = ", len(model_list))
     """
     # create ensemble model
-    ensemble_model = EnsembleRecall(word2vec_tracks)
-    # ensemble_model = Ensemble(word2vec_tracks)
+    # ensemble_model = EnsembleRecall(word2vec_tracks)
+    ensemble_model = Ensemble(word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()

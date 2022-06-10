@@ -6,7 +6,7 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import gensim
+from data_preprocessing import build_character_vocab as cv
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -26,22 +26,22 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-class Tracks2Rec(nn.Module):
-    def __init__(self, reducedTrackId2trackId, num_tracks, pre_trained_embedding, hid_dim, n_layers, dropout=0):
-        super(Tracks2Rec, self).__init__()
+class Title2Rec(nn.Module):
+    def __init__(self, num_chars, num_tracks, hid_dim, n_layers, reducedTrackId2trackId, dropout=0):
+        super(Title2Rec, self).__init__()
         self.hid_dim = hid_dim
         self.n_layers = n_layers
-        self.num_tracks = num_tracks
+        self.input_size = num_chars
         self.reducedTrackId2trackId = reducedTrackId2trackId
 
         # input shape of embedding: (*) containing the indices
         # output shape of embedding: (*, embed_dim == 100)
-        self.embedding = pre_trained_embedding
+        self.embedding = nn.Embedding(self.input_size, 100)
         # input shape of LSTM has to be (batch_size, seq_len, embed_dim == 100) when batch_first=True
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(300, hid_dim, n_layers, batch_first=True, dropout=dropout)
+        self.rnn = nn.LSTM(100, hid_dim, n_layers, batch_first=True)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, num_tracks)
@@ -51,26 +51,22 @@ class Tracks2Rec(nn.Module):
         # input.shape == (batch_size, seq_len)
         x = self.embedding(input)
         # x.shape == (batch_size, seq_len, embed_dim == 100)
-
         x, (h_n, c_n) = self.rnn(x)
         # x.shape == (batch_size, seq_len, hid_dim), when batch_first=True
-
         x = self.fc_out(x)
-        # x.shape == (batch_size, seq_len, vocab_size)
-
+        # x.shape == (batch_size, num_tracks)
         x = self.sigmoid(x)
 
         return x
 
-    def predict(self, input, num_predictions):
+    def predict(self, title, num_predictions):
+        input = cv.title2index_seq(title)
+        input = torch.LongTensor(input)
         # input.shape == seq_len
-        # input = torch.unsqueeze(input, dim=0)
-        print(input.shape)
         x = self.forward(input)
-        print(x.shape)
-        # x.shape == (seq_len, NUM_TRACKS)
+        # x.shape == (seq_len, num_tracks)
         x = x[-1]
-        # x.shape == (NUM_TRACKS)
+        # x.shape == (num_tracks)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
         output = []
@@ -81,42 +77,6 @@ class Tracks2Rec(nn.Module):
         # outputs.shape == (num_predictions)
         return output
 
-    def predict_do_summed_rank(self, input, num_predictions):
-        # input.shape == seq_len
-        x, _ = self.forward(input)
-        # x.shape == (seq_len, vocab_size)
-        x = torch.mean(x, dim=0)
-        # x.shape == (vocab_size)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
-        # top_k.shape == (num_predictions)
-        return top_k
-
-    def predict_(self, input, num_predictions):
-        # input.shape == seq_len
-        outputs = torch.zeros(num_predictions)
-        outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
-        # outputs.shape = (num_predictions)
-        x, (h_n, c_n) = self.forward(input)
-        # x.shape == (seq_len, vocab_size)
-        idx = torch.argmax(x[-1])
-        outputs[0] = idx
-        outputs_vectors[0] = x[-1]
-
-        # idx.shape == (1)
-        for i in range(1, num_predictions):
-            x = self.embedding(idx)
-            x = torch.unsqueeze(x, dim=0)
-            # x.shape == (1, embed_dim == 300)
-            x, (h_n, c_n) = self.rnn(x, (h_n, c_n))
-            # x.shape == (1, hid_dim)
-            x = self.fc_out(x)
-            # x.shape == (1, vocab_size)
-            outputs_vectors[i] = x[0]
-            idx = torch.argmax(x[0])
-            outputs[i] = idx
-        # outputs.shape == (num_predictions)
-        return outputs
-
 
 def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
     model.train()
@@ -124,10 +84,12 @@ def train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     for epoch in range(num_epochs):
         for i, (src, trg) in enumerate(dataloader):
             src = src.to(device)
+            # src.shape = (batch_size, num_characters_title)
             trg = trg.to(device)
-            # trg.shape = src.shape = (batch_size, seq_len)
+            # trg.shape = src.shape = (batch_size, num_tracks)
             optimizer.zero_grad()
             output = model(src)[:, -1, :]
+            # output.shape = (batch_size, num_tracks)
             del src
             # output.shape = (batch_size, seq_len, vocab_size)
             loss = criterion(output, trg)
@@ -153,15 +115,7 @@ if __name__ == '__main__':
     trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
     trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
     trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
-    trackUri2trackId = ld.get_trackuri2id()
     print("loaded dictionaries from file")
-
-    print("load pretrained embedding layer...")
-    weights = torch.load(la.path_embedded_weights(), map_location=device)
-    # weights.shape == (2262292, 100)
-    # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
-    embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-    print("finished")
 
     # Training and model parameters
     learning_rate = la.get_learning_rate()
@@ -169,14 +123,14 @@ if __name__ == '__main__':
     batch_size = la.get_batch_size()
     num_playlists_for_training = la.get_num_playlists_training()
     # VOCAB_SIZE == 2262292
-    NUM_TRACKS = len(reduced_trackId2trackId)
+    NUM_TRACKS = len(reducedTrackUri2reducedId)
+    NUM_CHARS = 43
     HID_DIM = la.get_recurrent_dimension()
     N_LAYERS = la.get_num_recurrent_layers()
-    num_steps = 20
     max_norm = 5
 
-    print("create Seq2Seq model...")
-    model = Tracks2Rec(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, HID_DIM, N_LAYERS)
+    print("create Title2Rec model...")
+    model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
     print("finished")
 
     print("init weights...")
@@ -184,31 +138,31 @@ if __name__ == '__main__':
     print("finished")
 
     print(f'The model has {count_parameters(model):,} trainable parameters')
-    print("The size of the vocabulary is: ", model.num_tracks)
+    print("The number of tracks is: ", NUM_TRACKS)
 
     optimizer = optim.Adam(model.parameters(), learning_rate)
     # optimizer = optim.SGD(model.parameters(), learning_rate)
     criterion = nn.BCELoss()
 
     print("Create train data...")
-    # dataset = (self, trackUri2reducedTrackId, trackUri2trackId, num_rows_train, num_steps):
-    dataset = ld.Tracks2RecDataset(reducedTrackUri2reducedId, trackUri2trackId, num_playlists_for_training,
-                                   num_steps=num_steps)
+    # (self, reducedTrackuri_2_id, reducedArtisturi_2_id, reducedAlbumuri_2_id, num_rows_train)
+    dataset = ld.Title2RecDataset(reducedTrackUri2reducedId, reducedArtistUri2reducedId, reducedAlbumUri2reducedId,
+                                  num_playlists_for_training)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
-    save_file_name = "/tracks2rec.pth"
+    save_file_name = "/seq2seq_v4_track_album_artist.pth"
 
     model.to(device)
-    #os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("../attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    #train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
-    device = torch.device("cuda")
+    device = torch.device("cpu")
     model.to(device)
 
     # evaluate model:
@@ -219,11 +173,11 @@ if __name__ == '__main__':
     artistUri2artistId = ld.get_artist_uri2id()
     print("finished")
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
-    results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+    results_str = eval.evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), device)
 
     # write results in a file with setted attributes
     f = open(la.output_path_model() + foldername + "/results.txt", "w")
-    f.write("\ntracks2rec.py: ")
     f.write(results_str)
+    f.write("\nseq2seq_v4_nlll: ")
     f.close()

@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
     model.to(device)
     os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("attributes", la.output_path_model() + foldername + "/attributes.txt")
+    shutil.copyfile("../attributes", la.output_path_model() + foldername + "/attributes.txt")
     train(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 

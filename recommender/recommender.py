@@ -2,12 +2,8 @@ import gensim
 import torch
 import load_attributes as la
 from data_preprocessing import load_data as ld
-from evaluation import eval
-from autoencoder import Autoencoder
 from evaluation import load_eval_data as eval_data
-from seq2seq_v4_nll_reduced import Seq2Seq
-import torch.nn as nn
-from ensemble import Ensemble
+from ensemble.ensemble import Ensemble
 
 
 def trackIds2trackUris(track_ids, track2vec):

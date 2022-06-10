@@ -8,7 +8,7 @@ import load_attributes as la
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     model = None
-    if os.path.isfile("models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model"):
+    if os.path.isfile("../models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model"):
         print("load model from file")
         model = gensim.models.Word2Vec.load("./models/gensim_word2vec/1_mil_playlists_albums/word2vec-song-vectors.model")
         print("model loaded from file")

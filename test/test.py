@@ -6,6 +6,7 @@ from data_preprocessing import load_data as ld
 import load_attributes as la
 from evaluation import eval, load_eval_data
 
+
 class Seq2Seq(nn.Module):
     def __init__(self, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
         super().__init__()
@@ -361,9 +362,8 @@ if __name__ == "__main__":
         # Iterate over each row in the csv file and create lists of track uri's
         for index, row in enumerate(csv_reader):
             if 950001 <= index < 999999:
-                if row[1] != ""  and len(row[2:]) >= 150:
-                # len_p = len(row[2:])
+                if row[1] != "" and len(row[2:]) >= 150:
+                    # len_p = len(row[2:])
                     c += 1
 
         print(c)
-
