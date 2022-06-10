@@ -1,6 +1,11 @@
+import sys
+
+# append the path of the
+# parent directory
+sys.path.append("..")
 import gensim
 import torch
-from ..config import load_attributes as la
+from config import loadattributes as la
 from playlist_continuation.recommender.autoencoder import Autoencoder
 from playlist_continuation.evaluation import eval
 from playlist_continuation.data_preprocessing import load_data as ld
