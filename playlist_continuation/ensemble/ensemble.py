@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 import gensim
 import torch
 from ..config import load_attributes as la
