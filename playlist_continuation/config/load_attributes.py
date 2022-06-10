@@ -220,7 +220,7 @@ def path_artist_to_vec_model():
 
 
 def output_path_model():
-    file = open("attributes", "r")
+    file = open("playlist_continuation/config/attributes", "r")
     for i, row in enumerate(file):
         if i == OUTPUT_PATH_MODEL:
             file.close()
