@@ -1,9 +1,7 @@
 import torch
 import csv
 from torch.utils.data import Dataset
-import load_attributes as la
-
-
+from config import load_attributes as la
 
 
 class FirstFiveEvaluationDatasetOld(Dataset):

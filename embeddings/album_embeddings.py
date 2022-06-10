@@ -1,7 +1,7 @@
 import gensim
 import os.path
 import csv
-import load_attributes as la
+from config import load_attributes as la
 
 # ----------------------------------------------------------------------------------------------------------------------
 

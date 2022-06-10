@@ -1,6 +1,6 @@
 import gensim
 import torch
-import load_attributes as la
+from config import load_attributes as la
 from data_preprocessing import load_data as ld
 from evaluation import load_eval_data as eval_data
 from ensemble.ensemble import Ensemble

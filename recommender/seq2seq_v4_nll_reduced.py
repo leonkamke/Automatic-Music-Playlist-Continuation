@@ -6,7 +6,6 @@ prediction: do_rank (take k largest values (indices) for the prediction)
                             largest values (indices) for the prediction)
 """
 import shutil
-import gensim
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -14,7 +13,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from config import load_attributes as la
 
 
 def init_weights(m):
@@ -200,7 +199,7 @@ if __name__ == '__main__':
     save_file_name = "/seq2seq_v4_reduced_nll.pth"
 
     os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("../attributes", la.output_path_model() + foldername + "/attributes.txt")
+    shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
     train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)

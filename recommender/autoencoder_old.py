@@ -5,16 +5,14 @@ prediction: do_rank (take k largest values (indices) for the prediction)
             do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
                             largest values (indices) for the prediction)
 """
-import shutil
 import gensim
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from config import load_attributes as la
 
 
 def init_weights(m):

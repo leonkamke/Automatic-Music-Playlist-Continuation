@@ -11,7 +11,7 @@ import torch.optim as optim
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from config import load_attributes as la
 
 
 def init_weights(m):

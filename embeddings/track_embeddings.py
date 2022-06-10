@@ -6,7 +6,7 @@ import argparse
 import json
 import csv
 
-import load_attributes as la
+from config import load_attributes as la
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------

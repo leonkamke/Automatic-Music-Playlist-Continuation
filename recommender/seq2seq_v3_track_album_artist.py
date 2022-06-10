@@ -11,7 +11,7 @@ import os
 import data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
 import evaluation.eval as eval
-import load_attributes as la
+from config import load_attributes as la
 import shutil
 
 
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     model.to(device)
     os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("../attributes", la.output_path_model() + foldername + "/attributes.txt")
+    shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
     train_one_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
     torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
