@@ -172,7 +172,7 @@ def path_track_album_dict_unique():
 
 
 def path_track_to_vec_model():
-    file = open("attributes", "r")
+    file = open("../config/attributes", "r")
     for i, row in enumerate(file):
         if i == TRACK_TO_VEC_MODEL:
             file.close()
