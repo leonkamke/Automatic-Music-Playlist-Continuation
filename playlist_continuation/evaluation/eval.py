@@ -281,8 +281,10 @@ and the artist level (any track by the same artist is a match)
 def playlist_extender_clicks(predictions, targets, max_n_predictions=500):
     # Assumes predictions are sorted by relevance
     # First, cap the number of predictions
-    predictions = predictions[:max_n_predictions].tolist()
-    targets = targets.tolist()
+    if not isinstance(predictions, list):
+        predictions = predictions[:max_n_predictions].tolist()
+    if not isinstance(targets, list):
+        targets = targets.tolist()
     # Calculate metric
     i = set(predictions).intersection(set(targets))
     for index, t in enumerate(predictions):
