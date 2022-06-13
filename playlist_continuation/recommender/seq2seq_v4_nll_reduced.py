@@ -190,19 +190,19 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = (self, trackUri2trackId, reducedTrackUri2reducedTrackId, num_rows_train, num_steps):
-    dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(trackUri2trackId, reducedTrackUri2reducedId,
-                                                               num_playlists_for_training, num_steps)
-    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
+    #dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(trackUri2trackId, reducedTrackUri2reducedId,
+    #                                                           num_playlists_for_training, num_steps)
+    # = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
     save_file_name = "/seq2seq_v4_reduced_nll.pth"
 
-    os.mkdir(la.output_path_model() + foldername)
-    shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
+    #os.mkdir(la.output_path_model() + foldername)
+    #shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    #train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cuda")
