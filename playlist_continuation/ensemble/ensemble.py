@@ -68,11 +68,39 @@ class Ensemble:
         # weights.shape == (2262292, 300)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+        seq2seq_5 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_5.load_state_dict(torch.load(seq2seq_path))
+        seq2seq_5.to(device)
+        seq2seq_5.eval()
+        model_list.append(seq2seq_5)
+        print("finished")
+
+        print("create seq2seq_2 model for ensemble")
+        weights_path = la.path_embedded_weights_tracks()
+        seq2seq_path = la.output_path_model() + "/tracks2rec_2/seq2seq_v4_reduced_nll.pth"
+        weights = torch.load(weights_path, map_location=device)
+        # weights.shape == (2262292, 100)
+        # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
+        embedding_pre_trained = nn.Embedding.from_pretrained(weights)
         seq2seq_2 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
         seq2seq_2.load_state_dict(torch.load(seq2seq_path))
         seq2seq_2.to(device)
         seq2seq_2.eval()
         model_list.append(seq2seq_2)
+        print("finished")
+
+        print("create seq2seq_3 model for ensemble")
+        weights_path = la.path_embedded_weights_tracks()
+        seq2seq_path = la.output_path_model() + "/tracks2rec_3/seq2seq_v4_reduced_nll.pth"
+        weights = torch.load(weights_path, map_location=device)
+        # weights.shape == (2262292, 100)
+        # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
+        embedding_pre_trained = nn.Embedding.from_pretrained(weights)
+        seq2seq_3 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_3.load_state_dict(torch.load(seq2seq_path))
+        seq2seq_3.to(device)
+        seq2seq_3.eval()
+        model_list.append(seq2seq_3)
         print("finished")
 
         self.model_list = model_list
