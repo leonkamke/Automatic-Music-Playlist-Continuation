@@ -157,4 +157,3 @@ if __name__ == "__main__":
 
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
-
