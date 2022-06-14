@@ -206,11 +206,11 @@ class FirstFiveEvaluationDataset(Dataset):
         self.artistUri2artistId = artistUri2artistId
         self.start_idx = start_idx
         self.end_idx = end_idx
-        self.src, self.trg, self.pids = self.read_train_data()
+        self.src, self.trg, self.pids, self.titles = self.read_train_data()
         self.n_samples = len(self.src)
 
     def __getitem__(self, index):
-        return self.src[index], self.trg[index], self.pids[index]
+        return self.src[index], self.trg[index], self.pids[index], self.titles[index]
 
     def __len__(self):
         return self.n_samples
@@ -220,12 +220,14 @@ class FirstFiveEvaluationDataset(Dataset):
         src_uri = []
         trg_uri = []
         pids = []
+        titles = []
         with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
             for index, row in enumerate(csv_reader):
                 if self.start_idx <= index < self.end_idx and len(row) > 32:
                     pids.append(row[0])
+                    titles.append(row[1])
                     src_i = row[2:7]
                     trg_i = row[7:-1]
                     src_uri.append(src_i)
@@ -244,7 +246,7 @@ class FirstFiveEvaluationDataset(Dataset):
                 for uri in trg_uri[i]:
                     indices.append(self.trackUri2trackId[uri])
                 trg_idx.append(torch.LongTensor(indices))
-        return src_idx, trg_idx, pids
+        return src_idx, trg_idx, pids, titles
 
 
 class VisualizeDataset(Dataset):
