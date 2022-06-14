@@ -54,7 +54,7 @@ class Ensemble:
         # weights.shape == (2262292, 300)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-        seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 300)
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
@@ -68,7 +68,7 @@ class Ensemble:
         # weights.shape == (2262292, 300)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-        seq2seq_5 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_5 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 300)
         seq2seq_5.load_state_dict(torch.load(seq2seq_path))
         seq2seq_5.to(device)
         seq2seq_5.eval()
@@ -82,7 +82,7 @@ class Ensemble:
         # weights.shape == (2262292, 100)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-        seq2seq_2 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_2 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 100)
         seq2seq_2.load_state_dict(torch.load(seq2seq_path))
         seq2seq_2.to(device)
         seq2seq_2.eval()
@@ -96,7 +96,7 @@ class Ensemble:
         # weights.shape == (2262292, 100)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-        seq2seq_3 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq_3 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 100)
         seq2seq_3.load_state_dict(torch.load(seq2seq_path))
         seq2seq_3.to(device)
         seq2seq_3.eval()

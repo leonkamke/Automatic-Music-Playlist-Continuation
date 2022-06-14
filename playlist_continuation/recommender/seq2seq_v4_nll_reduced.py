@@ -26,7 +26,8 @@ def count_parameters(model):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, reducedTrackId2trackId, vocab_size, pre_trained_embedding, hid_dim, n_layers, dropout=0):
+    def __init__(self, reducedTrackId2trackId, vocab_size, pre_trained_embedding, hid_dim, n_layers, embedded_dim,
+                 dropout=0):
         super(Seq2Seq, self).__init__()
         self.reducedTrackId2trackId = reducedTrackId2trackId
         self.hid_dim = hid_dim
@@ -40,7 +41,7 @@ class Seq2Seq(nn.Module):
         # output shape of LSTM: output.shape == (batch_size, seq_len, hid_dim)  when batch_first=True
         #                       h_n.shape == (n_layers, batch_size, hid_dim)
         #                       c_n.shape == (n_layers, batch_size, hid_dim)
-        self.rnn = nn.LSTM(300, hid_dim, n_layers, batch_first=True, dropout=0.2)
+        self.rnn = nn.LSTM(embedded_dim, hid_dim, n_layers, batch_first=True, dropout=0.2)
         # input shape of Linear: (*, hid_dim)
         # output shape of Linear: (*, vocab_size)
         self.fc_out = nn.Linear(hid_dim, vocab_size)
