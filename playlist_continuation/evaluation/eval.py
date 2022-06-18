@@ -115,6 +115,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
     print("start computing R-Precision and NDCG:")
     r_precision_tracks_sum = 0.0
     r_precision_artists_sum = 0.0
+    clicks_sum = 0
     ndcg_tracks_sum = 0.0
     ndcg_artists_sum = 0.0
     len_data = 0
@@ -126,16 +127,19 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
             print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
             # src (list of indices), trg (list of indices)
             trg = torch.cat((src, trg)).to(device)
-            num_predictions = len(trg)
-            # num_predictions = 500
+            num_predictions = 500
             prediction = model.predict(title, num_predictions)
+            prediction_all = prediction
+            prediction = prediction[:len(trg)]
 
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
-            ndcg_tracks = calc_ndcg(prediction, trg)
+            ndcg_tracks = calc_ndcg(prediction_all, trg)
+            clicks = playlist_extender_clicks(prediction_all, trg)
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
+            clicks_sum += clicks
 
             # convert prediction and target to list's of artist id's
             artist_prediction_all, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction_all, trg)
@@ -150,6 +154,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
             print("R-Precision(artists): " + str(r_precision_artists))
             print("NDCG(tracks):       : " + str(ndcg_tracks))
             print("NDCG(artists):      : " + str(ndcg_artists))
+            print("clicks:             : " + str(clicks))
             print(" ")
 
     r_precision_tracks_sum = r_precision_tracks_sum / len_data
@@ -167,6 +172,7 @@ def evaluate_title2rec_model(model, trackId2artistId, trackUri2trackId, artistUr
     print("Average NDCG(artists):      : " + str(ndcg_artists_sum))
     print("---> R-Precision            : " + str(r_precision))
     print("---> NDCG                   : " + str(ndcg))
+    print("---> Clicks                 : " + str(clicks_sum))
 
     output_string = "Results for evaluation dataset ----------------------------\n" + \
                     "start_idx: " + str(start_idx) + "\n" \
