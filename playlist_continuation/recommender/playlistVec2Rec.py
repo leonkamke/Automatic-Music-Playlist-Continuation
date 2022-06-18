@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import playlist_continuation.data_preprocessing.load_data as ld
 from playlist_continuation.config import load_attributes as la
+import playlist_continuation.evaluation.eval as eval
 
 
 # --------------- some helper functions --------------------------------------------------------------------------------
