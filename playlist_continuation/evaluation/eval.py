@@ -217,18 +217,18 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
-            ndcg_tracks = calc_ndcg(prediction, trg)
+            ndcg_tracks = calc_ndcg(prediction_all, trg)
             clicks = playlist_extender_clicks(prediction_all, trg)
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
             clicks_sum += clicks
 
             # convert prediction and target to list's of artist id's
-            artist_prediction, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction, trg)
-
+            artist_prediction_all, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction_all, trg)
+            artist_prediction = artist_prediction_all[:len(artist_ground_truth)]
             # calculate for the artists R-Precision and artists NDCG
             r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
-            ndcg_artists = calc_ndcg(artist_prediction, artist_ground_truth)
+            ndcg_artists = calc_ndcg(artist_prediction_all, artist_ground_truth)
             r_precision_artists_sum += r_precision_artists
             ndcg_artists_sum += ndcg_artists
 
