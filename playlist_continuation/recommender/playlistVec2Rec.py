@@ -57,8 +57,10 @@ if __name__ == '__main__':
     print("loaded dictionaries from file")
 
     # create model
+    print("create playlistVec2Rec model")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     model = Word2VecModel(word2vec_tracks)
+    print("finished")
 
     # evaluate word2vec model
     results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
