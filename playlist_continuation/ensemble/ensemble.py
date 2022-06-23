@@ -72,7 +72,7 @@ class Ensemble:
         seq2seq_5.load_state_dict(torch.load(seq2seq_path))
         seq2seq_5.to(device)
         seq2seq_5.eval()
-        # model_list.append(seq2seq_5)
+        model_list.append(seq2seq_5)
         print("finished")
 
         """print("create seq2seq_2 model for ensemble")
