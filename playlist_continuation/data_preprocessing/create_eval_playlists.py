@@ -99,8 +99,16 @@ def create_dataset():
         print("first_25 ", len(first_25))
         print("first_100 ", len(first_100))
 
+        eval_data = title_only + first_5 + first_10 + first_25 + first_100
+        print("len(eval_data) = ", len(eval_data))
 
+        with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/eval_data.csv', 'w', newline='',
+                  encoding='utf8') as csvfile:
+            writer = csv.writer(csvfile)
+            for playlist in eval_data:
+                writer.writerow(playlist)
 
+        print("finished")
 
         """
         num playlists        13935
@@ -110,14 +118,15 @@ def create_dataset():
         len(num_30_60)       5597
         in num_30_60 has title 5597
         """
-    """
-    Create evaluation dataset:
-    2000x title only
-    2000x first_5
-    2000x first_10
-    2000x first_25
-    2000x first_100
-    """
+        """
+        Create evaluation dataset:
+        2000x title only
+        2000x first_5
+        2000x first_10
+        2000x first_25
+        2000x first_100
+        """
+
 
 if __name__ == "__main__":
     create_dataset()
