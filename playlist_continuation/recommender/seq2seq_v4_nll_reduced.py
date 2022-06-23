@@ -63,6 +63,7 @@ class Seq2Seq(nn.Module):
 
     def predict(self, input, num_predictions):
         # input = torch.LongTensor(input)
+        input = input.to(torch.device("cuda"))
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, num_tracks)
