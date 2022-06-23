@@ -62,6 +62,7 @@ class Title2Rec(nn.Module):
     def predict(self, title, num_predictions):
         input = cv.title2index_seq(title)
         input = torch.LongTensor(input)
+        input.to(torch.device("cuda"))
         # input.shape == seq_len
         x = self.forward(input)
         # x.shape == (seq_len, num_tracks)
