@@ -34,7 +34,7 @@ class Ensemble:
         NUM_ALBUMS = len(reducedAlbumUri2reducedId)
 
         # 15, 12
-        """print("create autoencoder for ensemble")
+        print("create autoencoder for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
         # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
@@ -45,7 +45,7 @@ class Ensemble:
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")"""
+        print("finished")
 
         print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
@@ -58,7 +58,7 @@ class Ensemble:
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
-        model_list.append(seq2seq)
+        # model_list.append(seq2seq)
         print("finished")
 
         print("create seq2seq_5 model for ensemble")
@@ -72,7 +72,7 @@ class Ensemble:
         seq2seq_5.load_state_dict(torch.load(seq2seq_path))
         seq2seq_5.to(device)
         seq2seq_5.eval()
-        model_list.append(seq2seq_5)
+        # model_list.append(seq2seq_5)
         print("finished")
 
         print("create seq2seq_2 model for ensemble")
@@ -86,7 +86,7 @@ class Ensemble:
         seq2seq_2.load_state_dict(torch.load(seq2seq_path))
         seq2seq_2.to(device)
         seq2seq_2.eval()
-        model_list.append(seq2seq_2)
+        # model_list.append(seq2seq_2)
         print("finished")
 
         print("create seq2seq_3 model for ensemble")
@@ -100,7 +100,7 @@ class Ensemble:
         seq2seq_3.load_state_dict(torch.load(seq2seq_path))
         seq2seq_3.to(device)
         seq2seq_3.eval()
-        model_list.append(seq2seq_3)
+        # model_list.append(seq2seq_3)
         print("finished")
 
         self.model_list = model_list
@@ -141,10 +141,6 @@ class Ensemble:
 
 class EnsembleRecall:
     def __init__(self, track2vec):
-        self.track2vec = track2vec
-        # number of unique tracks in the MPD dataset = 2262292
-        self.vocab_size = 2262292
-
         self.track2vec = track2vec
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
