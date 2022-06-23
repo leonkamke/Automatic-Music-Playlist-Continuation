@@ -112,16 +112,17 @@ class Ensemble:
 
         rankings = torch.zeros(self.vocab_size, dtype=torch.float)
         # for each model make border-count
+        n = 2000
 
         for model in self.model_list:
             if isinstance(model, Title2Rec):
-                prediction = model.predict(title, num_predictions)
+                prediction = model.predict(title, n)
             else:
-                prediction = model.predict(src, num_predictions)
+                prediction = model.predict(src, n)
             for i, track_id in enumerate(prediction):
                 track_id = int(track_id)
                 i = int(i)
-                rankings[track_id] += (num_predictions - i)
+                rankings[track_id] += (n - i)
 
         _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
