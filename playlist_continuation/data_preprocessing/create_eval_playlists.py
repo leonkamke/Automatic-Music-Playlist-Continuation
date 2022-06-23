@@ -51,8 +51,13 @@ def create_dataset():
 
         first_100 = num_140_[0:2000]
         title_only = num_30_60[0:2000]
+        c = 0
+        for playlist in title_only:
+            if len(cv.title2index_seq(playlist[1])) >= 1:
+                c += 1
+        print("c = ", c)
 
-        first_25 = []
+        """first_25 = []
         first_10 = []
         first_5 = []
         first_1 = []
@@ -118,7 +123,7 @@ def create_dataset():
             for playlist in eval_data:
                 writer.writerow(playlist)
 
-        print("finished")
+        print("finished")"""
 
         """
         num playlists        13935
