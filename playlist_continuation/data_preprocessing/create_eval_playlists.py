@@ -56,7 +56,7 @@ def create_dataset():
                 break
             else:
                 if len(cv.title2index_seq(playlist[1])) >= 1:
-                    title_only.append(row)
+                    title_only.append(playlist)
 
         first_25 = []
         first_10 = []
