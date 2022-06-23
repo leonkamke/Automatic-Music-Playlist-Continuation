@@ -191,7 +191,7 @@ def evaluate_ensemble_model(model, trackId2artistId, trackUri2trackId, artistUri
     print("start evaluation...")
     # create evaluation dataset
     print("create evaluation dataset...")
-    evaluation_dataset = eval_data.FirstFiveEvaluationDataset(trackUri2trackId, artistUri2artistId, start_idx, end_idx)
+    evaluation_dataset = eval_data.SpotifyEvaluationDataset(trackUri2trackId, artistUri2artistId, start_idx, end_idx)
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)) +
           " (start_idx: " + str(start_idx) + ", end_idx: " + str(end_idx) + ")")
     print("finished")
