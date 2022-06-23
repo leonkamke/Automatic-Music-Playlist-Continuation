@@ -46,7 +46,7 @@ class Ensemble:
         autoencoder.eval()
         model_list.append(autoencoder)
         print("finished")
-        """
+
         print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
         seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
@@ -99,7 +99,7 @@ class Ensemble:
         seq2seq_3 = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 100)
         seq2seq_3.load_state_dict(torch.load(seq2seq_path))
         seq2seq_3.to(device)
-        seq2seq_3.eval()"""
+        seq2seq_3.eval()
         # model_list.append(seq2seq_3)
         print("finished")
 
@@ -188,12 +188,12 @@ class EnsembleRecall:
 
         print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
-        seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
+        seq2seq_path = la.output_path_model() + "/tracks2rec_5/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
         # weights.shape == (2262292, 300)
         # pre_trained embedding reduces the number of trainable parameters from 34 mill to 17 mill
         embedding_pre_trained = nn.Embedding.from_pretrained(weights)
-        seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1)
+        seq2seq = Seq2Seq(reduced_trackId2trackId, NUM_TRACKS, embedding_pre_trained, 256, 1, 300)
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
@@ -204,11 +204,12 @@ class EnsembleRecall:
         self.model_list = model_list
 
     def predict(self, title, input, num_predictions):
-        pred_autoencoder = self.autoencoder.predict(input, 1000)
+        pred_autoencoder = self.autoencoder.predict(input, num_predictions)
         # pred_autoencoder = sequence of track id's
         pred_seq2seq, _ = self.seq2seq.forward(input)
         # pred_seq2seq.shape = (seq_len, num_tracks)
         pred_seq2seq = pred_seq2seq[-1]
+        # pred_seq2seq.shape = (num_tracks)
 
         rankings = torch.zeros(self.vocab_size, dtype=torch.float)
         for trackId in pred_autoencoder:
@@ -244,7 +245,7 @@ if __name__ == "__main__":
     print("finished")
     # create ensemble model
     # ensemble_model = EnsembleRecall(word2vec_tracks)
-    ensemble_model = Ensemble(word2vec_tracks)
+    ensemble_model = EnsembleRecall(word2vec_tracks)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
