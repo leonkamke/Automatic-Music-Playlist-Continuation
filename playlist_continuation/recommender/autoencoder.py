@@ -63,6 +63,7 @@ class Autoencoder(nn.Module):
         # input is a list of track_id's
         # input.shape == (seq_len)
         input_vector = self.map_sequence2vector(input)
+        input_vector = input_vector.to(torch.device("cuda"))
         # input_vector.shape == (num_tracks + num_artists)
         # forward the vector through the autoencoder
         output_vector = self.forward(input_vector)[0:self.num_tracks]
