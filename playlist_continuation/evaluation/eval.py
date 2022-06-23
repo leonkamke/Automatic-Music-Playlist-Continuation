@@ -22,15 +22,92 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     print("Length of the evaluation dataset: " + str(len(evaluation_dataset)))
     print("finished")
 
+    """
+    0 = title_only
+    1 = first track
+    2 = first 5 tracks
+    3 = first 10 tracks
+    4 = first 25 tracks
+    5 = first 100 tracks
+    """
+
+    r_precision_mean = 0
+    ndcg_mean = 0
+    clicks_mean = 0
+
+    # title only
+    result_str = "Title only ----------------------\n"
     r_precision, ndcg, clicks = eval_title_only(model, evaluation_dataset, device, trackId2artistId)
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # first track
+    r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 1)
+    result_str = "First 1 Tracks ----------------------\n"
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # first 5 tracks
+    r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 2)
+    result_str = "First 5 Tracks ----------------------\n"
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # first 10 tracks
+    r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 3)
+    result_str = "First 10 Tracks ----------------------\n"
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # first 25 tracks
+    r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 4)
+    result_str = "First 25 Tracks ----------------------\n"
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # first 100 tracks
+    r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 5)
+    result_str = "First 100 Tracks ----------------------\n"
+    result_str += "---> R-Precision            : " + str(r_precision) + "\n"
+    result_str += "---> NDCG            : " + str(ndcg) + "\n"
+    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    r_precision_mean += r_precision
+    ndcg_mean += ndcg
+    clicks_mean += clicks
+
+    # calculate the mean of every metric
+    r_precision_mean /= 6
+    ndcg_mean /= 6
+    clicks_mean /= 6
 
     # print the results
-    print("Results for evaluation dataset ----------------------------")
+    print(result_str)
     print("")
-    print("Title only")
-    print("---> R-Precision            : " + str(r_precision))
-    print("---> NDCG                   : " + str(ndcg))
-    print("---> Clicks                 : " + str(clicks))
+    print("Results for the entire evaluation dataset #######################")
+    print("")
+    print("---> R-Precision            : " + str(r_precision_mean))
+    print("---> NDCG                   : " + str(ndcg_mean))
+    print("---> Clicks                 : " + str(clicks_mean))
 
 
 def eval_title_only(model, evaluation_dataset, device, trackId2artistId):
@@ -81,6 +158,64 @@ def eval_title_only(model, evaluation_dataset, device, trackId2artistId):
         print("NDCG(artists):      : " + str(ndcg_artists))
         print("clicks:             : " + str(clicks))
         print(" ")
+
+    r_precision_tracks_sum = r_precision_tracks_sum / len_data
+    ndcg_tracks_sum = ndcg_tracks_sum / len_data
+    r_precision_artists_sum = r_precision_artists_sum / len_data
+    ndcg_artists_sum = ndcg_artists_sum / len_data
+    r_precision = (r_precision_tracks_sum + r_precision_artists_sum) / 2.0
+    ndcg = (ndcg_tracks_sum + ndcg_artists_sum) / 2.0
+    clicks_sum = clicks_sum / len_data
+    return r_precision, ndcg, clicks_sum
+
+
+def eval_tracks(model, evaluation_dataset, device, trackId2artistId, t):
+    r_precision_tracks_sum = 0.0
+    r_precision_artists_sum = 0.0
+    clicks_sum = 0
+    ndcg_tracks_sum = 0.0
+    ndcg_artists_sum = 0.0
+    len_data = 0
+    # ---------------------------------------- Title only --------------------------------------------------------------
+    for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
+        if t*2000 <= i < t*2000 + 2000:
+            len_data += 1
+            print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
+            print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))
+            # src (list of indices), trg (list of indices)
+            src = src.to(device)
+            trg = trg.to(device)
+            # num_predictions = len(trg)
+            num_predictions = 500
+            # predict(self, title, src, num_predictions, only_title=False)
+            prediction = model.predict(title, src, num_predictions, only_title=False)
+            prediction_all = prediction
+            prediction = prediction[:len(trg)]
+
+            # prediction is of shape len(trg)
+            # first compute R-Precision and NDCG for tracks
+            r_precision_tracks = calc_r_precision(prediction, trg)
+            ndcg_tracks = calc_ndcg(prediction, trg)
+            clicks = playlist_extender_clicks(prediction_all, trg)
+            r_precision_tracks_sum += r_precision_tracks
+            ndcg_tracks_sum += ndcg_tracks
+            clicks_sum += clicks
+
+            # convert prediction and target to list's of artist id's
+            artist_prediction_all, artist_ground_truth = tracks_to_artists(trackId2artistId, prediction_all, trg)
+            artist_prediction = artist_prediction_all[:len(artist_ground_truth)]
+            # calculate for the artists R-Precision and artists NDCG
+            r_precision_artists = calc_r_precision(artist_prediction, artist_ground_truth)
+            ndcg_artists = calc_ndcg(artist_prediction_all, artist_ground_truth)
+            r_precision_artists_sum += r_precision_artists
+            ndcg_artists_sum += ndcg_artists
+
+            print("R-Precision(tracks) : " + str(r_precision_tracks))
+            print("R-Precision(artists): " + str(r_precision_artists))
+            print("NDCG(tracks):       : " + str(ndcg_tracks))
+            print("NDCG(artists):      : " + str(ndcg_artists))
+            print("clicks:             : " + str(clicks))
+            print(" ")
 
     r_precision_tracks_sum = r_precision_tracks_sum / len_data
     ndcg_tracks_sum = ndcg_tracks_sum / len_data
