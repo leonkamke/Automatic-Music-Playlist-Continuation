@@ -33,13 +33,13 @@ def create_dataset():
                 num_playlists_more_30 += 1
                 len_playlist = len(row) - 2
                 if len_playlist >= 140:
-                    num_140_.append(row[2:])
+                    num_140_.append(row)
                 elif len_playlist >= 100:
-                    num_100_140.append(row[2:])
+                    num_100_140.append(row)
                 elif len_playlist >= 60:
-                    num_60_100.append(row[2:])
+                    num_60_100.append(row)
                 elif len_playlist >= 30:
-                    num_30_60.append(row[2:])
+                    num_30_60.append(row)
             if index > end_idx:
                 break
 

@@ -4,6 +4,60 @@ from torch.utils.data import Dataset
 from playlist_continuation.config import load_attributes as la
 
 
+class EvaluationDataset(Dataset):
+    def __init__(self, trackUri2trackId, artistUri2artistId, start_idx, end_idx):
+        # data loading
+        self.trackUri2trackId = trackUri2trackId
+        self.artistUri2artistId = artistUri2artistId
+        self.start_idx = start_idx
+        self.end_idx = end_idx
+        self.src, self.trg, self.pids, self.titles = self.read_train_data()
+        self.n_samples = len(self.src)
+
+    def __getitem__(self, index):
+        return self.src[index], self.trg[index], self.pids[index], self.titles[index]
+
+    def __len__(self):
+        return self.n_samples
+
+    def read_train_data(self):
+        # read training data from "track_sequences"
+        src_uri = []
+        trg_uri = []
+        pids = []
+        titles = []
+        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+            csv_reader = csv.reader(read_obj)
+            # Iterate over each row in the csv file and create lists of track uri's
+            for index, row in enumerate(csv_reader):
+                if self.start_idx <= index < self.end_idx and len(row) >= 32:
+                    is_odd = len(row) % 2 == 1
+                    i = int(len(row) / 2 + 1)
+                    pids.append(row[0])
+                    src_i = row[2:i]
+                    trg_i = row[i:len(row)]
+                    if is_odd:
+                        trg_i = row[i:len(row) - 1]
+                    src_uri.append(src_i)
+                    trg_uri.append(trg_i)
+                    titles.append(row[1])
+                if index > self.end_idx:
+                    break
+            # create lists of track indices according to the indices of the word2vec model
+            src_idx = []
+            trg_idx = []
+            for i in range(len(src_uri)):
+                indices = []
+                for uri in src_uri[i]:
+                    indices.append(self.trackUri2trackId[uri])
+                src_idx.append(torch.LongTensor(indices))
+                indices = []
+                for uri in trg_uri[i]:
+                    indices.append(self.trackUri2trackId[uri])
+                trg_idx.append(torch.LongTensor(indices))
+        return src_idx, trg_idx, pids, titles
+
+
 class FirstFiveEvaluationDatasetOld(Dataset):
     def __init__(self, word2vec_tracks, word2vec_artists, start_idx, end_idx):
         # data loading
