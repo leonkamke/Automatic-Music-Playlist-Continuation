@@ -52,7 +52,7 @@ def create_dataset():
         first_100 = num_140_[0:2000]
         title_only = []
         for playlist in num_30_60:
-            if len(title_only) > 2000:
+            if len(title_only) >= 2000:
                 break
             else:
                 if len(cv.title2index_seq(playlist[1])) >= 1:
