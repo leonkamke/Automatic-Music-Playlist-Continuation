@@ -20,21 +20,19 @@ def create_dataset():
         c_first_25 = 0
         c_first_100 = 0"""
         num_140_ = 0
-        num_100_150 = 0
+        num_100_140 = 0
         num_60_100 = 0
         num_30_60 = 0
-
-
 
         num_playlists_more_30 = 0
         for index, row in enumerate(csv_reader):
             if start_idx <= index <= end_idx and len(row) >= 32:
                 num_playlists_more_30 += 1
                 len_playlist = len(row) - 2
-                if len_playlist >= 150:
+                if len_playlist >= 140:
                     num_140_ += 1
                 elif len_playlist >= 100:
-                    num_100_150 += 1
+                    num_100_140 += 1
                 elif len_playlist >= 60:
                     num_60_100 += 1
                 elif len_playlist >= 30:
@@ -52,8 +50,8 @@ def create_dataset():
             if index > end_idx:
                 break
         print("num playlists ", num_playlists_more_30)
-        print("num_150_ ", num_140_)
-        print("num_100_150 ", num_100_150)
+        print("num_140_ ", num_140_)
+        print("num_100_140 ", num_100_140)
         print("num_60_100 ", num_60_100)
         print("num_30_60 ", num_30_60)
 
