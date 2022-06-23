@@ -51,7 +51,7 @@ def create_dataset():
 
         first_100 = num_140_[0:2000]
         c_has_title = 0
-        for playlist in num_60_100:
+        for playlist in num_30_60:
             if len(cv.title2index_seq(playlist[1])) >= 1:
                 c_has_title += 1
         print("c_has_title ", c_has_title)
@@ -61,6 +61,7 @@ def create_dataset():
         len(num_100_140)     2104
         len(num_60_100)      3898
         len(num_30_60)       5597
+        in num_30_60 has title 3898
         """
     """
     Create evaluation dataset:
