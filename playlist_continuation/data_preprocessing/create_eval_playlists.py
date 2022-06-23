@@ -52,10 +52,10 @@ def create_dataset():
         first_100 = num_140_[0:2000]
         title_only = num_30_60[0:2000]
 
-        num_30_60 = num_30_60[2000:]
         first_25 = []
         first_10 = []
         first_5 = []
+        first_1 = []
 
         for _ in range(2000):
             r = random.uniform(0, 1)
@@ -93,13 +93,23 @@ def create_dataset():
                 first_25.append(num_100_140[0])
                 num_100_140 = num_100_140[1:]
 
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r < 0.5:
+                first_1.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            else:
+                first_1.append(num_30_60[0])
+                num_30_60 = num_30_60[1:]
+
         print("title_only ", len(title_only))
+        print("first_1 ", len(first_1))
         print("first_5 ", len(first_5))
         print("first_10 ", len(first_10))
         print("first_25 ", len(first_25))
         print("first_100 ", len(first_100))
 
-        eval_data = title_only + first_5 + first_10 + first_25 + first_100
+        eval_data = title_only + first_1 + first_5 + first_10 + first_25 + first_100
         print("len(eval_data) = ", len(eval_data))
 
         with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/eval_data.csv', 'w', newline='',
@@ -121,6 +131,7 @@ def create_dataset():
         """
         Create evaluation dataset:
         2000x title only
+        2000x first_1
         2000x first_5
         2000x first_10
         2000x first_25
