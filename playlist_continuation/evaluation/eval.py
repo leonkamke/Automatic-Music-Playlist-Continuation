@@ -36,61 +36,61 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     clicks_mean = 0
 
     # title only
-    result_str = "Title only ----------------------\n"
+    result_str = "Title only ---------------------------\n"
     r_precision, ndcg, clicks = eval_title_only(model, evaluation_dataset, device, trackId2artistId)
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
 
     # first track
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 1)
-    result_str = "First 1 Tracks ----------------------\n"
+    result_str += "First 1 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
 
     # first 5 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 2)
-    result_str = "First 5 Tracks ----------------------\n"
+    result_str += "First 5 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
 
     # first 10 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 3)
-    result_str = "First 10 Tracks ----------------------\n"
+    result_str += "First 10 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
 
     # first 25 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 4)
-    result_str = "First 25 Tracks ----------------------\n"
+    result_str += "First 25 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
 
     # first 100 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 5)
-    result_str = "First 100 Tracks ----------------------\n"
+    result_str += "First 100 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
-    result_str += "---> NDCG            : " + str(ndcg) + "\n"
-    result_str += "---> Clicks            : " + str(clicks) + "\n"
+    result_str += "---> NDCG                   : " + str(ndcg) + "\n"
+    result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += r_precision
     ndcg_mean += ndcg
     clicks_mean += clicks
