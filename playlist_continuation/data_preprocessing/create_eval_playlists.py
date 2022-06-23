@@ -1,4 +1,4 @@
-import torch
+import random
 import csv
 from playlist_continuation.config import load_attributes as la
 from playlist_continuation.data_preprocessing import build_character_vocab as cv
@@ -50,18 +50,65 @@ def create_dataset():
         print("num_30_60 ", len(num_30_60))
 
         first_100 = num_140_[0:2000]
-        c_has_title = 0
-        for playlist in num_30_60:
-            if len(cv.title2index_seq(playlist[1])) >= 1:
-                c_has_title += 1
-        print("c_has_title ", c_has_title)
+        title_only = num_30_60[0:2000]
+
+        num_30_60 = num_30_60[2000:]
+        first_25 = []
+        first_10 = []
+        first_5 = []
+
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r < 0.33:
+                first_5.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            elif 0.33 <= r < 0.66:
+                first_5.append(num_30_60[0])
+                num_30_60 = num_30_60[1:]
+            else:
+                first_5.append(num_100_140[0])
+                num_100_140 = num_100_140[1:]
+
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r < 0.33:
+                first_10.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            elif 0.33 <= r < 0.66:
+                first_10.append(num_30_60[0])
+                num_30_60 = num_30_60[1:]
+            else:
+                first_10.append(num_100_140[0])
+                num_100_140 = num_100_140[1:]
+
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r < 0.33:
+                first_25.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            elif 0.33 <= r < 0.66:
+                first_25.append(num_30_60[0])
+                num_30_60 = num_30_60[1:]
+            else:
+                first_25.append(num_100_140[0])
+                num_100_140 = num_100_140[1:]
+
+        print("title_only ", len(title_only))
+        print("first_5 ", len(first_5))
+        print("first_10 ", len(first_10))
+        print("first_25 ", len(first_25))
+        print("first_100 ", len(first_100))
+
+
+
+
         """
         num playlists        13935
         len(num_140_)        2336
         len(num_100_140)     2104
         len(num_60_100)      3898
         len(num_30_60)       5597
-        in num_30_60 has title 3898
+        in num_30_60 has title 5597
         """
     """
     Create evaluation dataset:
@@ -71,8 +118,6 @@ def create_dataset():
     2000x first_25
     2000x first_100
     """
-
-
 
 if __name__ == "__main__":
     create_dataset()
