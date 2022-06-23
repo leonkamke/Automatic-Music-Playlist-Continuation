@@ -19,10 +19,10 @@ def create_dataset():
         c_first_10 = 0
         c_first_25 = 0
         c_first_100 = 0"""
-        num_140_ = 0
-        num_100_140 = 0
-        num_60_100 = 0
-        num_30_60 = 0
+        num_140_ = []
+        num_100_140 = []
+        num_60_100 = []
+        num_30_60 = []
 
         num_playlists_more_30 = 0
         for index, row in enumerate(csv_reader):
@@ -30,30 +30,20 @@ def create_dataset():
                 num_playlists_more_30 += 1
                 len_playlist = len(row) - 2
                 if len_playlist >= 140:
-                    num_140_ += 1
+                    num_140_.append(row[2:])
                 elif len_playlist >= 100:
-                    num_100_140 += 1
+                    num_100_140.append(row[2:])
                 elif len_playlist >= 60:
-                    num_60_100 += 1
+                    num_60_100.append(row[2:])
                 elif len_playlist >= 30:
-                    num_30_60 += 1
-                """is_odd = len(row) % 2 == 1
-                i = int(len(row) / 2 + 1)
-                pids.append(row[0])
-                src_i = row[2:i]
-                trg_i = row[i:len(row)]
-                if is_odd:
-                    trg_i = row[i:len(row) - 1]
-                src_uri.append(src_i)
-                trg_uri.append(trg_i)
-                titles.append(row[1])"""
+                    num_30_60.append(row[2:])
             if index > end_idx:
                 break
         print("num playlists ", num_playlists_more_30)
-        print("num_140_ ", num_140_)
-        print("num_100_140 ", num_100_140)
-        print("num_60_100 ", num_60_100)
-        print("num_30_60 ", num_30_60)
+        print("num_140_ ", len(num_140_))
+        print("num_100_140 ", len(num_100_140))
+        print("num_60_100 ", len(num_60_100))
+        print("num_30_60 ", len(num_30_60))
 
 
 if __name__ == "__main__":
