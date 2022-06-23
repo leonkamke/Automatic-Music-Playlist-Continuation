@@ -33,7 +33,19 @@ class Ensemble:
         NUM_ARTISTS = len(reducedArtistUri2reducedId)
         NUM_ALBUMS = len(reducedAlbumUri2reducedId)
 
-        # 15, 12
+        print("create Title2Rec model for ensemble")
+        NUM_CHARS = 43
+        N_LAYERS = 1
+        HID_DIM = 256
+        model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
+        foldername = "/title2rec"
+        save_file_name = "/seq2seq_v4_track_album_artist.pth"
+        model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+        model.to(device)
+        model.eval()
+        self.title2rec = model
+        print("finished")
+
         print("create autoencoder for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
@@ -105,39 +117,41 @@ class Ensemble:
 
         self.model_list = model_list
 
-    def predict(self, title, src, num_predictions):
+    def predict(self, title, src, num_predictions, only_title=False):
         """# x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)"""
+        if only_title:
+            return self.title2rec.predict(title, num_predictions)
+        else:
+            rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+            # for each model make border-count
+            n = 2000
 
-        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-        # for each model make border-count
-        n = 2000
+            for model in self.model_list:
+                if isinstance(model, Title2Rec):
+                    prediction = model.predict(title, n)
+                else:
+                    prediction = model.predict(src, n)
+                for i, track_id in enumerate(prediction):
+                    track_id = int(track_id)
+                    i = int(i)
+                    rankings[track_id] += (n - i)
 
-        for model in self.model_list:
-            if isinstance(model, Title2Rec):
-                prediction = model.predict(title, n)
-            else:
-                prediction = model.predict(src, n)
-            for i, track_id in enumerate(prediction):
+            _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
+
+            """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+    
+            # sort corresponding to popularity
+            for track_id in top_k:
                 track_id = int(track_id)
-                i = int(i)
-                rankings[track_id] += (n - i)
+                track_uri = self.track2vec.wv.index_to_key[track_id]
+                popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
+                rankings[track_id] = popularity
+    
+            _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
-
-        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-
-        # sort corresponding to popularity
-        for track_id in top_k:
-            track_id = int(track_id)
-            track_uri = self.track2vec.wv.index_to_key[track_id]
-            popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
-            rankings[track_id] = popularity
-
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
-
-        return top_k
+            return top_k
 
 
 class EnsembleRecall:
@@ -253,5 +267,5 @@ if __name__ == "__main__":
     trackUri2trackId = ld.get_trackuri2id()
     artistUri2artistId = ld.get_artist_uri2id()
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
-    results_str = eval.evaluate_ensemble_model(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+    results_str = eval.spotify_evaluation(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                                981000, 981500, device)

@@ -26,23 +26,40 @@ class EvaluationDataset(Dataset):
         trg_uri = []
         pids = []
         titles = []
-        with open(la.path_track_sequences_path(), encoding='utf8') as read_obj:
+        EVAL_DATA_PATH = "/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/eval_data.csv"
+        with open(EVAL_DATA_PATH, encoding='utf8') as read_obj:
             csv_reader = csv.reader(read_obj)
             # Iterate over each row in the csv file and create lists of track uri's
-            for index, row in enumerate(csv_reader):
-                if self.start_idx <= index < self.end_idx and len(row) >= 32:
-                    is_odd = len(row) % 2 == 1
-                    i = int(len(row) / 2 + 1)
-                    pids.append(row[0])
-                    src_i = row[2:i]
-                    trg_i = row[i:len(row)]
-                    if is_odd:
-                        trg_i = row[i:len(row) - 1]
-                    src_uri.append(src_i)
-                    trg_uri.append(trg_i)
-                    titles.append(row[1])
-                if index > self.end_idx:
-                    break
+            for i, row in enumerate(csv_reader):
+                if i < 2000:
+                    # title only
+                    src_i = [row[2]]
+                    trg_i = row[2:]
+                elif i < 4000:
+                    # first track
+                    src_i = [row[2]]
+                    trg_i = row[3:]
+                elif i < 6000:
+                    # first 5 tracks
+                    src_i = row[2:7]
+                    trg_i = row[7:]
+                elif i < 8000:
+                    # first 10 tracks
+                    src_i = row[2:12]
+                    trg_i = row[12:]
+                elif i < 10000:
+                    # first 25 tracks
+                    src_i = row[2:27]
+                    trg_i = row[27:]
+                else:   # i < 12000
+                    # first 100 tracks
+                    src_i = row[2:102]
+                    trg_i = row[102:]
+                src_uri.append(src_i)
+                trg_uri.append(trg_i)
+                titles.append(row[1])
+                pids.append(row[0])
+
             # create lists of track indices according to the indices of the word2vec model
             src_idx = []
             trg_idx = []
