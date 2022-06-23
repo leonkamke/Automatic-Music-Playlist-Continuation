@@ -50,14 +50,15 @@ def create_dataset():
         print("num_30_60 ", len(num_30_60))
 
         first_100 = num_140_[0:2000]
-        title_only = num_30_60[0:2000]
-        c = 0
-        for playlist in title_only:
-            if len(cv.title2index_seq(playlist[1])) >= 1:
-                c += 1
-        print("c = ", c)
+        title_only = []
+        for playlist in num_30_60:
+            if len(title_only) > 2000:
+                break
+            else:
+                if len(cv.title2index_seq(playlist[1])) >= 1:
+                    title_only.append(row)
 
-        """first_25 = []
+        first_25 = []
         first_10 = []
         first_5 = []
         first_1 = []
@@ -123,7 +124,7 @@ def create_dataset():
             for playlist in eval_data:
                 writer.writerow(playlist)
 
-        print("finished")"""
+        print("finished")
 
         """
         num playlists        13935
