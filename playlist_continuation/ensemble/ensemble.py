@@ -163,11 +163,7 @@ class EnsembleRecall:
         # -----------------------------------------------------------------------------------------------
         model_list = []
 
-        device = torch.device("cpu")
-
-        """print("load word2vec models")
-        word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-        print("finished")"""
+        device = torch.device("cuda")
 
         print("load dictionaries from file")
         reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
@@ -177,12 +173,23 @@ class EnsembleRecall:
         self.trackId2reducedTrackId = ld.get_trackid2reduced_trackid()
         trackId2reducedArtistId = ld.get_trackid2reduced_artistid()
         trackId2reducedAlbumId = ld.get_trackid2reduced_albumid()
+        NUM_TRACKS = len(reducedTrackUri2reducedId)
+        NUM_ARTISTS = len(reducedArtistUri2reducedId)
+        NUM_ALBUMS = len(reducedAlbumUri2reducedId)
         print("loaded dictionaries from file")
 
-        """print("create word2vec model for ensemble")
-        model_word2vec = track_embeddings.Word2VecModel(word2vec_tracks)
-        model_list.append(model_word2vec)
-        print("finished")"""
+        print("create Title2Rec model for ensemble")
+        NUM_CHARS = 43
+        N_LAYERS = 1
+        HID_DIM = 256
+        model = Title2Rec(NUM_CHARS, NUM_TRACKS, HID_DIM, N_LAYERS, reduced_trackId2trackId)
+        foldername = "/title2rec"
+        save_file_name = "/seq2seq_v4_track_album_artist.pth"
+        model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
+        model.to(device)
+        model.eval()
+        self.title2rec = model
+        print("finished")
 
         # 15, 12
         print("create autoencoder for ensemble")
@@ -215,42 +222,33 @@ class EnsembleRecall:
         self.seq2seq = seq2seq
         print("finished")
 
-        model_list.append(seq2seq)
-        self.model_list = model_list
+    def predict(self, title, input, num_predictions, only_title=False):
+        if only_title:
+            return self.title2rec.predict(title, num_predictions)
+        else:
+            pred_autoencoder = self.autoencoder.predict(input, num_predictions)
+            # pred_autoencoder = sequence of track id's
+            pred_seq2seq, _ = self.seq2seq.forward(input)
+            # pred_seq2seq.shape = (seq_len, num_tracks)
+            pred_seq2seq = pred_seq2seq[-1]
+            # pred_seq2seq.shape = (num_tracks)
 
-    def predict(self, title, input, num_predictions):
-        pred_autoencoder = self.autoencoder.predict(input, num_predictions)
-        # pred_autoencoder = sequence of track id's
-        pred_seq2seq, _ = self.seq2seq.forward(input)
-        # pred_seq2seq.shape = (seq_len, num_tracks)
-        pred_seq2seq = pred_seq2seq[-1]
-        # pred_seq2seq.shape = (num_tracks)
+            return pred_autoencoder
 
-        rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-        for trackId in pred_autoencoder:
-            trackId = int(trackId)
-            reducedTrackId = self.trackId2reducedTrackId[trackId]
-            rankings[trackId] = float(pred_seq2seq[reducedTrackId])
+            rankings = torch.zeros(self.vocab_size, dtype=torch.float)
+            for trackId in pred_autoencoder:
+                trackId = int(trackId)
+                reducedTrackId = self.trackId2reducedTrackId[trackId]
+                rankings[trackId] = float(pred_seq2seq[reducedTrackId])
 
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)
+            _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)
 
-        """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-
-        # sort corresponding to popularity
-        for track_id in top_k:
-            track_id = int(track_id)
-            track_uri = self.track2vec.wv.index_to_key[track_id]
-            popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
-            rankings[track_id] = popularity
-
-        _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
-
-        output = []
-        for trackId in top_k:
-            output.append(int(trackId))
-        # output has to be a list of track_id's
-        # outputs.shape == (num_predictions)"""
-        return output
+            output = []
+            for trackId in top_k:
+                output.append(int(trackId))
+            # output has to be a list of track_id's
+            # outputs.shape == (num_predictions)"""
+            return output
 
 
 if __name__ == "__main__":
@@ -268,4 +266,4 @@ if __name__ == "__main__":
     artistUri2artistId = ld.get_artist_uri2id()
     # def evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId, start_idx, end_idx, device)
     results_str = eval.spotify_evaluation(ensemble_model, trackId2artistId, trackUri2trackId, artistUri2artistId,
-                                               981000, 981500, device)
+                                          981000, 981500, device)
