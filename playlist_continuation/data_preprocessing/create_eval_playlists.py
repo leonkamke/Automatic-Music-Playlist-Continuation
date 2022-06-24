@@ -61,52 +61,34 @@ def create_dataset():
         first_25 = []
         first_10 = []
         first_5 = []
-        first_1 = []
-
-        for _ in range(2000):
-            r = random.uniform(0, 1)
-            if r < 0.33:
-                first_5.append(num_60_100[0])
-                num_60_100 = num_60_100[1:]
-            elif 0.33 <= r < 0.66:
-                first_5.append(num_30_60[0])
-                num_30_60 = num_30_60[1:]
-            else:
-                first_5.append(num_100_140[0])
-                num_100_140 = num_100_140[1:]
-
-        for _ in range(2000):
-            r = random.uniform(0, 1)
-            if r < 0.33:
-                first_10.append(num_60_100[0])
-                num_60_100 = num_60_100[1:]
-            elif 0.33 <= r < 0.66:
-                first_10.append(num_30_60[0])
-                num_30_60 = num_30_60[1:]
-            else:
-                first_10.append(num_100_140[0])
-                num_100_140 = num_100_140[1:]
-
-        for _ in range(2000):
-            r = random.uniform(0, 1)
-            if r < 0.33:
-                first_25.append(num_60_100[0])
-                num_60_100 = num_60_100[1:]
-            elif 0.33 <= r < 0.66:
-                first_25.append(num_30_60[0])
-                num_30_60 = num_30_60[1:]
-            else:
-                first_25.append(num_100_140[0])
-                num_100_140 = num_100_140[1:]
+        first_1 = num_30_60[0:2000]
 
         for _ in range(2000):
             r = random.uniform(0, 1)
             if r < 0.5:
-                first_1.append(num_60_100[0])
+                first_5.append(num_60_100[0])
                 num_60_100 = num_60_100[1:]
             else:
-                first_1.append(num_30_60[0])
+                first_5.append(num_30_60[0])
                 num_30_60 = num_30_60[1:]
+
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r < 0.5:
+                first_10.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            else:
+                first_10.append(num_30_60[0])
+                num_30_60 = num_30_60[1:]
+
+        for _ in range(2000):
+            r = random.uniform(0, 1)
+            if r <= 0.5:
+                first_25.append(num_60_100[0])
+                num_60_100 = num_60_100[1:]
+            else:
+                first_25.append(num_100_140[0])
+                num_100_140 = num_100_140[1:]
 
         print("title_only ", len(title_only))
         print("first_1 ", len(first_1))
