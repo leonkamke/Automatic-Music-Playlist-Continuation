@@ -236,7 +236,7 @@ class EnsembleRecall:
             for trackId in pred_autoencoder:
                 trackId = int(trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
-                rankings[trackId] = pred_seq2seq[reducedTrackId]
+                rankings[trackId] = float(pred_seq2seq[reducedTrackId])
                 print("rankings[normal trackid] = ", rankings[trackId])
 
             _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
