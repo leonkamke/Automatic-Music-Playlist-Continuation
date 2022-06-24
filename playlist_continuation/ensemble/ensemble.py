@@ -45,13 +45,13 @@ class Ensemble:
         model.eval()
         self.title2rec = model
         print("finished")
-
+        """
         print("create autoencoder for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
         # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
         #                  reducedTrackId2trackId)
-        """autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
+        autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                                   trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
         autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
         autoencoder.to(device)

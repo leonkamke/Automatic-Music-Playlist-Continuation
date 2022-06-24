@@ -88,9 +88,16 @@ class Seq2Seq(nn.Module):
         # x.shape == (vocab_size)
         _, top_k = torch.topk(x, dim=0, k=num_predictions)
         # top_k.shape == (num_predictions)
-        return top_k
+        output = []
+        for reduced_track_id in top_k:
+            track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
+            output.append(track_id)
+        # output has to be a list of track_id's
+        # outputs.shape == (num_predictions)
+        return output
 
-    def predict_(self, input, num_predictions):
+    def predict__(self, input, num_predictions):
+        input = input.to(torch.device("cuda"))
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
         outputs_vectors = torch.zeros(num_predictions, self.vocab_size)
@@ -114,7 +121,13 @@ class Seq2Seq(nn.Module):
             idx = torch.argmax(x[0])
             outputs[i] = idx
         # outputs.shape == (num_predictions)
-        return outputs
+        output = []
+        for reduced_track_id in outputs:
+            track_id = self.reducedTrackId2trackId[int(reduced_track_id)]
+            output.append(track_id)
+        # output has to be a list of track_id's
+        # outputs.shape == (num_predictions)
+        return output
 
 
 def train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm):
