@@ -62,7 +62,7 @@ class Seq2Seq(nn.Module):
         return x, (h_n, c_n)
 
     # do rank
-    def predict__(self, input, num_predictions):
+    def predict(self, input, num_predictions):
         # input = torch.LongTensor(input)
         input = input.to(torch.device("cuda"))
         # input.shape == seq_len
@@ -99,7 +99,7 @@ class Seq2Seq(nn.Module):
         return output
 
     # decoding
-    def predict(self, input, num_predictions):
+    def predict__(self, input, num_predictions):
         input = input.to(torch.device("cuda"))
         # input.shape == seq_len
         outputs = torch.zeros(num_predictions)
