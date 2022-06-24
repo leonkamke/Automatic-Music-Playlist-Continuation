@@ -235,12 +235,10 @@ class EnsembleRecall:
             rankings = torch.zeros(self.vocab_size, dtype=torch.float)
             for trackId in pred_autoencoder:
                 trackId = int(trackId)
-                print("normal trackId ", trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
-                print("reduced trackId ", reducedTrackId)
                 rankings[trackId] = pred_seq2seq[reducedTrackId]
 
-            _, top_k = torch.topk(rankings, dim=0, k=num_predictions, largest=False)
+            _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
             output = []
             for trackId in top_k:
