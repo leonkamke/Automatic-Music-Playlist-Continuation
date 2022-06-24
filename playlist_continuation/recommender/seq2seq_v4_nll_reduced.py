@@ -61,7 +61,7 @@ class Seq2Seq(nn.Module):
 
         return x, (h_n, c_n)
 
-    def predict(self, input, num_predictions):
+    def predict_(self, input, num_predictions):
         # input = torch.LongTensor(input)
         input = input.to(torch.device("cuda"))
         # input.shape == seq_len
@@ -79,7 +79,8 @@ class Seq2Seq(nn.Module):
         # outputs.shape == (num_predictions)
         return output
 
-    def predict_do_summed_rank(self, input, num_predictions):
+    def predict(self, input, num_predictions):
+        input = input.to(torch.device("cuda"))
         # input.shape == seq_len
         x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)

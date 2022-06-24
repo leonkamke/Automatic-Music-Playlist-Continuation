@@ -62,9 +62,9 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
     result_str += "---> NDCG                   : " + str(ndcg) + "\n"
     result_str += "---> Clicks                 : " + str(clicks) + "\n"
-    r_precision_mean += r_precision
-    ndcg_mean += ndcg
-    clicks_mean += clicks
+    r_precision_mean += 2*r_precision
+    ndcg_mean += 2*ndcg
+    clicks_mean += 2*clicks
 
     # first 10 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 3)
@@ -72,9 +72,9 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
     result_str += "---> NDCG                   : " + str(ndcg) + "\n"
     result_str += "---> Clicks                 : " + str(clicks) + "\n"
-    r_precision_mean += r_precision
-    ndcg_mean += ndcg
-    clicks_mean += clicks
+    r_precision_mean += 2*r_precision
+    ndcg_mean += 2*ndcg
+    clicks_mean += 2*clicks
 
     # first 25 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 4)
@@ -82,9 +82,9 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
     result_str += "---> NDCG                   : " + str(ndcg) + "\n"
     result_str += "---> Clicks                 : " + str(clicks) + "\n"
-    r_precision_mean += r_precision
-    ndcg_mean += ndcg
-    clicks_mean += clicks
+    r_precision_mean += 2*r_precision
+    ndcg_mean += 2*ndcg
+    clicks_mean += 2*clicks
 
     # first 100 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 5)
@@ -92,14 +92,23 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
     result_str += "---> NDCG                   : " + str(ndcg) + "\n"
     result_str += "---> Clicks                 : " + str(clicks) + "\n"
-    r_precision_mean += r_precision
-    ndcg_mean += ndcg
-    clicks_mean += clicks
+    r_precision_mean += 2*r_precision
+    ndcg_mean += 2*ndcg
+    clicks_mean += 2*clicks
 
     # calculate the mean of every metric
-    r_precision_mean /= 6
-    ndcg_mean /= 6
-    clicks_mean /= 6
+    r_precision_mean /= 10
+    ndcg_mean /= 10
+    clicks_mean /= 10
+    """
+    weights:
+    title only: 1x
+    first track: 1x
+    first 5 tracks: 2x
+    first 10 tracks: 2x
+    first 25 tracks: 2x
+    first 100 tracks: 2x
+    """
 
     # print the results
     print(result_str)

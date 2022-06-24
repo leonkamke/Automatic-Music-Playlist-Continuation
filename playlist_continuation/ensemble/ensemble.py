@@ -51,15 +51,15 @@ class Ensemble:
         save_file_name = "/autoencoder.pth"
         # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
         #                  reducedTrackId2trackId)
-        autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
+        """autoencoder = Autoencoder(HID_DIM, NUM_TRACKS, NUM_ARTISTS, NUM_ALBUMS, trackId2reducedTrackId,
                                   trackId2reducedArtistId, trackId2reducedAlbumId, reduced_trackId2trackId)
         autoencoder.load_state_dict(torch.load(la.output_path_model() + "/autoencoder_1" + save_file_name))
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")
+        print("finished")"""
 
-        print("create seq2seq model for ensemble")
+        """print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
         seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -71,7 +71,7 @@ class Ensemble:
         seq2seq.to(device)
         seq2seq.eval()
         model_list.append(seq2seq)
-        print("finished")
+        print("finished")"""
 
         print("create seq2seq_5 model for ensemble")
         weights_path = la.path_embedded_weights()
@@ -87,7 +87,7 @@ class Ensemble:
         model_list.append(seq2seq_5)
         print("finished")
 
-        print("create seq2seq_2 model for ensemble")
+        """print("create seq2seq_2 model for ensemble")
         weights_path = la.path_embedded_weights_tracks()
         seq2seq_path = la.output_path_model() + "/tracks2rec_2/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -99,9 +99,9 @@ class Ensemble:
         seq2seq_2.to(device)
         seq2seq_2.eval()
         model_list.append(seq2seq_2)
-        print("finished")
+        print("finished")"""
 
-        print("create seq2seq_3 model for ensemble")
+        """print("create seq2seq_3 model for ensemble")
         weights_path = la.path_embedded_weights_tracks()
         seq2seq_path = la.output_path_model() + "/tracks2rec_3/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -113,7 +113,7 @@ class Ensemble:
         seq2seq_3.to(device)
         seq2seq_3.eval()
         model_list.append(seq2seq_3)
-        print("finished")
+        print("finished")"""
 
         self.model_list = model_list
 
