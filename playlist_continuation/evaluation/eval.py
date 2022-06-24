@@ -66,7 +66,7 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     ndcg_mean += 2*ndcg
     clicks_mean += 2*clicks
 
-    # first 10 tracks
+    """# first 10 tracks
     r_precision, ndcg, clicks = eval_tracks(model, evaluation_dataset, device, trackId2artistId, 3)
     result_str += "First 10 Tracks ----------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
@@ -94,12 +94,12 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str += "---> Clicks                 : " + str(clicks) + "\n"
     r_precision_mean += 2*r_precision
     ndcg_mean += 2*ndcg
-    clicks_mean += 2*clicks
+    clicks_mean += 2*clicks"""
 
     # calculate the mean of every metric
-    r_precision_mean /= 10
-    ndcg_mean /= 10
-    clicks_mean /= 10
+    r_precision_mean /= 4
+    ndcg_mean /= 4
+    clicks_mean /= 4
     """
     weights:
     title only: 1x
