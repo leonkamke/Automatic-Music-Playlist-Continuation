@@ -155,15 +155,13 @@ class Ensemble:
 
 
 class EnsembleRecall:
-    def __init__(self, track2vec):
+    def __init__(self, track2vec, device):
         self.track2vec = track2vec
         # number of unique tracks in the MPD dataset = 2262292
         self.vocab_size = 2262292
 
         # -----------------------------------------------------------------------------------------------
         model_list = []
-
-        device = torch.device("cuda")
 
         print("load dictionaries from file")
         reducedTrackUri2reducedId = ld.get_reducedTrackUri2reducedTrackID()
@@ -258,7 +256,7 @@ if __name__ == "__main__":
     print("finished")
     # create ensemble model
     # ensemble_model = EnsembleRecall(word2vec_tracks)
-    ensemble_model = Ensemble(word2vec_tracks, device)
+    ensemble_model = EnsembleRecall(word2vec_tracks, device)
 
     # evaluate ensemble model:
     trackId2artistId = ld.get_trackid2artistid()
