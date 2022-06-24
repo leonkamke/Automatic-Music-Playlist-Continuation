@@ -237,8 +237,7 @@ class EnsembleRecall:
                 trackId = int(trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
                 rankings[trackId] = float(pred_seq2seq[reducedTrackId])
-                print("rankings[normal trackid] = ", rankings[trackId])
-
+            print("rankings = ", rankings)
             _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
             output = []
