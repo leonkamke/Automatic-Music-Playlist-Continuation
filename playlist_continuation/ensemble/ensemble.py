@@ -232,11 +232,14 @@ class EnsembleRecall:
             # pred_seq2seq.shape = (num_tracks)
             print("pred_seq2seq: ", pred_seq2seq)
 
+            return self.seq2seq.predict(input, num_predictions)
+
             rankings = torch.zeros(self.vocab_size, dtype=torch.float)
             for trackId in pred_autoencoder:
                 trackId = int(trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
                 rankings[trackId] = float(pred_seq2seq[reducedTrackId])
+
             print("rankings = ", rankings)
             _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
 
