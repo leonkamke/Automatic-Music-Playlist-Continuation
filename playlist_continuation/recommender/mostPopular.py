@@ -10,10 +10,11 @@ class MostPopularModel:
     def __init__(self, word2vec_tracks):
         self.word2vec_tracks = word2vec_tracks
 
-    def predict(self, input, num_predictions):
+    # def predict(self, title, src, num_predictions, only_title=False):
+    def predict(self, title, src, num_predictions, only_title=False):
         # calculate mean-vector of given tracks
         vec = []
-        for track_id in input:
+        for track_id in src:
             track_id = int(track_id)
             track_vector = self.word2vec_tracks.wv[track_id]
             vec.append(track_vector)
@@ -55,5 +56,5 @@ if __name__ == '__main__':
     print("finished")
 
     # evaluate word2vec model
-    results_str = eval.evaluate_model(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
+    results_str = eval.spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
                                       la.get_start_idx(), la.get_end_idx(), torch.device("cpu"))
