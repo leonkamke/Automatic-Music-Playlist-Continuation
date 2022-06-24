@@ -46,7 +46,6 @@ class Ensemble:
         self.title2rec = model
         print("finished")
 
-        """
         print("create autoencoder for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
@@ -59,9 +58,8 @@ class Ensemble:
         autoencoder.eval()
         model_list.append(autoencoder)
         print("finished")
-        """
 
-        """print("create seq2seq model for ensemble")
+        print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
         seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -72,8 +70,8 @@ class Ensemble:
         seq2seq.load_state_dict(torch.load(seq2seq_path))
         seq2seq.to(device)
         seq2seq.eval()
-        # model_list.append(seq2seq)
-        print("finished")"""
+        model_list.append(seq2seq)
+        print("finished")
 
         print("create seq2seq_5 model for ensemble")
         weights_path = la.path_embedded_weights()
