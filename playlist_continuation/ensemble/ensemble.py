@@ -126,7 +126,7 @@ class Ensemble:
         else:
             rankings = torch.zeros(self.vocab_size, dtype=torch.float)
             # for each model make border-count
-            n = 2000
+            n = num_predictions
 
             for model in self.model_list:
                 if isinstance(model, Title2Rec):
