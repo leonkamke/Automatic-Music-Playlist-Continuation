@@ -100,6 +100,7 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     r_precision_mean /= 10
     ndcg_mean /= 10
     clicks_mean /= 10
+
     """
     weights:
     title only: 1x
