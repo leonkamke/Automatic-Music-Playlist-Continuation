@@ -72,7 +72,7 @@ class Ensemble:
         model_list.append(autoencoder)
         print("finished")"""
 
-        """print("create seq2seq model for ensemble")
+        print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
         seq2seq_path = la.output_path_model() + "/tracks2rec/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -84,7 +84,7 @@ class Ensemble:
         seq2seq.to(device)
         seq2seq.eval()
         model_list.append(seq2seq)
-        print("finished")"""
+        print("finished")
 
         print("create seq2seq_5 model for ensemble")
         weights_path = la.path_embedded_weights()
