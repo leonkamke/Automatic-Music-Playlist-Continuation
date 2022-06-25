@@ -244,7 +244,6 @@ class EnsembleRecall:
 
             output = []
             for value in values:
-                print("mydict[value] = ", mydict[value])
                 output.append(mydict[value])
             # output has to be a list of track_id's
             # outputs.shape == (num_predictions)"""
