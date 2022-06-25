@@ -50,6 +50,7 @@ def create_dataset():
         print("num_30_60 ", len(num_30_60))
 
         first_100 = num_140_[0:2000]
+        random_100 = []
         title_only = []
         for playlist in num_30_60:
             if len(title_only) >= 2000:
@@ -59,6 +60,7 @@ def create_dataset():
                     title_only.append(playlist)
 
         first_25 = []
+        random_25 = []
         first_10 = []
         first_5 = []
         first_1 = num_30_60[0:2000]
@@ -90,14 +92,29 @@ def create_dataset():
                 first_25.append(num_100_140[0])
                 num_100_140 = num_100_140[1:]
 
+        # create the random playlists
+        for playlist in first_25:
+            shuffled_tracks = playlist[2:]
+            random.shuffle(shuffled_tracks)
+            shuffled_playlist = playlist[:2] + shuffled_tracks
+            random_25.append(shuffled_playlist)
+
+        for playlist in first_100:
+            shuffled_tracks = playlist[2:]
+            random.shuffle(shuffled_tracks)
+            shuffled_playlist = playlist[:2] + shuffled_tracks
+            random_100.append(shuffled_playlist)
+
         print("title_only ", len(title_only))
         print("first_1 ", len(first_1))
         print("first_5 ", len(first_5))
         print("first_10 ", len(first_10))
         print("first_25 ", len(first_25))
+        print("random_25 ", len(random_25))
         print("first_100 ", len(first_100))
+        print("random_100", len(random_100))
 
-        eval_data = title_only + first_1 + first_5 + first_10 + first_25 + first_100
+        eval_data = title_only + first_1 + first_5 + first_10 + first_25 + random_25 + first_100 + random_100
         print("len(eval_data) = ", len(eval_data))
 
         with open('/ds/audio/MPD/spotify_million_playlist_dataset_csv/data/eval_data.csv', 'w', newline='',

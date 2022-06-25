@@ -1,3 +1,5 @@
+import random
+
 import torch
 import torch.nn as nn
 import csv
@@ -369,3 +371,10 @@ if __name__ == "__main__":
     rankings[1] = 1.1
     rankings[9] = -0.4
     print(torch.topk(rankings, k=4, largest=False))"""
+
+    l = ["99", "title", "10", "0", "22", "1"]
+    l_shuffled = l[2:]
+    random.shuffle(l_shuffled)
+    l_shuffled = l[:2] + l_shuffled
+    print("l_shuffled = ", l_shuffled)
+    print("l = ", l)
