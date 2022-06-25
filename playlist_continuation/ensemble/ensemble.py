@@ -45,7 +45,7 @@ class Ensemble:
         model.eval()
         self.title2rec = model
         print("finished")
-        """
+
         print("create autoencoder for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
@@ -57,7 +57,7 @@ class Ensemble:
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")"""
+        print("finished")
 
         """print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
@@ -73,7 +73,7 @@ class Ensemble:
         model_list.append(seq2seq)
         print("finished")"""
 
-        print("create seq2seq_5 model for ensemble")
+        """print("create seq2seq_5 model for ensemble")
         weights_path = la.path_embedded_weights()
         seq2seq_path = la.output_path_model() + "/tracks2rec_5/seq2seq_v4_reduced_nll.pth"
         weights = torch.load(weights_path, map_location=device)
@@ -85,7 +85,7 @@ class Ensemble:
         seq2seq_5.to(device)
         seq2seq_5.eval()
         model_list.append(seq2seq_5)
-        print("finished")
+        print("finished")"""
 
         """print("create seq2seq_2 model for ensemble")
         weights_path = la.path_embedded_weights_tracks()
@@ -129,28 +129,12 @@ class Ensemble:
             n = num_predictions
 
             for model in self.model_list:
-                if isinstance(model, Title2Rec):
-                    prediction = model.predict(title, n)
-                else:
-                    prediction = model.predict(src, n)
+                prediction = model.predict(src, n)
                 for i, track_id in enumerate(prediction):
                     track_id = int(track_id)
-                    i = int(i)
                     rankings[track_id] += (n - i)
 
             _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
-
-            """rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-    
-            # sort corresponding to popularity
-            for track_id in top_k:
-                track_id = int(track_id)
-                track_uri = self.track2vec.wv.index_to_key[track_id]
-                popularity = self.track2vec.wv.get_vecattr(track_uri, "count")
-                rankings[track_id] = popularity
-    
-            _, top_k = torch.topk(rankings, dim=0, k=num_predictions)"""
-
             return top_k
 
 
@@ -224,8 +208,6 @@ class EnsembleRecall:
         if only_title:
             return self.title2rec.predict(title, num_predictions)
         else:
-            return self.autoencoder.predict(input, num_predictions)
-
             pred_autoencoder = self.autoencoder.predict(input, num_predictions)
             # pred_autoencoder = sequence of track id's
 
