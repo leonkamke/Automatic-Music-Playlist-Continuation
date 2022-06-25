@@ -87,9 +87,10 @@ class Seq2Seq(nn.Module):
         x, _ = self.forward(input)
         # x.shape == (seq_len, vocab_size)
         x = torch.mean(x, dim=0)
-        print("x = ", x)
+        # print("x = ", x)
         # x.shape == (vocab_size)
-        _, top_k = torch.topk(x, dim=0, k=num_predictions)
+        a, top_k = torch.topk(x, dim=0, k=num_predictions, largest=False)
+        print("a = ", a)
         # top_k.shape == (num_predictions)
         output = []
         for reduced_track_id in top_k:

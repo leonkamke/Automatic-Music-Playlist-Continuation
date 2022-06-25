@@ -343,7 +343,7 @@ if __name__ == "__main__":
     weights = torch.FloatTensor(word2vec.wv.vectors)
     torch.save(weights, '/netscratch/kamke/outputs/trained_models/pretrained_embedded_matrix/track.pt')"""
 
-    class1 = []
+    """class1 = []
     class2 = []
     class3 = []
     class4 = []
@@ -363,4 +363,9 @@ if __name__ == "__main__":
                     # len_p = len(row[2:])
                     c += 1
 
-        print(c)
+        print(c)"""
+
+    """rankings = torch.zeros(10, dtype=torch.float)
+    rankings[1] = 1.1
+    rankings[9] = -0.4
+    print(torch.topk(rankings, k=4, largest=False))"""
