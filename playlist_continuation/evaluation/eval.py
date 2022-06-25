@@ -37,11 +37,11 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     result_str = ""
 
     # title only
-    """r_precision, ndcg, clicks = eval_title_only(model, evaluation_dataset, device, trackId2artistId)
+    r_precision, ndcg, clicks = eval_title_only(model, evaluation_dataset, device, trackId2artistId)
     result_str += "Title only ---------------------------\n"
     result_str += "---> R-Precision            : " + str(r_precision) + "\n"
     result_str += "---> NDCG                   : " + str(ndcg) + "\n"
-    result_str += "---> Clicks                 : " + str(clicks) + "\n"""
+    result_str += "---> Clicks                 : " + str(clicks) + "\n
     r_precision_mean += 0
     ndcg_mean += 0
     clicks_mean += 51.0
