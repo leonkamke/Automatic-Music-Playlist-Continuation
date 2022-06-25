@@ -226,33 +226,26 @@ class EnsembleRecall:
         else:
             pred_autoencoder = self.autoencoder.predict(input, num_predictions)
             # pred_autoencoder = sequence of track id's
-            """
-            input = input.to(torch.device("cuda"))
-            # input.shape == seq_len
-            x, _ = self.forward(input)
-            # x.shape == (seq_len, vocab_size)
-            x = torch.mean(x, dim=0)
-            """
 
             pred_seq2seq, _ = self.seq2seq.forward(input)
             # pred_seq2seq.shape = (seq_len, num_tracks)
             pred_seq2seq = torch.mean(pred_seq2seq, dim=0)
             # pred_seq2seq.shape = (num_tracks)
-            print("pred_seq2seq.shape: ", pred_seq2seq.shape)
-            print("pred_seq2seq: ", pred_seq2seq)
 
-            rankings = torch.zeros(self.vocab_size, dtype=torch.float)
-            for trackId in pred_autoencoder:
+            mydict = {}
+            values = []
+            for i, trackId in pred_autoencoder:
                 trackId = int(trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
-                rankings[trackId] = float(pred_seq2seq[reducedTrackId])
-
-            print("rankings = ", rankings)
-            _, top_k = torch.topk(rankings, dim=0, k=num_predictions)
+                value = -1.0 * float(pred_seq2seq[reducedTrackId])
+                mydict[value] = trackId
+                values.append(value)
+            values = sorted(values)
 
             output = []
-            for trackId in top_k:
-                output.append(int(trackId))
+            for value in values:
+                print("mydict[value] = ", mydict[value])
+                output.append(mydict[value])
             # output has to be a list of track_id's
             # outputs.shape == (num_predictions)"""
             return output
