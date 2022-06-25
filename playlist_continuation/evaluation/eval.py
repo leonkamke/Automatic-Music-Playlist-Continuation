@@ -148,7 +148,7 @@ def eval_title_only(model, evaluation_dataset, device, trackId2artistId):
         # prediction is of shape len(trg)
         # first compute R-Precision and NDCG for tracks
         r_precision_tracks = calc_r_precision(prediction, trg)
-        ndcg_tracks = calc_ndcg(prediction, trg)
+        ndcg_tracks = calc_ndcg(prediction_all, trg)
         clicks = playlist_extender_clicks(prediction_all, trg)
         r_precision_tracks_sum += r_precision_tracks
         ndcg_tracks_sum += ndcg_tracks
@@ -206,7 +206,7 @@ def eval_tracks(model, evaluation_dataset, device, trackId2artistId, t):
             # prediction is of shape len(trg)
             # first compute R-Precision and NDCG for tracks
             r_precision_tracks = calc_r_precision(prediction, trg)
-            ndcg_tracks = calc_ndcg(prediction, trg)
+            ndcg_tracks = calc_ndcg(prediction_all, trg)
             clicks = playlist_extender_clicks(prediction_all, trg)
             r_precision_tracks_sum += r_precision_tracks
             ndcg_tracks_sum += ndcg_tracks
