@@ -51,8 +51,16 @@ class EvaluationDataset(Dataset):
                     # first 25 tracks
                     src_i = row[2:27]
                     trg_i = row[27:]
-                else:   # i < 12000
+                elif i < 12000:
+                    # random 25 tracks
+                    src_i = row[2:27]
+                    trg_i = row[27:]
+                elif i < 14000:
                     # first 100 tracks
+                    src_i = row[2:102]
+                    trg_i = row[102:]
+                else:   # i < 16000
+                    # random 100 tracks
                     src_i = row[2:102]
                     trg_i = row[102:]
                 src_uri.append(src_i)
