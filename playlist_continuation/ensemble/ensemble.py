@@ -224,6 +224,8 @@ class EnsembleRecall:
         if only_title:
             return self.title2rec.predict(title, num_predictions)
         else:
+            return self.autoencoder.predict(input, num_predictions)
+
             pred_autoencoder = self.autoencoder.predict(input, num_predictions)
             # pred_autoencoder = sequence of track id's
 
