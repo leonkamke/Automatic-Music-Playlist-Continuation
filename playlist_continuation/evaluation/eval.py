@@ -114,7 +114,7 @@ def spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2arti
     # print the results
     print(result_str)
     print("")
-    print("Results for the entire evaluation dataset #######################")
+    print("Results for the entire evaluation dataset --------------------")
     print("")
     print("---> R-Precision            : " + str(r_precision_mean))
     print("---> NDCG                   : " + str(ndcg_mean))
