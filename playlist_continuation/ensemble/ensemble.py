@@ -226,13 +226,20 @@ class EnsembleRecall:
         else:
             pred_autoencoder = self.autoencoder.predict(input, num_predictions)
             # pred_autoencoder = sequence of track id's
+            """
+            input = input.to(torch.device("cuda"))
+            # input.shape == seq_len
+            x, _ = self.forward(input)
+            # x.shape == (seq_len, vocab_size)
+            x = torch.mean(x, dim=0)
+            """
+
             pred_seq2seq, _ = self.seq2seq.forward(input)
             # pred_seq2seq.shape = (seq_len, num_tracks)
-            pred_seq2seq = pred_seq2seq[-1]
+            pred_seq2seq = torch.mean(pred_seq2seq, dim=0)
             # pred_seq2seq.shape = (num_tracks)
+            print("pred_seq2seq.shape: ", pred_seq2seq.shape)
             print("pred_seq2seq: ", pred_seq2seq)
-
-            return self.seq2seq.predict(input, num_predictions)
 
             rankings = torch.zeros(self.vocab_size, dtype=torch.float)
             for trackId in pred_autoencoder:
