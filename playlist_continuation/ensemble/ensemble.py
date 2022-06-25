@@ -59,7 +59,6 @@ class Ensemble:
         model_list.append(autoencoder)
         print("finished")
 
-        """
         print("create autoencoder_2 for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
@@ -71,7 +70,7 @@ class Ensemble:
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")"""
+        print("finished")
 
         """print("create seq2seq model for ensemble")
         weights_path = la.path_embedded_weights()
