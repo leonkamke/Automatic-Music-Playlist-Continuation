@@ -46,7 +46,7 @@ class Ensemble:
         self.title2rec = model
         print("finished")
 
-        """print("create autoencoder_1 for ensemble")
+        print("create autoencoder_1 for ensemble")
         HID_DIM = 256
         save_file_name = "/autoencoder.pth"
         # (self, hid_dim, num_tracks, num_artists, num_albums, trackId2reducedTrackId, trackId2reducedArtistId,
@@ -57,7 +57,7 @@ class Ensemble:
         autoencoder.to(device)
         autoencoder.eval()
         model_list.append(autoencoder)
-        print("finished")"""
+        print("finished")
 
         print("create autoencoder_2 for ensemble")
         HID_DIM = 256
