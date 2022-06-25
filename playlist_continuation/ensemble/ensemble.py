@@ -234,7 +234,7 @@ class EnsembleRecall:
 
             mydict = {}
             values = []
-            for i, trackId in pred_autoencoder:
+            for trackId in pred_autoencoder:
                 trackId = int(trackId)
                 reducedTrackId = self.trackId2reducedTrackId[trackId]
                 value = -1.0 * float(pred_seq2seq[reducedTrackId])
