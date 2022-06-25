@@ -89,7 +89,7 @@ class Seq2Seq(nn.Module):
         x = torch.mean(x, dim=0)
         # print("x = ", x)
         # x.shape == (vocab_size)
-        a, top_k = torch.topk(x, dim=0, k=num_predictions, largest=False)
+        a, top_k = torch.topk(x, dim=0, k=num_predictions, largest=True)
         print("a = ", a)
         # top_k.shape == (num_predictions)
         output = []
