@@ -8,7 +8,7 @@ import argparse
 import csv
 import json
 
-parser = argparse.ArgumentParser(description="Convert MPD(json) to csv file with list of spotify uri's")
+parser = argparse.ArgumentParser(description="Convert MPD(json) to csv file with list of spotify track uri's")
 
 parser.add_argument('--mpd_path', default=None, required=True)
 parser.add_argument('--out_path', default=None, required=True)
