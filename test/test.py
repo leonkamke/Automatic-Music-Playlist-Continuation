@@ -381,5 +381,6 @@ if __name__ == "__main__":
     print("l = ", l)"""
 
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    len(word2vec_tracks.wv)
+    print(len(word2vec_tracks.wv))
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
+    print(len(word2vec_tracks.wv))
