@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print("loaded dictionaries from file")
 
     # create model
-    print("create playlistVec2Rec model")
+    print("create Random2Rec model")
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
     model = Random2Rec(word2vec_tracks)
     print("finished")

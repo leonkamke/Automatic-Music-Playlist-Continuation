@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import csv
 from playlist_continuation.config import load_attributes as la
+import gensim
 
 
 class Seq2Seq(nn.Module):
@@ -372,9 +373,13 @@ if __name__ == "__main__":
     rankings[9] = -0.4
     print(torch.topk(rankings, k=4, largest=False))"""
 
-    l = ["99", "title", "10", "0", "22", "1"]
+    """ l = ["99", "title", "10", "0", "22", "1"]
     l_shuffled = l[2:]
     random.shuffle(l_shuffled)
     l_shuffled = l[:2] + l_shuffled
     print("l_shuffled = ", l_shuffled)
-    print("l = ", l)
+    print("l = ", l)"""
+
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
+    len(word2vec_tracks.wv)
+    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
