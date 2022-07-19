@@ -79,6 +79,6 @@ if __name__ == "__main__":
         print(loaded_dict["!"])
         print(type(loaded_dict["!"]))
         print(type(loaded_dict))"""
-    title = ""
-
+    title = "Das ist ein Test"
+    print(convert_title(title))
     print(title2index_seq(title))

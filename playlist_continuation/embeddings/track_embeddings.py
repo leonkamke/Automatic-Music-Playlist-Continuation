@@ -108,3 +108,4 @@ if __name__ == '__main__':
     word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
     model = Word2VecModel(word2vec_tracks, word2vec_artists)
     eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 0, 500, torch.device('cpu'))"""
+    print(word2vec_tracks.wv.similar_by_key("spotify:track:1znPMY3zq78mVuTAmOA9O7", topn=500))
