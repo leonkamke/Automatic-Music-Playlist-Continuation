@@ -62,7 +62,7 @@ class Word2VecModel:
 if __name__ == '__main__':
     # if trained model exits then load model else train and safe model
     word2vec_tracks = None
-    if os.path.isfile("../../models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model"):
+    if os.path.isfile("../../models/gensim_word2vec/1_mil_playlists/word2vec-song-vectors.model"):
         print("load model from file")
         word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
         print("model loaded from file")

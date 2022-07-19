@@ -381,6 +381,5 @@ if __name__ == "__main__":
     print("l = ", l)"""
 
     word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_model())
-    print(len(word2vec_tracks.wv))
-    word2vec_tracks = gensim.models.Word2Vec.load(la.path_track_to_vec_reduced_model())
-    print(len(word2vec_tracks.wv))
+    print(word2vec_tracks.wv.similar_by_key("spotify:track:1znPMY3zq78mVuTAmOA9O7", topn=500))
+
