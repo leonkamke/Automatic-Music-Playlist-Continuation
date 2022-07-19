@@ -173,8 +173,9 @@ if __name__ == "__main__":
     num_predictions = 50
     playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7",
                      "spotify:track:2JS1iE5A5RHvUPH5Zl9jlF",
-                     "spotify:track:6Qyc6fS4DsZjB2mRW9DsQs"]
+                     "spotify:track:2zYzyRzz6pRmhPzyfMEC8s"]
     playlist_ids = playlist_uris_to_ids(playlist_uris, word2vec_tracks)
+    playlist_ids = torch.LongTensor(playlist_ids)
 
     recommendation_ids = model.predict(playlist_name, playlist_ids, num_predictions)
     # print recommendations
