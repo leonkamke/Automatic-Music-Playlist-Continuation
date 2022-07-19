@@ -14,6 +14,14 @@ def trackIds2trackUris(track_ids, track2vec):
     return track_uris
 
 
+def playlist_uris_to_ids(playlist_uris, track2vec):
+    playlist_ids = []
+    for uri in playlist_uris:
+        id = track2vec.wv.key_to_index[uri]
+        playlist_ids.append(id)
+    return playlist_ids
+
+
 if __name__ == "__main__":
     device = torch.device("cpu")
 
@@ -143,7 +151,7 @@ if __name__ == "__main__":
             
     Day'n nite: pid 450 song 69
     """
-    model = Ensemble(word2vec_tracks)
+    """model = Ensemble(word2vec_tracks, torch.device("cpu"))
     print("create dataset")
     evaluation_dataset = eval_data.VisualizeDataset(trackUri2trackId, artistUri2artistId, 0, 100000)
     print("finished")
@@ -155,5 +163,19 @@ if __name__ == "__main__":
     num_predictions = 50
     recommendation_ids = model.predict(playlist_name, playlist_ids, num_predictions)
 
+    # print recommendations
+    print(trackIds2trackUris(recommendation_ids, word2vec_tracks))"""
+
+    # ---------------------------------------------------------------------------------------------------
+
+    model = Ensemble(word2vec_tracks, torch.device("cpu"))
+    playlist_name = "Test"
+    num_predictions = 50
+    playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7",
+                     "spotify:track:2JS1iE5A5RHvUPH5Zl9jlF",
+                     "spotify:track:6Qyc6fS4DsZjB2mRW9DsQs"]
+    playlist_ids = playlist_uris_to_ids(playlist_uris, word2vec_tracks)
+
+    recommendation_ids = model.predict(playlist_name, playlist_ids, num_predictions)
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
