@@ -177,6 +177,6 @@ if __name__ == "__main__":
     playlist_ids = playlist_uris_to_ids(playlist_uris, word2vec_tracks)
     playlist_ids = torch.LongTensor(playlist_ids)
 
-    recommendation_ids = model.predict(playlist_name, playlist_ids, num_predictions)
+    recommendation_ids = model.predict(playlist_name, playlist_ids, num_predictions, only_title=False)
     # print recommendations
     print(trackIds2trackUris(recommendation_ids, word2vec_tracks))
