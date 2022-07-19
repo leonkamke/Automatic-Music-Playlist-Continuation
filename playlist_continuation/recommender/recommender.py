@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     # ---------------------------------------------------------------------------------------------------
 
-    model = Ensemble(word2vec_tracks, torch.device("cpu"))
+    model = Ensemble(word2vec_tracks, torch.device("cuda"))
     playlist_name = "Test"
     num_predictions = 50
     playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7",
