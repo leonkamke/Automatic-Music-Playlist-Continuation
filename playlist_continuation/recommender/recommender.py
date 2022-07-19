@@ -171,8 +171,8 @@ if __name__ == "__main__":
     model = Ensemble(word2vec_tracks, torch.device("cuda"))
     playlist_name = "Test"
     num_predictions = 50
-    playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7" # nothing else matters,
-                     "spotify:album:43wpzak9OmQfrjyksuGwp0" # dont stop believin,
+    playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7", # nothing else matters,
+                     "spotify:album:43wpzak9OmQfrjyksuGwp0", # dont stop believin,
                      "spotify:track:2zYzyRzz6pRmhPzyfMEC8s"] # highway to hell
     playlist_ids = playlist_uris_to_ids(playlist_uris, word2vec_tracks)
     playlist_ids = torch.LongTensor(playlist_ids)
