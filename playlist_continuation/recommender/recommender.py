@@ -174,7 +174,8 @@ if __name__ == "__main__":
 
     playlist_uris = ["spotify:track:1znPMY3zq78mVuTAmOA9O7", # nothing else matters,
                      "spotify:track:4bHsxqR3GMrXTxEPLuK5ue", # dont stop believin,
-                     "spotify:track:2zYzyRzz6pRmhPzyfMEC8s"] # highway to hell
+                     "spotify:track:1ynmMEK1fkyiZ6Z6F3ThEt"] # Centerfold
+                     # "spotify:track:2zYzyRzz6pRmhPzyfMEC8s"] # highway to hell
 
     """
     playlist_uris = ["spotify:track:7BKLCZ1jbUBVqRi2FVlTVw", # Closer,
