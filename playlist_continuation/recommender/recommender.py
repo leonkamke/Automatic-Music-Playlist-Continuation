@@ -177,11 +177,17 @@ if __name__ == "__main__":
                      "spotify:track:1ynmMEK1fkyiZ6Z6F3ThEt"] # Centerfold
                      # "spotify:track:2zYzyRzz6pRmhPzyfMEC8s"] # highway to hell"""
 
-
+    """
     playlist_uris = [# "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw", # Closer,
                      "spotify:track:3RiPr603aXAoi4GHyXx0uy", # Hymn for the weekend - coldplay,
                      "spotify:track:7qiZfU4dY1lWllzX7mPBI3", # Shape of you
                     "spotify:track:1xznGGDReH1oQq0xzbwXa3"] # One dance
+    """
+    playlist_uris = [
+        "spotify:track:2QbFClFyhMMtiurUjuQlAe",  # dont wanna know
+        "spotify:track:3a1lNhkSLSkpJE4MSHpDu9",  # congratulations
+        "spotify:track:1xznGGDReH1oQq0xzbwXa3"   # one dance
+    ]
 
     playlist_ids = playlist_uris_to_ids(playlist_uris, word2vec_tracks)
     playlist_ids = torch.LongTensor(playlist_ids)
