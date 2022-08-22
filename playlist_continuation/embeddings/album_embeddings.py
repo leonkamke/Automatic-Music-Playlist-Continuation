@@ -1,3 +1,7 @@
+"""
+Create and train Album2Vec model with Gensim
+"""
+
 import gensim
 import os.path
 import csv

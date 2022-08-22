@@ -1,8 +1,8 @@
 import pandas as pd
 
 if __name__ == "__main__":
-    df = pd.read_csv("../../data/spotify_million_playlist_dataset_csv/data/track_album_dict.csv",
-                     header=None, index_col=None)
+    df = pd.read_csv("../../data/spotify_million_playlist_dataset_csv/data/track_album_dict.csv", header=None,
+                     index_col=None)
     print(df.size)
     df = df.drop_duplicates()
     print(df.size)

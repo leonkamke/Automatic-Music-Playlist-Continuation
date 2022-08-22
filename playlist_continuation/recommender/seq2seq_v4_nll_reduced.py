@@ -1,19 +1,17 @@
 """
-training: train by computing the Cross Entropy Loss based on the shifted target (the output
-            is shifted in one timestamp in comparison to the input)
-prediction: do_rank (take k largest values (indices) for the prediction)
-            do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
-                            largest values (indices) for the prediction)
+Sequence model which implements a Recurrent Neural Network to generate track recommendations
 """
-import shutil
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import os
-import playlist_continuation.data_preprocessing.load_data as ld
 from torch.utils.data import DataLoader
+
+import playlist_continuation.data_preprocessing.load_data as ld
 import playlist_continuation.evaluation.eval as eval
 from playlist_continuation.config import load_attributes as la
+import shutil
+import os
 
 
 def init_weights(m):
@@ -151,7 +149,7 @@ def train_shifted_target(model, dataloader, optimizer, criterion, device, num_ep
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             optimizer.step()
-            print("epoch ", epoch+1, " iteration ", num_iterations, " loss = ", loss.item())
+            print("epoch ", epoch + 1, " iteration ", num_iterations, " loss = ", loss.item())
             num_iterations += 1
         num_iterations = 1
 
@@ -211,19 +209,19 @@ if __name__ == '__main__':
 
     print("Create train data...")
     # dataset = (self, trackUri2trackId, reducedTrackUri2reducedTrackId, num_rows_train, num_steps):
-    #dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(trackUri2trackId, reducedTrackUri2reducedId,
-    #                                                           num_playlists_for_training, num_steps)
-    # = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
+    dataset = ld.NextTrackDatasetShiftedTargetReducedFixedStep(trackUri2trackId, reducedTrackUri2reducedId,
+                                                               num_playlists_for_training, num_steps)
+    dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=6)
     print("Created train data")
 
     foldername = la.get_folder_name()
     save_file_name = "/seq2seq_v4_reduced_nll.pth"
 
-    #os.mkdir(la.output_path_model() + foldername)
-    #shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
+    os.mkdir(la.output_path_model() + foldername)
+    shutil.copyfile("../config/attributes", la.output_path_model() + foldername + "/attributes.txt")
     # def train(model, src, trg, optimizer, criterion, device, batch_size=10, clip=1, epochs=2)
-    #train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
-    #torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
+    train_shifted_target(model, dataloader, optimizer, criterion, device, num_epochs, max_norm)
+    torch.save(model.state_dict(), la.output_path_model() + foldername + save_file_name)
 
     model.load_state_dict(torch.load(la.output_path_model() + foldername + save_file_name))
     device = torch.device("cpu")

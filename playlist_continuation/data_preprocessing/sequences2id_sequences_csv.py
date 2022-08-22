@@ -1,8 +1,5 @@
-from os import listdir
-from os import path
-import argparse
 import csv
-import json
+
 
 def create_dict():
     with open('../data/spotify_million_playlist_dataset_csv/data/vocabulary.csv', encoding='utf8') as read_obj:
@@ -33,5 +30,3 @@ if __name__ == '__main__':
                     spotify_uri = row[i]
                     to_write.append(track_to_index[spotify_uri])
                 file_writer.writerow(to_write)
-
-

@@ -1,3 +1,7 @@
+"""
+Create recommendations with the Word2Vec models and calculate a vector for a given playlist
+"""
+
 import gensim
 import numpy as np
 import torch

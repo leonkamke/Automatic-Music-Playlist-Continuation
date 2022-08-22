@@ -1,5 +1,8 @@
+"""
+Recommends random tracks for a given playlist
+"""
+
 import gensim
-import numpy as np
 import torch
 import playlist_continuation.data_preprocessing.load_data as ld
 from playlist_continuation.config import load_attributes as la

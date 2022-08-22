@@ -1,6 +1,5 @@
 import csv
 import pickle
-
 import gensim
 
 OUTPUT_PATH = "/netscratch/kamke/dictionaries/"
@@ -242,10 +241,8 @@ def build_trackid2albumid():
     print("finished")
 
 
-# track_all_id2artist_id
-# track_all_id2album_id
 if __name__ == "__main__":
-    build_trackid2albumid()
+    """build_trackid2albumid()
     build_trackid2artistid()
     build_track_uri2id()
     build_reducedTrackUri2reducedTrackID()
@@ -257,5 +254,4 @@ if __name__ == "__main__":
     build_track_id2reduced_artist_id()
     build_track_id2reduced_album_id()
     build_artist_uri2id()
-    build_album_uri2id()
-
+    build_album_uri2id()"""

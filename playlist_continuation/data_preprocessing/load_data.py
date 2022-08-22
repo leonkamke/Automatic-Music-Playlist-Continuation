@@ -1,3 +1,7 @@
+"""
+Contains the training and evaluation datasets
+"""
+
 import pickle
 import random
 import torch

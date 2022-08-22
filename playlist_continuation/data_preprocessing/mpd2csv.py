@@ -9,7 +9,6 @@ import csv
 import json
 
 parser = argparse.ArgumentParser(description="Convert MPD(json) to csv files")
-
 parser.add_argument('--mpd_path', default=None, required=True)
 parser.add_argument('--out_path', default=None, required=True)
 

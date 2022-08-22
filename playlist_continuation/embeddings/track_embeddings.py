@@ -1,3 +1,7 @@
+"""
+Create and train Track2Vec model with Gensim
+"""
+
 import gensim
 import os.path
 import numpy as np
@@ -5,7 +9,6 @@ from os import path
 import argparse
 import json
 import csv
-
 from playlist_continuation.config import load_attributes as la
 
 
@@ -92,20 +95,3 @@ if __name__ == '__main__':
         word2vec_tracks.save("./models/gensim_word2vec/1_mil_playlists_reduced/word2vec-song-vectors.model")
         # model.wv.save_word2vec_format("./models/word2vec-song-vectors.model")
         print("trained and saved the model")
-
-    '''some playlists:
-    old bangers 198000
-    brunch 198154'''
-    # print(model.wv.get_index("spotify:track:1KHdq8NK9QxnGjdXb55NiG"))
-
-    """track_uris = get_track_uris_from_playlist(8024)
-    x = calc_mean_vector(word2vec_tracks, track_uris)
-    print(word2vec_tracks.wv.similar_by_key("spotify:track:4ZoBC5MhSEzuknIgAkBaoT", topn=500))
-    # print(model.wv.similar_by_key('spotify:track:0muI8DpTEpLqqibPm3sKYf'))
-
-    # evaluate word2vec model
-    # word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    word2vec_artists = gensim.models.Word2Vec.load(la.path_artist_to_vec_model())
-    model = Word2VecModel(word2vec_tracks, word2vec_artists)
-    eval.evaluate_model(model, word2vec_tracks, word2vec_artists, 0, 500, torch.device('cpu'))"""
-    print(word2vec_tracks.wv.similar_by_key("spotify:track:1znPMY3zq78mVuTAmOA9O7", topn=500))

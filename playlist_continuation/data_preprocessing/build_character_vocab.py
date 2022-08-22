@@ -66,19 +66,8 @@ def title2index_seq(title):
         index_seq.append(get_index(char))
     return index_seq
 
+
 def get_char_dict():
     with open(OUTPUT_PATH + 'char_dict.pkl', 'rb') as f:
         loaded_dict = pickle.load(f)
         return loaded_dict
-
-
-if __name__ == "__main__":
-    """with open(OUTPUT_PATH + 'char_dict.pkl', 'rb') as f:
-        loaded_dict = pickle.load(f)
-        print(len(loaded_dict))
-        print(loaded_dict["!"])
-        print(type(loaded_dict["!"]))
-        print(type(loaded_dict))"""
-    title = "Das ist ein Test"
-    print(convert_title(title))
-    print(title2index_seq(title))

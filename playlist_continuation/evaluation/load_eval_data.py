@@ -1,3 +1,7 @@
+"""
+Loads the evaluation dataset and is used in "eval.py"
+"""
+
 import torch
 import csv
 from torch.utils.data import Dataset
@@ -59,7 +63,7 @@ class EvaluationDataset(Dataset):
                     # first 100 tracks
                     src_i = row[2:102]
                     trg_i = row[102:]
-                else:   # i < 16000
+                else:  # i < 16000
                     # random 100 tracks
                     src_i = row[2:102]
                     trg_i = row[102:]

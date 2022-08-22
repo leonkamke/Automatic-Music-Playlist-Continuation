@@ -1,7 +1,7 @@
 """
 Evaluation script.
 It considers how good a model recommends relevant tracks (R-Precision) and
-it evaluates the ordering of the recommendation (NDCG).
+it evaluates the ordering of the recommendation (NDCG)
 """
 
 from playlist_continuation.evaluation import load_eval_data as eval_data
@@ -208,7 +208,7 @@ def eval_tracks(model, evaluation_dataset, device, trackId2artistId, t):
     len_data = 0
     # ---------------------------------------- Title only --------------------------------------------------------------
     for i, (src, trg, pid, title) in enumerate(evaluation_dataset):
-        if t*2000 <= i < t*2000 + 2000:
+        if t * 2000 <= i < t * 2000 + 2000:
             len_data += 1
             print("playlist " + str(i) + " of " + str(len(evaluation_dataset)) + " -----------------")
             print("PID = " + str(pid) + ", Title = " + str(title) + ", length playlist: " + str(len(src) + len(trg)))

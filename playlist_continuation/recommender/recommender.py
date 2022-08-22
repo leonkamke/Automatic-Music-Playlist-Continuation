@@ -1,8 +1,11 @@
+"""
+Script for applying the implemented models and print the recommendations in the form of Spotify URIs
+"""
+
 import gensim
 import torch
 from playlist_continuation.config import load_attributes as la
 from playlist_continuation.data_preprocessing import load_data as ld
-from playlist_continuation.evaluation import load_eval_data as eval_data
 from playlist_continuation.ensemble.ensemble import Ensemble
 
 

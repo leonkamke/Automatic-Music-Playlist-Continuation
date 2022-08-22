@@ -1,3 +1,7 @@
+"""
+Create recommendations with the Word2Vec models and rank the relevant tracks according to their popularity
+"""
+
 import gensim
 import numpy as np
 import torch
@@ -57,4 +61,4 @@ if __name__ == '__main__':
 
     # evaluate word2vec model
     results_str = eval.spotify_evaluation(model, trackId2artistId, trackUri2trackId, artistUri2artistId,
-                                      la.get_start_idx(), la.get_end_idx(), torch.device("cpu"))
+                                          la.get_start_idx(), la.get_end_idx(), torch.device("cpu"))

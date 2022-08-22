@@ -1,3 +1,7 @@
+"""
+Loads the configuration from the attributes.txt file
+"""
+
 START_PATH = 1  # line in which the paths start
 START_TRAINING = 9  # line in which the training parameters start
 
@@ -43,7 +47,7 @@ DEVICE = 19
 Which line contains which device will be used
 """
 NUM_RECURRENT_LAYERS = 22
-NUM_RECURRENT_DIMENSION  = 23
+NUM_RECURRENT_DIMENSION = 23
 
 
 # Methods for getting the network architecture

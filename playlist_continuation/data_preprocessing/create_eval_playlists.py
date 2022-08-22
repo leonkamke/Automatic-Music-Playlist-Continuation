@@ -1,11 +1,14 @@
+"""
+# training playlists:    0 - 980000
+# evaluation playlists:  980001 - 999999
+# --> evaluation_set contains of 20000 playlists
+"""
+
 import random
 import csv
 from playlist_continuation.config import load_attributes as la
 from playlist_continuation.data_preprocessing import build_character_vocab as cv
 
-# training playlists:    0 - 980000
-# evaluation playlists:  980001 - 999999
-# --> evaluation_set contains of 20000 playlists
 start_idx = 980001
 end_idx = 999999
 

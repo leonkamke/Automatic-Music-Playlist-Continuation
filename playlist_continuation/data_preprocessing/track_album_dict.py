@@ -10,7 +10,6 @@ import json
 import pandas as pd
 
 parser = argparse.ArgumentParser(description="Convert MPD(json) to csv file with list of album uri's")
-
 parser.add_argument('--mpd_path', default=None, required=True)
 parser.add_argument('--out_path', default=None, required=True)
 

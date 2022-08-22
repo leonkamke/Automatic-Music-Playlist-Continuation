@@ -1,10 +1,7 @@
 """
-training: train by computing the Cross Entropy Loss based on the shifted target (the output
-            is shifted in one timestamp in comparison to the input)
-prediction: do_rank (take k largest values (indices) for the prediction)
-            do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
-                            largest values (indices) for the prediction)
+Autoencoder, which takes binary track and artist vectors from a given playlist
 """
+
 import shutil
 import torch
 import torch.nn as nn

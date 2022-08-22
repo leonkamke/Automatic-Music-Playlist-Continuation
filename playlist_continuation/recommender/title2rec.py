@@ -1,10 +1,7 @@
 """
-training: train by computing the Cross Entropy Loss based on the shifted target (the output
-            is shifted in one timestamp in comparison to the input)
-prediction: do_rank (take k largest values (indices) for the prediction)
-            do_mean_rank (take mean over all vector's correlating to each timestamp and then take the k
-                            largest values (indices) for the prediction)
+Character level Recurrent Neural Network which creates recommendations for a given playlist title
 """
+
 import shutil
 from playlist_continuation.data_preprocessing import build_character_vocab as cv
 import torch
